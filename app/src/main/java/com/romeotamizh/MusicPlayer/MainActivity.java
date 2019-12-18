@@ -23,7 +23,6 @@ public class MainActivity extends AppCompatActivity   {
     private static final String[] permissions = new String[]{
             Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.WRITE_EXTERNAL_STORAGE,
-
     };
     ArrayList<String> mTitles = new ArrayList<>();
     ArrayList<Integer> mDurations = new ArrayList<>();

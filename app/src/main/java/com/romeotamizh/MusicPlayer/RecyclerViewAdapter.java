@@ -46,7 +46,22 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
     @Override
     public void onBindViewHolder(@NonNull final ViewHolder holder, final int position) {
-        holder.title.setText(mTitles.get(position));
+        StringBuffer titleOnly =  new StringBuffer();
+        StringBuffer extension =  new StringBuffer();
+        titleOnly.append(mTitles.get(position));
+        for(int i = titleOnly.length()-1;i>=0;i--){
+            extension.append(titleOnly.charAt(i));
+            if(titleOnly.charAt(i)=='.') {
+                titleOnly.delete(i, titleOnly.length());
+                break;
+            }
+
+        }
+        extension.reverse();
+        extension.deleteCharAt(0);
+        holder.title.setText(titleOnly.toString());
+        holder.extension.setText(extension.toString());
+        //holder.title.setText(mTitles.get(position));
         Integer m = (mDurations.get(position) / 1000) / 60;
         Integer s = (mDurations.get(position) / 1000) % 60;
         if (s < 10)
@@ -59,7 +74,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
             @Override
             public void onClick(View v) {
-                Toast.makeText(mContext, "Clicked " + mTitles.get(position), Toast.LENGTH_SHORT).show();
+                Toast.makeText(mContext, "Playing " + mTitles.get(position), Toast.LENGTH_SHORT).show();
                 MainActivity.playMusic(mData.get(position));
 
 
@@ -77,14 +92,17 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         CircleImageView image;
         TextView title;
         TextView duration;
+        TextView extension;
         CardView parentLayout;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             title = itemView.findViewById(R.id.title);
             duration = itemView.findViewById(R.id.duration);
+            extension = itemView.findViewById(R.id.extension);
             parentLayout = itemView.findViewById(R.id.parent_layout);
         }
+
     }
 
 
