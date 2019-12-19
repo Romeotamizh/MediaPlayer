@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".PlayScreenActivity">
+
+    <ImageView
+        android:id="@+id/image_view"
+        android:layout_width="match_parent"
+        android:layout_height="400dp"
+        android:background="#ff0000"
+        android:scaleType="fitCenter"
+        android:src="@mipmap/a" />
+
+    <TextView
+        android:id="@+id/title_play_screen"
+        android:layout_width="match_parent"
+        android:layout_height="152dp"
+        android:gravity="center_horizontal|center_vertical"
+        android:singleLine="false"
+        android:text="Title"
+        android:textAlignment="center"
+        android:textColor="@color/colorAccent"
+        android:textSize="25dp" />
+
+    <ImageView
+        android:id="@+id/play_pause"
+        android:layout_width="wrap_content"
+        android:layout_height="128dp"
+        android:layout_gravity="center"
+        android:focusable="true"
+        android:onClick="playPausePress"
+        android:scaleType="fitCenter"
+        android:src="@mipmap/pause" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:orientation="horizontal"
+        android:paddingHorizontal="8dp">
+
+        <TextView
+            android:id="@+id/current_position"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="start|center"
+            android:text="00:00"
+            android:textSize="12dp" />
+
+        <SeekBar
+            android:id="@+id/seekbar"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="10"
+            android:foregroundGravity="center_vertical"
+            android:paddingHorizontal="8dp" />
+
+        <TextView
+            android:id="@+id/max_length"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="end|center"
+            android:text="00:01"
+            android:textSize="12dp" />
+
+    </LinearLayout>
+</LinearLayout>

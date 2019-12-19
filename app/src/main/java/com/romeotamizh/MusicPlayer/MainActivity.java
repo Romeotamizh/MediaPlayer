@@ -1,21 +1,24 @@
 package com.romeotamizh.MusicPlayer;
 
+import android.Manifest;
+import android.content.Context;
+import android.content.Intent;
+import android.database.Cursor;
+import android.media.MediaPlayer;
+import android.os.Build;
+import android.os.Bundle;
+import android.provider.MediaStore;
+import android.util.Log;
+
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.Manifest;
-import android.database.Cursor;
-import android.media.MediaPlayer;
-import android.os.Bundle;
-import android.provider.MediaStore;
-import android.util.Log;
-
 import com.gun0912.tedpermission.PermissionListener;
 import com.gun0912.tedpermission.TedPermission;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity   {
@@ -26,7 +29,9 @@ public class MainActivity extends AppCompatActivity   {
     };
     ArrayList<String> mTitles = new ArrayList<>();
     ArrayList<Integer> mDurations = new ArrayList<>();
-    ArrayList<String> mData = new ArrayList<>();
+    public static Context context;
+    public static Cursor cursor;
+    ArrayList<String> mDatas = new ArrayList<>();
     Toolbar toolbar;
     RecyclerView recyclerView;
     public  static MediaPlayer mediaPlayer = new MediaPlayer();
@@ -43,14 +48,30 @@ public class MainActivity extends AppCompatActivity   {
 
 
     }
-    void initialize(){
-        //requestPermissions();
 
+    public static void openPlayScreen(final String mData, final String mTitle) {
+        Intent intent = new Intent(context, PlayScreenActivity.class);
+        intent.putExtra("title", mTitle);
+        context.startActivity(intent);
+
+
+    }
+
+    void initialize(){
+        context = this;
+        checkPermissions();
+        addMusic();
+        initializeRecyclerView();
+
+
+    }
+
+    void checkPermissions() {
         TedPermission tedPermission = new TedPermission(getBaseContext());
         PermissionListener permissionListener = new PermissionListener() {
             @Override
             public void onPermissionGranted() {
-               // Toast.makeText(getBaseContext(),"permission granted",Toast.LENGTH_SHORT).show();
+                // Toast.makeText(getBaseContext(),"permission granted",Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -59,31 +80,21 @@ public class MainActivity extends AppCompatActivity   {
             }
         };
         tedPermission.setPermissionListener(permissionListener).setDeniedMessage("Must Accept Permissions").setPermissions(permissions).check();
-        addMusic();
-
-
-        RecyclerViewAdapter recyclerViewAdapter = new RecyclerViewAdapter(mTitles,mDurations,mData,getBaseContext());
-        recyclerView.setAdapter(recyclerViewAdapter);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-
 
     }
 
-
-
-
-
+    @RequiresApi(api = Build.VERSION_CODES.O)
     private void addMusic() {
 
-        Cursor cursor;
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-            cursor = getApplicationContext().getContentResolver().query(
-                    MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, null, null, null);
+
+        cursor = getApplicationContext().getContentResolver().query(
+                MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, null, null, null, "upper(" + MediaStore.Audio.Media.DISPLAY_NAME + ")ASC");
+        if (cursor != null) {
             cursor.moveToFirst();
             while (cursor.moveToNext()) {
                 mTitles.add(cursor.getString(cursor.getColumnIndex("_display_name")));
                 mDurations.add(cursor.getInt(cursor.getColumnIndex("duration")));
-                mData.add(cursor.getString(cursor.getColumnIndex("_data")));
+                mDatas.add(cursor.getString(cursor.getColumnIndex("_data")));
                 //musicFilesUri.add(ContentUris.withAppendedId(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,cursor.getInt(cursor.getColumnIndex("_id"))));
 
             }
@@ -92,42 +103,18 @@ public class MainActivity extends AppCompatActivity   {
                 Log.d("Column names", cursor.getColumnName(i));
             }
             cursor.moveToFirst();
-            Log.d("data",cursor.getString(cursor.getColumnIndex("_data")));
+            Log.d("data", cursor.getString(cursor.getColumnIndex("_data")));
             cursor.moveToFirst();
-            cursor.close();
-
-
         }
-
-
 
 
     }
 
-     public static void playMusic(String mData){
-
-        try {
-            if(mediaPlayer.isPlaying()) {
-                mediaPlayer.stop();
-            }
-            mediaPlayer = new MediaPlayer();
-            mediaPlayer.setVolume(1.0f,1.0f);
-            mediaPlayer.setDataSource(mData);
-            mediaPlayer.prepare();
-            mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                @Override
-                public void onPrepared(MediaPlayer mp) {
-                    mediaPlayer.start();
-
-                }
-            });
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
+    void initializeRecyclerView() {
+        RecyclerViewAdapter recyclerViewAdapter = new RecyclerViewAdapter(mTitles, mDurations, mDatas, getBaseContext());
+        recyclerView.setAdapter(recyclerViewAdapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
     }
-
-
 
 }
 
