@@ -15,7 +15,7 @@ import java.util.ArrayList;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-import static com.romeotamizh.MusicPlayer.PlayScreenActivity.playMusic;
+import static com.romeotamizh.MusicPlayer.MainActivity.openPlayScreen;
 
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder> {
     ArrayList<String> mImages = new ArrayList<>();
@@ -62,22 +62,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         extension.deleteCharAt(0);
         holder.title.setText(titleOnly.toString());
         holder.extension.setText(extension.toString());
-        //holder.title.setText(mTitles.get(position));
-        Integer m = (mDurations.get(position) / 1000) / 60;
-        Integer s = (mDurations.get(position) / 1000) % 60;
-        if (m == 0 && s == 0)
-            holder.duration.setText("00:01");
-        else {
-            if (m < 10 && s < 10)
-                holder.duration.setText("0" + m + ":" + "0" + s);
-
-            else if (m < 10 && s >= 10)
-                holder.duration.setText("0" + m + ":" + s);
-            else if (m >= 10 && s < 10)
-                holder.duration.setText(m + ":" + "0" + s);
-            else
-                holder.duration.setText(m + ":" + s);
-        }
+        holder.duration.setText(FormatTime.formatTime(mDurations.get(position)));
 
         holder.parentLayout.setOnClickListener(new View.OnClickListener() {
 
@@ -85,7 +70,8 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             @Override
             public void onClick(View v) {
                 // Toast.makeText(mContext, "Playing " + mTitles.get(position), Toast.LENGTH_SHORT).show();
-                playMusic(mDatas.get(position), titleOnly.toString());
+                PlayMusic.playMusic(mDatas.get(position), titleOnly.toString());
+                openPlayScreen(mDatas.get(position), mTitles.get(position));
 
 
             }
@@ -94,12 +80,6 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
     }
 
-    /*public  void openPlayScreen(){
-        Intent intent = new Intent(MainActivity.context,PlayScreenActivity.class);
-        MainActivity.context.startActivity(intent);
-
-
-    }*/
     @Override
     public int getItemCount() {
         return mTitles.size();

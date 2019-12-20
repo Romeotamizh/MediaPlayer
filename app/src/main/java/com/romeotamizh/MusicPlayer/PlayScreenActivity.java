@@ -9,8 +9,6 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import java.io.IOException;
-
 import static com.romeotamizh.MusicPlayer.MainActivity.mediaPlayer;
 
 public class PlayScreenActivity extends AppCompatActivity {
@@ -18,37 +16,11 @@ public class PlayScreenActivity extends AppCompatActivity {
     static ImageView playPause;
     ImageView imageView;
     TextView title;
-    TextView currentPosition;
-    TextView maxLength;
+    TextView currentPositionTextView;
+    TextView maxLengthTextView;
     String mTitle;
     SeekBar seekBar;
 
-    public static void playMusic(final String mData, final String mTitle) {
-
-        try {
-            if (mediaPlayer.isPlaying()) {
-                mediaPlayer.stop();
-            }
-            mediaPlayer = new MediaPlayer();
-            mediaPlayer.setVolume(1.0f, 1.0f);
-            mediaPlayer.setDataSource(mData);
-            mediaPlayer.prepare();
-            mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                @Override
-                public void onPrepared(MediaPlayer mp) {
-                    mediaPlayer.start();
-                    MainActivity.openPlayScreen(mData, mTitle);
-
-                }
-            });
-            mediaPlayBackListener();
-
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-    }
 
     static void mediaPlayBackListener() {
         mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
@@ -67,8 +39,8 @@ public class PlayScreenActivity extends AppCompatActivity {
         title = findViewById(R.id.title_play_screen);
         imageView = findViewById(R.id.image_view);
         playPause = findViewById(R.id.play_pause);
-        currentPosition = findViewById(R.id.current_position);
-        maxLength = findViewById(R.id.max_length);
+        currentPositionTextView = findViewById(R.id.current_position);
+        maxLengthTextView = findViewById(R.id.max_length);
         seekBar = findViewById(R.id.seekbar);
         initialize();
         seekBarFunctions();
@@ -189,49 +161,25 @@ public class PlayScreenActivity extends AppCompatActivity {
     }
 
     void seekBarFunctions() {
-        maxLength = findViewById(R.id.max_length);
-        Integer m = (mediaPlayer.getDuration() / 1000) / 60;
-        Integer s = (mediaPlayer.getDuration() / 1000) % 60;
-
-
-        if (m == 0 && s == 0)
-            maxLength.setText("00:01");
-        else {
-            if (m < 10 && s < 10)
-                maxLength.setText("0" + m + ":" + "0" + s);
-
-            else if (m < 10 && s > 10)
-                maxLength.setText("0" + m + ":" + s);
-            else if (m >= 10 && s < 10)
-                maxLength.setText(m + ":" + "0" + s);
-            else
-                maxLength.setText(m + ":" + s);
-        }
-
-        /*final ObjectAnimator objectAnimator = ObjectAnimator.ofInt(seekBar,"progress",0,mediaPlayer.getDuration());
-        objectAnimator.setDuration(seekBar.getMax());
-        objectAnimator.setInterpolator(new TimeInterpolator() {
-            @Override
-            public float getInterpolation(float input) {
-                return .01f;
-            }
-        });
-        objectAnimator.start();*/
-
-
+        maxLengthTextView = findViewById(R.id.max_length);
+        currentPositionTextView = findViewById(R.id.current_position);
+        maxLengthTextView.setText(FormatTime.formatTime(mediaPlayer.getDuration()));
         seekBar.setMax(mediaPlayer.getDuration());
         new Thread(new Runnable() {
             @Override
             public void run() {
-                int currentPosition = 0;
-                while (true) {
-                    currentPosition = mediaPlayer.getCurrentPosition();
-                    currentPosition++;
 
+                int currentPosition;
+
+
+                while (mediaPlayer.isPlaying()) {
+                    currentPosition = mediaPlayer.getCurrentPosition();
+                    currentPositionTextView.setText(FormatTime.formatTime(currentPosition));
+                    currentPosition++;
                     seekBar.setProgress(currentPosition);
                     if (currentPosition >= mediaPlayer.getDuration()) {
-                        currentPosition = 0;
-                        break;
+                        Thread.currentThread().interrupt();
+
                     }
                 }
 
