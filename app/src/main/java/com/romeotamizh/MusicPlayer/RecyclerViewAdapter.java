@@ -65,7 +65,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
             @Override
             public void onClick(View v) {
-                PlayMusic.playMusic(mDataList.get(position), titleOnly.toString());
+                // PlayMusic.playMusic(mDataList.get(position), titleOnly.toString());
                 openPlayScreen(mDataList.get(position), mTitleList.get(position));
 
 

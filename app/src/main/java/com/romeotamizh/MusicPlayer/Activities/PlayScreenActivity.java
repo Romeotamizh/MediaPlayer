@@ -11,10 +11,12 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.romeotamizh.MusicPlayer.FormatTime;
+import com.romeotamizh.MusicPlayer.PlayMusic;
 import com.romeotamizh.MusicPlayer.R;
 
 import static com.romeotamizh.MusicPlayer.Helpers.SetAlphabetImages.setAlphabetImages;
 import static com.romeotamizh.MusicPlayer.PlayMusic.mediaPlayer;
+//import static com.romeotamizh.MusicPlayer.PlayMusic.mediaPlayer;
 
 
 public class PlayScreenActivity extends AppCompatActivity {
@@ -25,9 +27,10 @@ public class PlayScreenActivity extends AppCompatActivity {
     TextView currentPositionTextView;
     TextView maxLengthTextView;
     String mTitle;
+    String mData;
     SeekBar seekBar;
     Runnable runnable;
-
+    // Activity activity = this;
 
     public static void mediaPlayBackListener() {
         mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
@@ -50,7 +53,6 @@ public class PlayScreenActivity extends AppCompatActivity {
         maxLengthTextView = findViewById(R.id.max_length);
         seekBar = findViewById(R.id.seekbar);
         initialize();
-        seekBarFunctions();
 
 
     }
@@ -62,21 +64,34 @@ public class PlayScreenActivity extends AppCompatActivity {
         super.onBackPressed();
     }
 
-
     void initialize() {
+        final Handler handler = new Handler();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while (true) {
+                    if (mediaPlayer.isPlaying()) {
+                        seekBarFunctions();
+                        Thread.currentThread().interrupt();
+                        return;
+                    }
+                }
 
+
+            }
+        }).start();
 
         mTitle = getIntent().getStringExtra("title");
+        mData = getIntent().getStringExtra("data");
         titleTextView.setText(mTitle);
         imageView.setImageResource(setAlphabetImages(mTitle));
+        PlayMusic.playMusic(mData, mTitle);
+        seekBarFunctions();
 
 
     }
 
-
-
-
-    void seekBarFunctions() {
+    public void seekBarFunctions() {
         maxLengthTextView.setText(FormatTime.formatTime(mediaPlayer.getDuration()));
         seekBar.setMax(mediaPlayer.getDuration());
 
@@ -85,8 +100,6 @@ public class PlayScreenActivity extends AppCompatActivity {
             public void run() {
 
                 int currentPosition;
-
-
                 while (mediaPlayer.isPlaying()) {
                     currentPosition = mediaPlayer.getCurrentPosition();
                     currentPosition++;
@@ -106,14 +119,11 @@ public class PlayScreenActivity extends AppCompatActivity {
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                // onProgressChanged(seekBar,mediaPlayer.getCurrentPosition(),false);
                 final Handler handler = new Handler();
                 handler.postDelayed(runnable = new Runnable() {
                     @Override
                     public void run() {
                         currentPositionTextView.setText(FormatTime.formatTime(mediaPlayer.getCurrentPosition()));
-
-
                     }
                 }, 100);
 
@@ -136,7 +146,6 @@ public class PlayScreenActivity extends AppCompatActivity {
 
     }
 
-
     public void playPausePress(View view) {
         if (mediaPlayer != null) {
 
@@ -150,7 +159,6 @@ public class PlayScreenActivity extends AppCompatActivity {
                 seekBarFunctions();
             }
         }
-
 
 
     }

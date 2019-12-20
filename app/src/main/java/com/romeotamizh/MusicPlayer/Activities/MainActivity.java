@@ -51,6 +51,7 @@ public class MainActivity extends AppCompatActivity   {
     public static void openPlayScreen(final String mData, final String mTitle) {
         Intent intent = new Intent(context, PlayScreenActivity.class);
         intent.putExtra("title", mTitle);
+        intent.putExtra("data", mData);
         context.startActivity(intent);
 
 
