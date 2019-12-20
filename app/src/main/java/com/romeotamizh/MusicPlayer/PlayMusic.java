@@ -8,6 +8,7 @@ import static com.romeotamizh.MusicPlayer.Activities.PlayScreenActivity.mediaPla
 
 public class PlayMusic {
     public static MediaPlayer mediaPlayer = new MediaPlayer();
+    public static int mediaPlayerDuration = 0;
 
     public static void playMusic(final String mData, final String mTitle) {
         if (mediaPlayer != null) {
@@ -22,6 +23,7 @@ public class PlayMusic {
                 mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                     @Override
                     public void onPrepared(MediaPlayer mp) {
+                        mediaPlayerDuration = mediaPlayer.getDuration();
                         mediaPlayer.start();
                         mediaPlayBackListener();
 
