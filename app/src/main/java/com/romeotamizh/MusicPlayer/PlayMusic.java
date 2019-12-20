@@ -15,18 +15,18 @@ public class PlayMusic {
             try {
                 if (mediaPlayer.isPlaying()) {
                     mediaPlayer.stop();
+                    mediaPlayer.reset();
                 }
-                mediaPlayer = new MediaPlayer();
+                mediaPlayer.reset();
                 mediaPlayer.setVolume(1.0f, 1.0f);
                 mediaPlayer.setDataSource(mData);
-                mediaPlayer.prepareAsync();
+                mediaPlayer.prepare();
                 mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                     @Override
                     public void onPrepared(MediaPlayer mp) {
                         mediaPlayerDuration = mediaPlayer.getDuration();
                         mediaPlayer.start();
                         mediaPlayBackListener();
-
 
                     }
                 });

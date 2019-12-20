@@ -54,6 +54,10 @@ public class PlayScreenActivity extends AppCompatActivity {
         currentPositionTextView = findViewById(R.id.current_position);
         maxLengthTextView = findViewById(R.id.max_length);
         seekBar = findViewById(R.id.seekbar);
+        mTitle = getIntent().getStringExtra("title");
+        mData = getIntent().getStringExtra("data");
+
+        PlayMusic.playMusic(mData, mTitle);
         initialize();
 
 
@@ -88,11 +92,9 @@ public class PlayScreenActivity extends AppCompatActivity {
             }
         }).start();
 
-        mTitle = getIntent().getStringExtra("title");
-        mData = getIntent().getStringExtra("data");
+
         titleTextView.setText(mTitle);
         imageView.setImageResource(setAlphabetImages(mTitle));
-        PlayMusic.playMusic(mData, mTitle);
         // Handler handler1 = new Handler();
        /* new Runnable() {
             @Override
