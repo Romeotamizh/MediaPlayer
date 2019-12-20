@@ -1,10 +1,9 @@
-package com.romeotamizh.MusicPlayer;
+package com.romeotamizh.MusicPlayer.Activities;
 
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
-import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -18,6 +17,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.gun0912.tedpermission.PermissionListener;
 import com.gun0912.tedpermission.TedPermission;
+import com.romeotamizh.MusicPlayer.R;
+import com.romeotamizh.MusicPlayer.RecyclerViewAdapter;
 
 import java.util.ArrayList;
 
@@ -27,14 +28,11 @@ public class MainActivity extends AppCompatActivity   {
             Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.WRITE_EXTERNAL_STORAGE,
     };
-    ArrayList<String> mTitles = new ArrayList<>();
-    ArrayList<Integer> mDurations = new ArrayList<>();
+
     public static Context context;
     public static Cursor cursor;
-    ArrayList<String> mDatas = new ArrayList<>();
     Toolbar toolbar;
     RecyclerView recyclerView;
-    public  static MediaPlayer mediaPlayer = new MediaPlayer();
 
 
     @Override
@@ -49,6 +47,7 @@ public class MainActivity extends AppCompatActivity   {
 
     }
 
+
     public static void openPlayScreen(final String mData, final String mTitle) {
         Intent intent = new Intent(context, PlayScreenActivity.class);
         intent.putExtra("title", mTitle);
@@ -61,7 +60,6 @@ public class MainActivity extends AppCompatActivity   {
         context = this;
         checkPermissions();
         addMusic();
-        initializeRecyclerView();
 
 
     }
@@ -85,6 +83,9 @@ public class MainActivity extends AppCompatActivity   {
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     private void addMusic() {
+        ArrayList<String> mTitleList = new ArrayList<>();
+        ArrayList<Integer> mDurationList = new ArrayList<>();
+        ArrayList<String> mDataList = new ArrayList<>();
 
 
         cursor = getApplicationContext().getContentResolver().query(
@@ -92,9 +93,9 @@ public class MainActivity extends AppCompatActivity   {
         if (cursor != null) {
             cursor.moveToFirst();
             while (cursor.moveToNext()) {
-                mTitles.add(cursor.getString(cursor.getColumnIndex("_display_name")));
-                mDurations.add(cursor.getInt(cursor.getColumnIndex("duration")));
-                mDatas.add(cursor.getString(cursor.getColumnIndex("_data")));
+                mTitleList.add(cursor.getString(cursor.getColumnIndex("_display_name")));
+                mDurationList.add(cursor.getInt(cursor.getColumnIndex("duration")));
+                mDataList.add(cursor.getString(cursor.getColumnIndex("_data")));
                 //musicFilesUri.add(ContentUris.withAppendedId(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,cursor.getInt(cursor.getColumnIndex("_id"))));
 
             }
@@ -102,16 +103,15 @@ public class MainActivity extends AppCompatActivity   {
             for (int i = 0; i < cursor.getColumnCount(); i++) {
                 Log.d("Column names", cursor.getColumnName(i));
             }
-            cursor.moveToFirst();
-            Log.d("data", cursor.getString(cursor.getColumnIndex("_data")));
-            cursor.moveToFirst();
+            cursor.close();
+            initializeRecyclerView(mTitleList, mDurationList, mDataList);
         }
 
 
     }
 
-    void initializeRecyclerView() {
-        RecyclerViewAdapter recyclerViewAdapter = new RecyclerViewAdapter(mTitles, mDurations, mDatas, getBaseContext());
+    void initializeRecyclerView(ArrayList<String> mTitleList, ArrayList<Integer> mDurationList, ArrayList<String> mDataList) {
+        RecyclerViewAdapter recyclerViewAdapter = new RecyclerViewAdapter(mTitleList, mDurationList, mDataList, getBaseContext());
         recyclerView.setAdapter(recyclerViewAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
     }

@@ -1,7 +1,8 @@
-package com.romeotamizh.MusicPlayer;
+package com.romeotamizh.MusicPlayer.Activities;
 
 import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.SeekBar;
@@ -9,20 +10,25 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import static com.romeotamizh.MusicPlayer.MainActivity.mediaPlayer;
+import com.romeotamizh.MusicPlayer.FormatTime;
+import com.romeotamizh.MusicPlayer.R;
+
+import static com.romeotamizh.MusicPlayer.PlayMusic.mediaPlayer;
+
 
 public class PlayScreenActivity extends AppCompatActivity {
 
     static ImageView playPause;
     ImageView imageView;
-    TextView title;
+    TextView titleTextView;
     TextView currentPositionTextView;
     TextView maxLengthTextView;
     String mTitle;
     SeekBar seekBar;
+    Runnable runnable;
 
 
-    static void mediaPlayBackListener() {
+    public static void mediaPlayBackListener() {
         mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mp) {
@@ -36,7 +42,7 @@ public class PlayScreenActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_play_screen);
-        title = findViewById(R.id.title_play_screen);
+        titleTextView = findViewById(R.id.title_play_screen);
         imageView = findViewById(R.id.image_view);
         playPause = findViewById(R.id.play_pause);
         currentPositionTextView = findViewById(R.id.current_position);
@@ -48,15 +54,24 @@ public class PlayScreenActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    public void onBackPressed() {
+        Thread.currentThread().interrupt();
+
+        super.onBackPressed();
+    }
+
+
     void initialize() {
 
 
         mTitle = getIntent().getStringExtra("title");
-        title.setText(mTitle);
+        titleTextView.setText(mTitle);
         setAlphabetImage(mTitle);
 
 
     }
+
 
     void setAlphabetImage(String mTitle) {
 
@@ -161,10 +176,9 @@ public class PlayScreenActivity extends AppCompatActivity {
     }
 
     void seekBarFunctions() {
-        maxLengthTextView = findViewById(R.id.max_length);
-        currentPositionTextView = findViewById(R.id.current_position);
         maxLengthTextView.setText(FormatTime.formatTime(mediaPlayer.getDuration()));
         seekBar.setMax(mediaPlayer.getDuration());
+
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -174,24 +188,33 @@ public class PlayScreenActivity extends AppCompatActivity {
 
                 while (mediaPlayer.isPlaying()) {
                     currentPosition = mediaPlayer.getCurrentPosition();
-                    currentPositionTextView.setText(FormatTime.formatTime(currentPosition));
                     currentPosition++;
                     seekBar.setProgress(currentPosition);
                     if (currentPosition >= mediaPlayer.getDuration()) {
                         Thread.currentThread().interrupt();
+                        return;
 
                     }
                 }
 
+
             }
         }).start();
-        seekBar.clearAnimation();
 
 
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 // onProgressChanged(seekBar,mediaPlayer.getCurrentPosition(),false);
+                final Handler handler = new Handler();
+                handler.postDelayed(runnable = new Runnable() {
+                    @Override
+                    public void run() {
+                        currentPositionTextView.setText(FormatTime.formatTime(mediaPlayer.getCurrentPosition()));
+
+
+                    }
+                }, 100);
 
             }
 
@@ -212,18 +235,21 @@ public class PlayScreenActivity extends AppCompatActivity {
 
     }
 
+
     public void playPausePress(View view) {
+        if (mediaPlayer != null) {
 
-        if (mediaPlayer.isPlaying()) {
+            if (mediaPlayer.isPlaying()) {
 
-            playPause.setImageResource(R.mipmap.play);
-            mediaPlayer.pause();
-        } else {
-            playPause.setImageResource(R.mipmap.pause);
-            mediaPlayer.start();
-            seekBarFunctions();
+                playPause.setImageResource(R.mipmap.play);
+                mediaPlayer.pause();
+            } else {
+                playPause.setImageResource(R.mipmap.pause);
+                mediaPlayer.start();
+                seekBarFunctions();
+            }
         }
-        // PlaybackParams playbackParams =mediaPlayer.getPlaybackParams();
+
 
 
     }

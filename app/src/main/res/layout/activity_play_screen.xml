@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".PlayScreenActivity">
+    tools:context=".Activities.PlayScreenActivity">
 
     <ImageView
         android:id="@+id/image_view"
@@ -23,8 +23,8 @@
         android:text="Title"
         android:textAlignment="center"
         android:textColor="@color/colorAccent"
-        android:ellipsize="marquee"
-        android:textSize="25dp" />
+        android:textSize="25dp"
+        tools:ignore="EllipsizeMaxLines" />
 
     <ImageView
         android:id="@+id/play_pause"

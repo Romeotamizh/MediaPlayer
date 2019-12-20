@@ -2,9 +2,10 @@ package com.romeotamizh.MusicPlayer;
 
 public class FormatTime {
 
-    static String formatTime(int x) {
+    public static String formatTime(int x) {
         Integer m = (x / 1000) / 60;
         Integer s = (x / 1000) % 60;
+
         if (m == 0 && s == 0)
             return ("00:01");
         else {
