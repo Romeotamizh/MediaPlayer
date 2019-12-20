@@ -120,26 +120,32 @@ public class PlayScreenActivity extends AppCompatActivity {
     public void seekBarFunctions() {
         maxLengthTextView.setText(FormatTime.formatTime(mediaPlayerDuration));
         seekBar.setMax(mediaPlayerDuration);
+        if (mediaPlayerDuration < 1000)
+            seekBar.setProgress(seekBar.getMax());
+        else {
 
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
 
-                int currentPosition;
-                while (mediaPlayer.isPlaying()) {
-                    currentPosition = mediaPlayer.getCurrentPosition();
-                    currentPosition++;
-                    seekBar.setProgress(currentPosition);
-                    if (currentPosition >= mediaPlayerDuration) {
-                        Thread.currentThread().interrupt();
-                        return;
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
 
+
+                    int currentPosition;
+                    while (mediaPlayer.isPlaying()) {
+                        currentPosition = mediaPlayer.getCurrentPosition();
+                        currentPosition++;
+                        seekBar.setProgress(currentPosition);
+                        if (currentPosition >= mediaPlayerDuration) {
+                            Thread.currentThread().interrupt();
+                            return;
+
+                        }
                     }
+
+
                 }
-
-
-            }
-        }).start();
+            }).start();
+        }
 
 
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
