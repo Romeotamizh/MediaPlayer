@@ -13,6 +13,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.romeotamizh.MusicPlayer.FormatTime;
 import com.romeotamizh.MusicPlayer.R;
 
+import static com.romeotamizh.MusicPlayer.Helpers.SetAlphabetImages.setAlphabetImages;
 import static com.romeotamizh.MusicPlayer.PlayMusic.mediaPlayer;
 
 
@@ -67,113 +68,13 @@ public class PlayScreenActivity extends AppCompatActivity {
 
         mTitle = getIntent().getStringExtra("title");
         titleTextView.setText(mTitle);
-        setAlphabetImage(mTitle);
+        imageView.setImageResource(setAlphabetImages(mTitle));
 
 
     }
 
 
-    void setAlphabetImage(String mTitle) {
 
-
-        switch (mTitle.toLowerCase().charAt(0)) {
-
-            case 'a':
-                imageView.setImageResource(R.mipmap.a);
-                break;
-            case 'b':
-                imageView.setImageResource(R.mipmap.b);
-                break;
-
-            case 'c':
-                imageView.setImageResource(R.mipmap.c);
-                break;
-            case 'd':
-                imageView.setImageResource(R.mipmap.d);
-                break;
-            case 'e':
-                imageView.setImageResource(R.mipmap.e);
-                break;
-            case 'f':
-                imageView.setImageResource(R.mipmap.f);
-                break;
-
-            case 'g':
-                imageView.setImageResource(R.mipmap.g);
-                break;
-            case 'h':
-                imageView.setImageResource(R.mipmap.h);
-                break;
-
-            case 'i':
-                imageView.setImageResource(R.mipmap.i);
-                break;
-
-
-            case 'j':
-                imageView.setImageResource(R.mipmap.j);
-                break;
-            case 'k':
-                imageView.setImageResource(R.mipmap.k);
-                break;
-            case 'l':
-                imageView.setImageResource(R.mipmap.l);
-                break;
-            case 'm':
-                imageView.setImageResource(R.mipmap.m);
-                break;
-            case 'n':
-                imageView.setImageResource(R.mipmap.n);
-                break;
-            case 'o':
-                imageView.setImageResource(R.mipmap.o);
-                break;
-            case 'p':
-                imageView.setImageResource(R.mipmap.p);
-                break;
-            case 'q':
-                imageView.setImageResource(R.mipmap.q);
-                break;
-
-            case 'r':
-                imageView.setImageResource(R.mipmap.r);
-                break;
-
-            case 's':
-                imageView.setImageResource(R.mipmap.s);
-                break;
-
-            case 't':
-                imageView.setImageResource(R.mipmap.t);
-                break;
-
-            case 'u':
-                imageView.setImageResource(R.mipmap.u);
-                break;
-
-            case 'v':
-                imageView.setImageResource(R.mipmap.v);
-                break;
-            case 'w':
-                imageView.setImageResource(R.mipmap.w);
-                break;
-            case 'x':
-                imageView.setImageResource(R.mipmap.x);
-                break;
-
-            case 'y':
-                imageView.setImageResource(R.mipmap.y);
-                break;
-            case 'z':
-                imageView.setImageResource(R.mipmap.z);
-                break;
-
-
-            default:
-                break;
-        }
-
-    }
 
     void seekBarFunctions() {
         maxLengthTextView.setText(FormatTime.formatTime(mediaPlayer.getDuration()));
