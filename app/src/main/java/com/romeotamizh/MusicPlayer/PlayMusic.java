@@ -4,8 +4,6 @@ import android.media.MediaPlayer;
 
 import java.io.IOException;
 
-import static com.romeotamizh.MusicPlayer.Activities.PlayScreenActivity.mediaPlayBackListener;
-
 public class PlayMusic {
     public static MediaPlayer mediaPlayer = new MediaPlayer();
     public static int mediaPlayerDuration = 0;
@@ -26,7 +24,6 @@ public class PlayMusic {
                     public void onPrepared(MediaPlayer mp) {
                         mediaPlayerDuration = mediaPlayer.getDuration();
                         mediaPlayer.start();
-                        mediaPlayBackListener();
 
                     }
                 });

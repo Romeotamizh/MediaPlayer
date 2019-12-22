@@ -30,7 +30,7 @@ public class MainActivity extends AppCompatActivity   {
     };
 
     public static Context context;
-    public static Cursor cursor;
+    //public static Cursor cursor;
     Toolbar toolbar;
     RecyclerView recyclerView;
 
@@ -87,6 +87,10 @@ public class MainActivity extends AppCompatActivity   {
         ArrayList<String> mTitleList = new ArrayList<>();
         ArrayList<Integer> mDurationList = new ArrayList<>();
         ArrayList<String> mDataList = new ArrayList<>();
+        Cursor cursor;
+        Cursor cursorAlbum;
+//        cursorAlbum = getApplicationContext().getContentResolver().query(MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,null,null,null,"upper("+MediaStore.Audio.Albums.ALBUM_ID);
+
 
 
         cursor = getApplicationContext().getContentResolver().query(

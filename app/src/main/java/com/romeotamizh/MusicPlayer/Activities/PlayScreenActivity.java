@@ -22,7 +22,7 @@ import static com.romeotamizh.MusicPlayer.PlayMusic.mediaPlayerDuration;
 
 public class PlayScreenActivity extends AppCompatActivity {
 
-    static ImageView playPause;
+    ImageView playPause;
     ImageView imageView;
     TextView titleTextView;
     TextView currentPositionTextView;
@@ -31,10 +31,10 @@ public class PlayScreenActivity extends AppCompatActivity {
     String mData;
     SeekBar seekBar;
     Runnable runnable;
-    Boolean isBackPressed = false;
+    Boolean isSongChanged = false;
     // Activity activity = this;
 
-    public static void mediaPlayBackListener() {
+    /*public  void mediaPlayBackListener() {
         mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mp) {
@@ -42,7 +42,7 @@ public class PlayScreenActivity extends AppCompatActivity {
 
             }
         });
-    }
+    }*/
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,14 +50,16 @@ public class PlayScreenActivity extends AppCompatActivity {
         setContentView(R.layout.activity_play_screen);
         titleTextView = findViewById(R.id.title_play_screen);
         imageView = findViewById(R.id.image_view);
-        playPause = findViewById(R.id.play_pause);
+        playPause = findViewById(R.id.play_or_pause);
         currentPositionTextView = findViewById(R.id.current_position);
         maxLengthTextView = findViewById(R.id.max_length);
-        seekBar = findViewById(R.id.seekbar);
+        seekBar = findViewById(R.id.seekBar);
         mTitle = getIntent().getStringExtra("title");
         mData = getIntent().getStringExtra("data");
 
         PlayMusic.playMusic(mData, mTitle);
+        titleTextView.setText(mTitle);
+        imageView.setImageResource(setAlphabetImages(mTitle));
         initialize();
 
 
@@ -68,20 +70,19 @@ public class PlayScreenActivity extends AppCompatActivity {
         Thread.currentThread().interrupt();
 
 
-        isBackPressed = true;
+        isSongChanged = true;
 
         super.onBackPressed();
 
     }
 
     void initialize() {
-        isBackPressed = false;
-        final Handler handler = new Handler();
+        isSongChanged = false;
         new Thread(new Runnable() {
             @Override
             public void run() {
                 while (true) {
-                    if (mediaPlayer.isPlaying() || isBackPressed) {
+                    if (mediaPlayer.isPlaying() || isSongChanged) {
                         seekBarFunctions();
                         Thread.currentThread().interrupt();
                         return;
@@ -93,23 +94,6 @@ public class PlayScreenActivity extends AppCompatActivity {
         }).start();
 
 
-        titleTextView.setText(mTitle);
-        imageView.setImageResource(setAlphabetImages(mTitle));
-        // Handler handler1 = new Handler();
-       /* new Runnable() {
-            @Override
-            public void run() {
-                while (true) {
-                    if (mediaPlayer.isPlaying()) {
-                        seekBarFunctions();
-                        Thread.currentThread().interrupt();
-                        return;
-                    }
-                }
-
-
-            }
-        };*/
 
         seekBarFunctions();
 
@@ -151,6 +135,7 @@ public class PlayScreenActivity extends AppCompatActivity {
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+
                 final Handler handler = new Handler();
                 handler.postDelayed(runnable = new Runnable() {
                     @Override
@@ -163,7 +148,7 @@ public class PlayScreenActivity extends AppCompatActivity {
 
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
-
+                mediaPlayer.pause();
 
             }
 
@@ -171,8 +156,18 @@ public class PlayScreenActivity extends AppCompatActivity {
             public void onStopTrackingTouch(SeekBar seekBar) {
 
                 mediaPlayer.seekTo(seekBar.getProgress());
+                mediaPlayer.start();
+                if (mediaPlayer.isPlaying())
+                    playPause.setImageResource(R.mipmap.red_pause);
 
 
+            }
+        });
+
+        mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mp) {
+                playPause.setImageResource(R.mipmap.red_play);
             }
         });
 
@@ -183,10 +178,10 @@ public class PlayScreenActivity extends AppCompatActivity {
 
             if (mediaPlayer.isPlaying()) {
 
-                playPause.setImageResource(R.mipmap.play);
+                playPause.setImageResource(R.mipmap.red_play);
                 mediaPlayer.pause();
             } else {
-                playPause.setImageResource(R.mipmap.pause);
+                playPause.setImageResource(R.mipmap.red_pause);
                 mediaPlayer.start();
                 seekBarFunctions();
             }

@@ -6,7 +6,8 @@
     android:id="@+id/parent_layout">
 <RelativeLayout
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/Black">
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/image"
