@@ -57,6 +57,16 @@ public class MainActivity extends AppCompatActivity   {
 
     }
 
+    public static void openPlayScreen(final Cursor cursor, final int position, final String mData, final String mTitle, final int mId) {
+        Intent intent = new Intent(context, PlayScreenActivity.class);
+        intent.putExtra("title", mTitle);
+        intent.putExtra("data", mData);
+        intent.putExtra("id", mId);
+        context.startActivity(intent);
+
+
+    }
+
     void initialize(){
         context = this;
         checkPermissions();
@@ -86,6 +96,7 @@ public class MainActivity extends AppCompatActivity   {
     private void addMusic() {
         ArrayList<String> mTitleList = new ArrayList<>();
         ArrayList<Integer> mDurationList = new ArrayList<>();
+        ArrayList<Integer> mIdList = new ArrayList<>();
         ArrayList<String> mDataList = new ArrayList<>();
         Cursor cursor;
         Cursor cursorAlbum;
@@ -101,24 +112,40 @@ public class MainActivity extends AppCompatActivity   {
                 mTitleList.add(cursor.getString(cursor.getColumnIndex("_display_name")));
                 mDurationList.add(cursor.getInt(cursor.getColumnIndex("duration")));
                 mDataList.add(cursor.getString(cursor.getColumnIndex("_data")));
+                mIdList.add(cursor.getInt(cursor.getColumnIndex("_id")));
                 //musicFilesUri.add(ContentUris.withAppendedId(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,cursor.getInt(cursor.getColumnIndex("_id"))));
 
             }
             cursor.moveToFirst();
             for (int i = 0; i < cursor.getColumnCount(); i++) {
                 Log.d("Column names", cursor.getColumnName(i));
+
             }
-            cursor.close();
-            initializeRecyclerView(mTitleList, mDurationList, mDataList);
+            //cursor.moveToPosition(2);
+
+            // Log.d("data", cursor.getString(cursor.getColumnIndex("track")));
+
+
+            //cursor.close();
+            initializeRecyclerView(mTitleList, mDurationList, mDataList, mIdList);
+            // initializeRecyclerView(cursor);
         }
 
 
     }
 
-    void initializeRecyclerView(ArrayList<String> mTitleList, ArrayList<Integer> mDurationList, ArrayList<String> mDataList) {
-        RecyclerViewAdapter recyclerViewAdapter = new RecyclerViewAdapter(mTitleList, mDurationList, mDataList, getBaseContext());
+    void initializeRecyclerView(ArrayList<String> mTitleList, ArrayList<Integer> mDurationList, ArrayList<String> mDataList, ArrayList<Integer> mIdlist) {
+        RecyclerViewAdapter recyclerViewAdapter = new RecyclerViewAdapter(mTitleList, mDurationList, mDataList, mIdlist, getBaseContext());
         recyclerView.setAdapter(recyclerViewAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
+    }
+
+    void initializeRecyclerView(Cursor cursor) {
+
+        RecyclerViewAdapter recyclerViewAdapter = new RecyclerViewAdapter(cursor, this);
+        recyclerView.setAdapter(recyclerViewAdapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
     }
 
 

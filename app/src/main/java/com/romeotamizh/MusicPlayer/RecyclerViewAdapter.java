@@ -1,6 +1,7 @@
 package com.romeotamizh.MusicPlayer;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,23 +18,42 @@ import java.util.ArrayList;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 import static com.romeotamizh.MusicPlayer.Activities.MainActivity.openPlayScreen;
+import static com.romeotamizh.MusicPlayer.Helpers.SetAlphabetImages.setAlphabetImages;
 
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder> {
     //ArrayList<String> mImages = new ArrayList<>();
-    ArrayList<String> mTitleList;
-    ArrayList<Integer> mDurationList;
-    ArrayList<String> mDataList;
+    ArrayList<String> mTitleList = new ArrayList<String>();
+    ArrayList<Integer> mDurationList = new ArrayList<Integer>();
+    ArrayList<Integer> mIdList = new ArrayList<Integer>();
+    ArrayList<String> mDataList = new ArrayList<String>();
     LayoutInflater mInflater;
+    Cursor cursor;
 
     Context mContext;
 
-    public RecyclerViewAdapter(ArrayList<String> mTitleList, ArrayList<Integer> mDurationList, ArrayList<String> mDataList, Context context) {
+    public RecyclerViewAdapter(ArrayList<String> mTitleList, ArrayList<Integer> mDurationList, ArrayList<String> mDataList, ArrayList<Integer> mIdList, Context context) {
         //this.mImages = mImages;
         mInflater = LayoutInflater.from(context);
         this.mTitleList = mTitleList;
         this.mDurationList = mDurationList;
         this.mDataList = mDataList;
         this.mContext = context;
+        this.mIdList = mIdList;
+    }
+
+    public RecyclerViewAdapter(Cursor cursor, Context context) {
+        mInflater = LayoutInflater.from(context);
+        this.cursor = cursor;
+
+        if (cursor != null) {
+            while (cursor.moveToNext()) {
+                this.mTitleList.add(cursor.getString(cursor.getColumnIndex("_display_name")));
+                this.mDurationList.add(cursor.getInt(cursor.getColumnIndex("duration")));
+                this.mDataList.add(cursor.getString(cursor.getColumnIndex("_data")));
+                this.mIdList.add(cursor.getInt(cursor.getColumnIndex("_id")));
+            }
+        }
+
     }
 
     @NonNull
@@ -61,6 +81,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         holder.title.setText(titleOnly);
         holder.extension.setText(extension);
         holder.duration.setText(FormatTime.formatTime(mDurationList.get(position)));
+        holder.image.setImageResource(setAlphabetImages(mTitleList.get(position)));
 
         holder.parentLayout.setOnClickListener(new View.OnClickListener() {
 
@@ -68,7 +89,8 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             @Override
             public void onClick(View v) {
                 // PlayMusic.playMusic(mDataList.get(position), titleOnly.toString());
-                openPlayScreen(mDataList.get(position), titleOnly.toString());
+                // openPlayScreen(mDataList.get(position),titleOnly.toString());
+                openPlayScreen(cursor, position, mDataList.get(position), titleOnly.toString(), mIdList.get(position));
 
 
             }
@@ -107,6 +129,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             duration = itemView.findViewById(R.id.duration);
             extension = itemView.findViewById(R.id.extension);
             parentLayout = itemView.findViewById(R.id.parent_layout);
+            image = itemView.findViewById(R.id.image);
         }
 
     }

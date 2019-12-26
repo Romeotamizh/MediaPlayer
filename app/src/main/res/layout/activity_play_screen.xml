@@ -163,7 +163,8 @@
                 android:layout_marginStart="2dp"
                 android:layout_marginEnd="20dp"
                 android:focusable="true"
-                android:onClick="playPausePress"
+                android:clickable="true"
+                android:longClickable="true"
                 android:scaleType="fitCenter"
                 android:src="@mipmap/white_back"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -178,12 +179,13 @@
                 android:layout_gravity="center"
                 android:layout_marginBottom="20dp"
                 android:focusable="true"
-                android:onClick="playPausePress"
+                android:clickable="true"
                 android:scaleType="fitCenter"
                 android:src="@mipmap/white_heart"
                 app:layout_constraintBottom_toTopOf="@id/play_pause"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
+                android:longClickable="true"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <ImageView
@@ -235,7 +237,7 @@
                 android:layout_marginStart="40dp"
                 android:layout_marginEnd="2dp"
                 android:focusable="true"
-                android:onClick="playPausePress"
+                android:onClick="nextFavouriteMoment"
                 android:scaleType="fitCenter"
                 android:src="@mipmap/white_next"
                 app:layout_constraintBottom_toBottomOf="parent"

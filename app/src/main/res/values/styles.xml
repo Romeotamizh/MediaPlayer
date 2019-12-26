@@ -15,6 +15,7 @@
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:colorBackground">@color/Black</item>
         <item name="android:textColor">@color/White</item>
+        <item name="android:fontFamily">@font/valera_round_regular</item>
     </style>
 
 
