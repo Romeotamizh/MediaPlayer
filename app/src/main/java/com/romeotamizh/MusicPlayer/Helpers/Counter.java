@@ -1,4 +1,4 @@
-package com.romeotamizh.MusicPlayer;
+package com.romeotamizh.MusicPlayer.Helpers;
 
 public class Counter {
 

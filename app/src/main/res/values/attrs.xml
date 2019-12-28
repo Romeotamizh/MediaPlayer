@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <declare-styleable name="DottedSeekbar">
+    <declare-styleable name="SeekbarWithFavourites">
         <attr name="dots_Position" format="reference" />
         <attr name="dots_drawable" format="reference" />
 

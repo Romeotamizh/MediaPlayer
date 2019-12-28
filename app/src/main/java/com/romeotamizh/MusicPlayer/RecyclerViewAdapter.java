@@ -11,7 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.romeotamizh.MusicPlayer.Helpers.FormatTime;
+import com.romeotamizh.MusicPlayer.Helpers.TimeFormat;
 
 import java.util.ArrayList;
 
@@ -80,7 +80,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         extension.deleteCharAt(0);
         holder.title.setText(titleOnly);
         holder.extension.setText(extension);
-        holder.duration.setText(FormatTime.formatTime(mDurationList.get(position)));
+        holder.duration.setText(TimeFormat.formatTime(mDurationList.get(position)));
         holder.image.setImageResource(setAlphabetImages(mTitleList.get(position)));
 
         holder.parentLayout.setOnClickListener(new View.OnClickListener() {

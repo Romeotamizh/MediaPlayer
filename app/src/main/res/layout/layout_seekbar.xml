@@ -2,11 +2,11 @@
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/seekBar_parent"
     android:layout_width="match_parent"
     android:layout_height="72dp"
     android:layout_centerVertical="true"
     app:layout_constraintBottom_toBottomOf="parent"
-    android:id="@+id/seekBar_parent"
     app:layout_constraintTop_toTopOf="parent">
 
     <ImageView
@@ -29,26 +29,18 @@
         android:textColor="@color/Black"
         android:textSize="12dp" />
 
-    <com.romeotamizh.MusicPlayer.Activities.DottedSeekbar
+    <com.romeotamizh.MusicPlayer.Helpers.SeekbarWithFavourites
         android:id="@+id/seekBar"
         android:layout_width="320dp"
         android:layout_height="30dp"
-        app:isb_thumb_color="@color/colorAccent"
-        app:isb_track_progress_color="@color/colorAccent"
-        app:isb_seek_smoothly="true"
-        app:isb_ticks_count="5"
-        app:isb_tick_marks_size="13dp"
-        app:isb_tick_marks_drawable="@mipmap/red_play"
-        app:isb_thumb_adjust_auto="false"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
         android:indeterminateTint="@color/White"
-        app:dots_Position="@array/dots"
-        app:dots_drawable="@mipmap/red_play"
-        android:outlineAmbientShadowColor="@color/White"
-        android:outlineSpotShadowColor="@color/White"
         android:paddingStart="9dp"
-        android:paddingEnd="9dp" />
+        android:paddingEnd="9dp"
+
+        app:dots_Position="@array/dots"
+        app:dots_drawable="@mipmap/red_play" />
 
     <TextView
         android:id="@+id/max_length"

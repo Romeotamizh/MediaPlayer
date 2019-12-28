@@ -1,4 +1,4 @@
-package com.romeotamizh.MusicPlayer;
+package com.romeotamizh.MusicPlayer.Helpers;
 
 import android.app.Application;
 import android.content.Context;

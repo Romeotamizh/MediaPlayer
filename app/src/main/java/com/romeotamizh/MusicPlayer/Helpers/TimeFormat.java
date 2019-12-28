@@ -1,6 +1,6 @@
 package com.romeotamizh.MusicPlayer.Helpers;
 
-public class FormatTime {
+public class TimeFormat {
 
     public static String formatTime(int x) {
         Integer m = (x / 1000) / 60;

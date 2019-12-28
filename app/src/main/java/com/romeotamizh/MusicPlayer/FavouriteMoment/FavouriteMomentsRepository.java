@@ -1,21 +1,23 @@
-package com.romeotamizh.MusicPlayer;
+package com.romeotamizh.MusicPlayer.FavouriteMoment;
 
 import android.util.Log;
 
+import com.romeotamizh.MusicPlayer.Music;
+import com.romeotamizh.MusicPlayer.MusicRoomDatabase;
+
 import java.util.Arrays;
 
-import static com.romeotamizh.MusicPlayer.Activities.DottedSeekbar.mDotsPositions;
 import static com.romeotamizh.MusicPlayer.Activities.PlayScreenActivity.isFavouriteMomentsExist;
 import static com.romeotamizh.MusicPlayer.Activities.PlayScreenActivity.mFavouriteMomentsCount;
 import static com.romeotamizh.MusicPlayer.Activities.PlayScreenActivity.mFavouriteMomentsList;
-import static com.romeotamizh.MusicPlayer.MyApplication.getContext;
+import static com.romeotamizh.MusicPlayer.Helpers.MyApplication.getContext;
+import static com.romeotamizh.MusicPlayer.Helpers.SeekbarWithFavourites.mFavouritesPositionsList;
 
 
 public class FavouriteMomentsRepository {
 
 
-    public static boolean isFinished = false;
-    static DatabaseOperationObject databaseOperationObject;
+    static FavouriteMoments favouriteMoments;
     static MusicRoomDatabase musicRoomDatabase = MusicRoomDatabase.getInstance(getContext());
 
 
@@ -24,16 +26,12 @@ public class FavouriteMomentsRepository {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                isFinished = false;
                 int temp = musicRoomDatabase.musicDao().delete(mId);
-                int[] toemp = new int[100];
-              /*  mFavouriteMomentsList = new int[100];
-                mFavouriteMomentsCount = 1;
-                isFavouriteMomentsExist = false;*/
-                databaseOperationObject = new DatabaseOperationObject(toemp, 1, false);
+
+                favouriteMoments = new FavouriteMoments(new int[100], 1, false);
 
                 Log.d("dbdel ", String.valueOf(temp));
-                isFinished = true;
+                resetFavouritesOperation("music");
 
 
             }
@@ -46,7 +44,6 @@ public class FavouriteMomentsRepository {
         Thread t1 = new Thread(new Runnable() {
             @Override
             public void run() {
-                isFinished = false;
                 int[] temp;
                 int[] mFavouriteMomentsList = new int[100];
                 int mFavouriteMomentsCount = 1;
@@ -69,9 +66,8 @@ public class FavouriteMomentsRepository {
                 }
 
 
-                databaseOperationObject = new DatabaseOperationObject(mFavouriteMomentsList, mFavouriteMomentsCount, isFavouriteMomentsExist);
-                isFinished = true;
-                setFavouritesDataMusic(databaseOperationObject, s);
+                favouriteMoments = new FavouriteMoments(mFavouriteMomentsList, mFavouriteMomentsCount, isFavouriteMomentsExist);
+                setFavouritesDataMusic(favouriteMoments, s);
                 Thread.currentThread().interrupt();
                 return;
 
@@ -83,11 +79,11 @@ public class FavouriteMomentsRepository {
 
     }
 
-    private static void setFavouritesDataMusic(DatabaseOperationObject databaseOperationObject, final String s) {
-        mFavouriteMomentsCount = databaseOperationObject.mFavouriteMomentsCount;
-        mFavouriteMomentsList = databaseOperationObject.mFavouriteMomentsList;
-        isFavouriteMomentsExist = databaseOperationObject.isFavouriteMomentsExist;
-        mDotsPositions = mFavouriteMomentsList;
+    private static void setFavouritesDataMusic(FavouriteMoments favouriteMoments, final String s) {
+        mFavouriteMomentsCount = favouriteMoments.mFavouriteMomentsCount;
+        mFavouriteMomentsList = favouriteMoments.mFavouriteMomentsList;
+        isFavouriteMomentsExist = favouriteMoments.isFavouriteMomentsExist;
+        mFavouritesPositionsList = mFavouriteMomentsList;
         Log.d("getfavfno", Arrays.toString(mFavouriteMomentsList));
         Log.d("getfavfno", String.valueOf(mFavouriteMomentsCount));
     }
@@ -98,9 +94,10 @@ public class FavouriteMomentsRepository {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                isFinished = false;
+                favouriteMoments = new FavouriteMoments(mFavouriteMomentsList, mFavouriteMomentsCount, isFavouriteMomentsExist);
 
-                boolean isFavouriteMomentsExist = false;
+                setFavouritesDataMusic(favouriteMoments, s);
+
                 for (int i = 0; i < mFavouriteMomentsCount; i++) {
                     Music music = new Music(mId + "." + mFavouriteMomentsList[i], mId, mFavouriteMomentsList[i]);
                     musicRoomDatabase.musicDao().insertData(music);
@@ -109,7 +106,7 @@ public class FavouriteMomentsRepository {
                 Log.d("dbinsfn", Arrays.toString(musicRoomDatabase.musicDao().getFavouriteMoments(mId)));
                 Log.d("dbinsfn", Arrays.toString(musicRoomDatabase.musicDao().getId(mId)));
 
-                isFinished = true;
+
                 Thread.currentThread().interrupt();
                 return;
 
@@ -122,7 +119,7 @@ public class FavouriteMomentsRepository {
 
     public static void resetFavouritesOperation(final String s) {
         mFavouriteMomentsCount = 1;
-        mDotsPositions = new int[100];
+        mFavouritesPositionsList = new int[100];
         mFavouriteMomentsList = new int[100];
         isFavouriteMomentsExist = false;
         Log.d("resetfav", "resetdone");
