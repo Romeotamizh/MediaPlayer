@@ -1,5 +1,6 @@
 package com.romeotamizh.MusicPlayer.Activities;
 
+import android.graphics.Canvas;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
@@ -17,6 +18,9 @@ import com.romeotamizh.MusicPlayer.Helpers.FormatTime;
 import com.romeotamizh.MusicPlayer.MusicRoomDatabase;
 import com.romeotamizh.MusicPlayer.PlayMusic;
 import com.romeotamizh.MusicPlayer.R;
+import com.warkiz.widget.IndicatorSeekBar;
+import com.warkiz.widget.OnSeekChangeListener;
+import com.warkiz.widget.SeekParams;
 
 import java.util.Arrays;
 
@@ -43,7 +47,7 @@ public class PlayScreenActivity extends AppCompatActivity implements View.OnClic
     String mTitle;
     String mData;
     public static boolean isFavouriteMomentsExist = false;
-    SeekBar seekBar;
+    IndicatorSeekBar seekBar;
     Runnable runnable;
     Boolean isSongChanged = false;
     public static int mFavouriteMomentsCount = 1;
@@ -58,6 +62,7 @@ public class PlayScreenActivity extends AppCompatActivity implements View.OnClic
     int mFavouriteMomentsListPosition = 0;
     boolean x = false;
     boolean z = true;
+    final Handler handler = new Handler();
 
     ConstraintLayout imageViewBackground;
     DatabaseOperationObject databaseOperationObject;
@@ -88,9 +93,15 @@ public class PlayScreenActivity extends AppCompatActivity implements View.OnClic
 
         imageViewBackground = findViewById(R.id.pic_layout);
         initialize();
+        seekBar.setThumbAdjustAuto(false);
+
+
+
 
 
     }
+
+
 
     private void initializeButtons() {
         favTextView = findViewById(R.id.next_fav_textView);
@@ -184,7 +195,34 @@ public class PlayScreenActivity extends AppCompatActivity implements View.OnClic
 
             }
         });*/
-        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+        seekBar.setOnSeekChangeListener(new OnSeekChangeListener() {
+            @Override
+            public void onSeeking(SeekParams seekParams) {
+                handler.postDelayed(runnable = new Runnable() {
+                    @Override
+                    public void run() {
+                        currentPositionTextView.setText(FormatTime.formatTime(mediaPlayer.getCurrentPosition()));
+                    }
+                }, 1000);
+
+            }
+
+            @Override
+            public void onStartTrackingTouch(IndicatorSeekBar seekBar) {
+                mediaPlayer.pause();
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(IndicatorSeekBar seekBar) {
+                mediaPlayer.seekTo(seekBar.getProgress());
+                mediaPlayer.start();
+                seekBarFunctions();
+                if (mediaPlayer.isPlaying())
+                    playPause.setImageResource(R.mipmap.red_pause);
+
+            }
+/*
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
 
@@ -215,7 +253,7 @@ public class PlayScreenActivity extends AppCompatActivity implements View.OnClic
                     playPause.setImageResource(R.mipmap.red_pause);
 
 
-            }
+            }*/
         });
         mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
@@ -235,6 +273,8 @@ public class PlayScreenActivity extends AppCompatActivity implements View.OnClic
 
     public void seekBarFunctions() {
         maxLengthTextView.setText(FormatTime.formatTime(mediaPlayerDuration));
+        seekBar.setTickCount(mFavouriteMomentsCount);
+
         // seekBar.setRange(0f,(float)mediaPlayerDuration);
         if (mediaPlayerDuration < 1000)
             seekBar.setProgress(seekBar.getMax());
@@ -261,9 +301,13 @@ public class PlayScreenActivity extends AppCompatActivity implements View.OnClic
                     }
 
 
+
                 }
             }).start();
         }
+
+
+
 
     }
 
@@ -420,6 +464,7 @@ public class PlayScreenActivity extends AppCompatActivity implements View.OnClic
         resetFavouritesOperation("music");
 
     }
+
 
 
 }

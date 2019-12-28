@@ -28,10 +28,17 @@
         android:textColor="@color/Black"
         android:textSize="12dp" />
 
-    <SeekBar
+    <com.warkiz.widget.IndicatorSeekBar
         android:id="@+id/seekBar"
         android:layout_width="320dp"
         android:layout_height="30dp"
+        app:isb_thumb_color="@color/colorAccent"
+        app:isb_track_progress_color="@color/colorAccent"
+        app:isb_seek_smoothly="true"
+        app:isb_ticks_count="5"
+        app:isb_tick_marks_size="13dp"
+        app:isb_tick_marks_drawable="@mipmap/red_play"
+        app:isb_thumb_adjust_auto="false"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
         android:indeterminateTint="@color/White"
