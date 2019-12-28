@@ -1,24 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/parent_linear"
+    style="@style/AppThemeDark"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    style="@style/AppThemeDark"
     tools:context=".Activities.PlayScreenActivity">
+
+    <ImageView
+        android:id="@+id/divider"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true" />
 
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/pic_layout"
         android:layout_width="match_parent"
-        android:layout_height="225dp"
-        android:background="@mipmap/wallpaper"
+        android:layout_height="360dp"
+        android:layout_alignBottom="@id/divider"
         android:gravity="center_vertical|center_horizontal"
-        app:layout_constraintBottom_toTopOf="@id/title_play_screen"
+        android:layout_alignParentTop="true"
+        android:background="@mipmap/wallpaper_blur"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/bootom_half"
         app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
@@ -27,7 +36,10 @@
             android:layout_width="match_parent"
             android:layout_height="150dp"
             android:scaleType="fitCenter"
-            android:src="@mipmap/white_circle"
+            android:layout_marginLeft="4dp"
+            android:layout_marginTop="4dp"
+            android:src="@mipmap/white_backgound_with_shadow"
+
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -36,8 +48,8 @@
         <ImageView
 
             android:id="@+id/image_view"
-            android:layout_width="150dp"
-            android:layout_height="150dp"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
             android:scaleType="fitCenter"
             android:src="@mipmap/a"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -47,206 +59,9 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <TextView
-        android:id="@+id/title_play_screen"
-        android:layout_width="match_parent"
-        android:layout_height="80dp"
-        android:background="@color/White"
-        android:gravity="center_horizontal|center_vertical"
-        android:singleLine="false"
-        android:text="Title"
-        android:textAlignment="center"
-        android:textColor="@color/colorAccent"
-        android:textSize="24dp"
-        app:layout_constraintBottom_toTopOf="@id/seekBar_Layout"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/pic_layout"
-        tools:ignore="EllipsizeMaxLines" />
+    <include layout="@layout/layout_seekbar" />
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:id="@+id/seekBar_Layout"
-        android:layout_height="60dp"
-        android:orientation="horizontal"
-        android:background="@color/White"
-        android:paddingHorizontal="8dp"
-        app:layout_constraintBottom_toTopOf="@id/seekBar_Layout"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/pic_layout">
-
-        <TextView
-            android:id="@+id/current_position"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:gravity="start|center"
-            android:text="00:00"
-            android:textColor="@color/Black"
-            android:textSize="12dp" />
-
-        <SeekBar
-            android:id="@+id/seekBar"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="10"
-            android:foregroundGravity="center_vertical"
-            android:indeterminateTint="@color/White"
-            android:outlineAmbientShadowColor="@color/White"
-            android:outlineSpotShadowColor="@color/White"
-            android:paddingHorizontal="18dp" />
-
-        <TextView
-            android:id="@+id/max_length"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:gravity="end|center"
-            android:text="00:01"
-            android:textColor="@color/Black"
-            android:textSize="12dp" />
-
-    </LinearLayout>
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
-        android:paddingVertical="10dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/seekBar_Layout">
+    <include layout="@layout/layout_circle_controls" />
 
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical|end"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
-
-            <ImageView
-                android:layout_width="0dp"
-                android:layout_height="90dp"
-                android:layout_gravity="end"
-                android:layout_marginStart="40dp"
-                android:scaleType="fitEnd"
-                android:src="@mipmap/fav_rectangle_overlay"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="320dp"
-            android:layout_height="320dp"
-            android:layout_gravity="center_horizontal|center_vertical"
-            android:background="@mipmap/big_circle"
-            android:gravity="center_horizontal|center_vertical"
-            android:orientation="horizontal"
-            android:paddingVertical="12dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
-
-            <ImageView
-                android:id="@+id/back"
-                android:layout_width="wrap_content"
-                android:layout_height="36dp"
-                android:layout_gravity="center"
-                android:layout_marginStart="2dp"
-                android:layout_marginEnd="20dp"
-                android:focusable="true"
-                android:clickable="true"
-                android:longClickable="true"
-                android:scaleType="fitCenter"
-                android:src="@mipmap/white_back"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/play_pause"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <ImageView
-                android:id="@+id/fav"
-                android:layout_width="0dp"
-                android:layout_height="36dp"
-                android:layout_gravity="center"
-                android:layout_marginBottom="20dp"
-                android:focusable="true"
-                android:clickable="true"
-                android:scaleType="fitCenter"
-                android:src="@mipmap/white_heart"
-                app:layout_constraintBottom_toTopOf="@id/play_pause"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                android:longClickable="true"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <ImageView
-                android:id="@+id/repeat"
-                android:layout_width="0dp"
-                android:layout_height="36dp"
-                android:layout_gravity="center"
-                android:focusable="true"
-                android:onClick="playPausePress"
-                android:scaleType="fitCenter"
-                android:src="@mipmap/white_repeat"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/play_pause" />
-
-            <ImageView
-                android:id="@+id/play_pause"
-                android:layout_width="90dp"
-                android:layout_height="90dp"
-                android:layout_gravity="center"
-                android:focusable="true"
-                android:onClick="playPausePress"
-                android:scaleType="fitCenter"
-                android:src="@mipmap/white_circle"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <ImageView
-                android:id="@+id/play_or_pause"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_gravity="center"
-                android:focusable="true"
-                android:scaleType="fitCenter"
-                android:src="@mipmap/red_pause"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <ImageView
-                android:id="@+id/next"
-                android:layout_width="wrap_content"
-                android:layout_height="36dp"
-                android:layout_gravity="center"
-                android:layout_marginStart="40dp"
-                android:layout_marginEnd="2dp"
-                android:focusable="true"
-                android:onClick="nextFavouriteMoment"
-                android:scaleType="fitCenter"
-                android:src="@mipmap/white_next"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@id/play_pause"
-                app:layout_constraintTop_toTopOf="parent" />
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+</RelativeLayout>

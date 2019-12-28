@@ -9,30 +9,46 @@
     android:layout_height="match_parent"
     android:background="@color/Black">
 
-    <de.hdodenhof.circleimageview.CircleImageView
-        android:id="@+id/dummy_circle_image"
+    <RelativeLayout
+        android:id="@+id/circle_image_view_recycler"
         android:layout_width="80dp"
         android:layout_height="80dp"
-        android:padding="8dp"
-        android:src="@mipmap/white_circle"
+        android:foregroundGravity="center">
 
-        />
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/dummy_circle_image"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:padding="8dp"
+            android:src="@mipmap/white_circle"
 
 
-    <de.hdodenhof.circleimageview.CircleImageView
-        android:id="@+id/image"
-        android:layout_width="80dp"
-        android:layout_height="80dp"
-        android:padding="8dp"
-        android:src="@mipmap/a"
+            />
 
-        />
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/image"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_alignWithParentIfMissing="true"
+            android:layout_alignStart="@id/dummy_circle_image"
+            android:layout_alignTop="@id/dummy_circle_image"
+            android:layout_alignEnd="@id/dummy_circle_image"
+            android:layout_alignBottom="@id/dummy_circle_image"
+            android:layout_margin="8dp"
+
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="4dp"
+            android:padding="8dp"
+
+            android:src="@mipmap/a" />
+    </RelativeLayout>
 
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="80dp"
-        android:layout_toEndOf="@+id/image">
+        android:layout_toEndOf="@+id/circle_image_view_recycler">
 
         <TextView
             android:id="@+id/title"

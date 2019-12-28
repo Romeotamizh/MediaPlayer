@@ -98,7 +98,7 @@ public class SetAlphabetImages {
 
 
             default:
-                return (R.mipmap.red_play);
+                return (R.mipmap.number);
 
         }
 

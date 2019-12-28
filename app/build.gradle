@@ -38,4 +38,10 @@ dependencies {
     implementation 'androidx.room:room-runtime:2.2.3'
     annotationProcessor 'androidx.room:room-compiler:2.2.3'
     testImplementation 'androidx.room:room-testing:2.2.3'
+    implementation 'com.squareup.picasso:picasso:2.71828'
+    implementation 'jp.wasabeef:picasso-transformations:2.2.1'
+    implementation 'jp.co.cyberagent.android.gpuimage:gpuimage-library:1.4.1'
+    implementation 'com.github.Jay-Goo:RangeSeekBar:3.0.0'
+    implementation 'com.github.warkiz.widget:indicatorseekbar:2.1.2'
+
 }

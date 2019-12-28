@@ -10,15 +10,20 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 
+import com.romeotamizh.MusicPlayer.DatabaseOperationObject;
 import com.romeotamizh.MusicPlayer.Helpers.FormatTime;
-import com.romeotamizh.MusicPlayer.Music;
 import com.romeotamizh.MusicPlayer.MusicRoomDatabase;
 import com.romeotamizh.MusicPlayer.PlayMusic;
 import com.romeotamizh.MusicPlayer.R;
 
 import java.util.Arrays;
 
+import static com.romeotamizh.MusicPlayer.FavouriteMomentsRepository.databaseDeleteOperation;
+import static com.romeotamizh.MusicPlayer.FavouriteMomentsRepository.databaseGetFavouritesOperation;
+import static com.romeotamizh.MusicPlayer.FavouriteMomentsRepository.databaseInsertOperation;
+import static com.romeotamizh.MusicPlayer.FavouriteMomentsRepository.resetFavouritesOperation;
 import static com.romeotamizh.MusicPlayer.Helpers.SetAlphabetImages.setAlphabetImages;
 import static com.romeotamizh.MusicPlayer.PlayMusic.mediaPlayer;
 import static com.romeotamizh.MusicPlayer.PlayMusic.mediaPlayerDuration;
@@ -34,21 +39,28 @@ public class PlayScreenActivity extends AppCompatActivity implements View.OnClic
     TextView titleTextView;
     TextView currentPositionTextView;
     TextView maxLengthTextView;
+    public static int[] mFavouriteMomentsList = new int[100];
     String mTitle;
     String mData;
-    static int[] mFavouriteMomentsList = new int[100];
+    public static boolean isFavouriteMomentsExist = false;
     SeekBar seekBar;
     Runnable runnable;
     Boolean isSongChanged = false;
-    public boolean isFavouriteMomentsExist = false;
-    int mId;
-    int mFavouriteMomentsCount = 1;
+    public static int mFavouriteMomentsCount = 1;
+    static int mId;
+    TextView favTextView;
     MusicRoomDatabase musicRoomDatabase;
+    ImageView playPauseCircle;
     ImageView favButton;
+    ImageView nextFavButton;
     ImageView previousButton;
     boolean y;
     int mFavouriteMomentsListPosition = 0;
     boolean x = false;
+    boolean z = true;
+
+    ConstraintLayout imageViewBackground;
+    DatabaseOperationObject databaseOperationObject;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,10 +68,12 @@ public class PlayScreenActivity extends AppCompatActivity implements View.OnClic
         setContentView(R.layout.activity_play_screen);
         titleTextView = findViewById(R.id.title_play_screen);
         imageView = findViewById(R.id.image_view);
-        playPause = findViewById(R.id.play_or_pause);
         currentPositionTextView = findViewById(R.id.current_position);
         maxLengthTextView = findViewById(R.id.max_length);
         seekBar = findViewById(R.id.seekBar);
+        /*seekBar.setDots(new int[] {25, 50, 75});
+        seekBar.setDotsDrawable(R.drawable.ic_launcher_background);
+        seekBar.setDotsDrawable(R.mipmap.red_play);*/
         mTitle = getIntent().getStringExtra("title");
         mData = getIntent().getStringExtra("data");
         mId = getIntent().getIntExtra("id", 0);
@@ -70,16 +84,29 @@ public class PlayScreenActivity extends AppCompatActivity implements View.OnClic
         imageView.setImageResource(setAlphabetImages(mTitle));
         musicRoomDatabase = MusicRoomDatabase.getInstance(getApplicationContext());
 
+        initializeButtons();
 
+        imageViewBackground = findViewById(R.id.pic_layout);
+        initialize();
+
+
+    }
+
+    private void initializeButtons() {
+        favTextView = findViewById(R.id.next_fav_textView);
+        favTextView.setOnClickListener(this);
+        nextFavButton = findViewById(R.id.next_fav);
+        nextFavButton.setOnClickListener(this);
         favButton = findViewById(R.id.fav);
         previousButton = findViewById(R.id.back);
         previousButton.setOnClickListener(this);
         previousButton.setOnLongClickListener(this);
         favButton.setOnClickListener(this);
         favButton.setOnLongClickListener(this);
-
-        initialize();
-
+        playPause = findViewById(R.id.play_or_pause);
+        playPause.setOnClickListener(this);
+        //playPauseCircle = findViewById(R.id.play_pause);
+        // playPauseCircle.setOnClickListener(this);
 
     }
 
@@ -87,28 +114,32 @@ public class PlayScreenActivity extends AppCompatActivity implements View.OnClic
     public void onBackPressed() {
 
 
-        //Thread.currentThread().interrupt();
         databaseInsertFunction();
-
-
+        resetFavouriteMoments();
         isSongChanged = true;
-
         super.onBackPressed();
 
     }
 
     void initialize() {
+        z = true;
         isSongChanged = false;
         mFavouriteMomentsList[0] = 0;
-        //  databaseGetFavouriteMomentsFunction();
         new Thread(new Runnable() {
             @Override
             public void run() {
                 while (true) {
                     if (mediaPlayer.isPlaying() || isSongChanged) {
+                        databaseGetFavouriteMomentsFunction();
+                        resetFavouriteMoments();
                         seekBarFunctions();
                         Thread.currentThread().interrupt();
                         return;
+                    }
+                    try {
+                        Thread.sleep(100);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
                     }
                 }
 
@@ -116,10 +147,43 @@ public class PlayScreenActivity extends AppCompatActivity implements View.OnClic
             }
         }).start();
 
-        databaseGetFavouriteMomentsFunction();
-
 
         seekBarFunctions();
+/*
+        seekBar.setOnRangeChangedListener(new OnRangeChangedListener() {
+            @Override
+            public void onRangeChanged(RangeSeekBar view, float leftValue, float rightValue, boolean isFromUser) {
+
+
+                *//*final Handler handler = new Handler();
+                handler.postDelayed(runnable = *//*
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        currentPositionTextView.setText(FormatTime.formatTime(mediaPlayer.getCurrentPosition()));
+                    }
+
+                }.run();
+
+            }
+
+            @Override
+            public void onStartTrackingTouch(RangeSeekBar view, boolean isLeft) {
+                mediaPlayer.pause();
+            }
+
+            @Override
+            public void onStopTrackingTouch(RangeSeekBar view, boolean isLeft) {
+
+                mediaPlayer.seekTo(seekBar.getProgressLeft());
+                mediaPlayer.start();
+                seekBarFunctions();
+                if (mediaPlayer.isPlaying())
+                    playPause.setImageResource(R.mipmap.red_pause);
+
+
+            }
+        });*/
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -156,7 +220,9 @@ public class PlayScreenActivity extends AppCompatActivity implements View.OnClic
         mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mp) {
-                databaseInsertFunction();
+
+                databaseGetFavouriteMomentsFunction();
+                resetFavouriteMoments();
                 mFavouriteMomentsListPosition = 0;
                 playPause.setImageResource(R.mipmap.red_play);
 
@@ -164,130 +230,12 @@ public class PlayScreenActivity extends AppCompatActivity implements View.OnClic
         });
 
 
-        // Blurry.with(getBaseContext()).radius(4).sampling(4).color(255).async().onto(viewGroup);
-
-        previousButton = findViewById(R.id.back);
-        previousButton.setOnLongClickListener(this);
-        /*previousButton.setOnLongClickListener(new View.OnLongClickListener()  {
-            @Override
-            public boolean onLongClick(View v) {
-                y = true;
-                return false;
-            }
-        });*/
-
-        /*favButton.setOnLongClickListener(new View.OnLongClickListener()  {
-            @Override
-            public boolean onLongClick(View v) {
-                databaseDeleteFunction();
-                mFavouriteMomentsList = new int[100];
-                mFavouriteMomentsCount = 1;
-                isFavouriteMomentsExist =false;
-                Log.d("db","dbdel");
-                return true;
-            }
-        });*/
-
-
-    }
-
-    public void databaseInsertFunction() {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                // MusicRoomDatabase musicRoomDatabase = MusicRoomDatabase.getInstance(getApplicationContext());
-
-
-                for (int i = 0; i < mFavouriteMomentsCount; i++) {
-                    Music music = new Music(String.valueOf(mId) + "." + String.valueOf(mFavouriteMomentsList[i]), mId, mFavouriteMomentsList[i]);
-                    musicRoomDatabase.musicDao().insertData(music);
-                    //musicRoomDatabase.musicDao().insertData(mId,mFavouriteMomentsList[i]);
-
-                }
-                Log.d("dbinsfn", Arrays.toString(musicRoomDatabase.musicDao().getFavouriteMoments(mId)));
-                Log.d("dbinsfn", Arrays.toString(musicRoomDatabase.musicDao().getId(mId)));
-                mFavouriteMomentsList = new int[100];
-                mFavouriteMomentsList[0] = 0;
-                databaseGetFavouriteMomentsFunction();
-
-
-                // Thread.currentThread().interrupt();
-                return;
-
-
-            }
-        }).start();
-
-
-    }
-
-    public void databaseGetFavouriteMomentsFunction() {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                // MusicRoomDatabase musicRoomDatabase = MusicRoomDatabase.getInstance(getApplicationContext());
-                int[] temp = new int[100];
-
-                temp = musicRoomDatabase.musicDao().getFavouriteMoments(mId);
-                Log.d("getfavfn", Arrays.toString(musicRoomDatabase.musicDao().getFavouriteMoments(mId)));
-                // Log.d("getfavfn", String.valueOf(mId));
-                Log.d("getfavfn", String.valueOf(temp.length));
-
-
-                if (temp.length < 1) {
-                    isFavouriteMomentsExist = false;
-                } else if (temp.length == 1) {
-                    isFavouriteMomentsExist = false;
-
-
-                } else {
-                    Arrays.sort(temp);
-                    mFavouriteMomentsList = Arrays.copyOf(temp, 100);
-
-                    /*for (int x = 1; x < temp.length; x++) {
-                        mFavouriteMomentsList[x] = temp[x];
-
-                    }*/
-                    //mFavouriteMomentsCount = mFavouriteMomentsList.length;
-                    mFavouriteMomentsCount = temp.length;
-
-                    isFavouriteMomentsExist = true;
-                }
-                Log.d("getfavfn", Arrays.toString(mFavouriteMomentsList));
-                Log.d("getfavfn", String.valueOf(mFavouriteMomentsCount));
-
-
-                //   Thread.currentThread().interrupt();
-                return;
-
-
-            }
-        }).start();
-
-
-    }
-
-    public void databaseDeleteFunction() {
-
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                int temp = musicRoomDatabase.musicDao().delete(mId);
-                mFavouriteMomentsList = new int[100];
-                mFavouriteMomentsCount = 1;
-                isFavouriteMomentsExist = false;
-                Log.d("dbdel ", String.valueOf(temp));
-
-
-            }
-        }).start();
-
     }
 
 
     public void seekBarFunctions() {
         maxLengthTextView.setText(FormatTime.formatTime(mediaPlayerDuration));
-        seekBar.setMax(mediaPlayerDuration);
+        // seekBar.setRange(0f,(float)mediaPlayerDuration);
         if (mediaPlayerDuration < 1000)
             seekBar.setProgress(seekBar.getMax());
         else {
@@ -296,9 +244,12 @@ public class PlayScreenActivity extends AppCompatActivity implements View.OnClic
                 @Override
                 public void run() {
                     int currentPosition;
-
-
                     while (mediaPlayer.isPlaying()) {
+                        if (z) {
+                            Log.d("mpduration", String.valueOf(mediaPlayerDuration));
+                            seekBar.setMax(mediaPlayer.getDuration());
+                            z = false;
+                        }
                         currentPosition = mediaPlayer.getCurrentPosition();
                         currentPosition++;
                         seekBar.setProgress(currentPosition);
@@ -316,7 +267,7 @@ public class PlayScreenActivity extends AppCompatActivity implements View.OnClic
 
     }
 
-    public void playPausePress(View view) {
+    public void playPausePress() {
         if (mediaPlayer != null) {
 
             if (mediaPlayer.isPlaying()) {
@@ -338,24 +289,25 @@ public class PlayScreenActivity extends AppCompatActivity implements View.OnClic
 
 
         mFavouriteMomentsList[mFavouriteMomentsCount++] = mediaPlayer.getCurrentPosition();
-        //Log.d("favouritemomentadded", String.valueOf(mFavouriteMomentsList[mFavouriteMomentsListPosition]));
+        //mFavouriteMomentsCount++;
         Arrays.sort(mFavouriteMomentsList, 0, mFavouriteMomentsCount);
         Log.d("favouritemomentadded", Arrays.toString(mFavouriteMomentsList));
+
+        databaseInsertFunction();
 
 
     }
 
-    public void nextFavouriteMoment(View view) {
+    public void nextFavouriteMoment() {
         int[] temp;
         int currentPosition;
 
         if (isFavouriteMomentsExist) {
-            // if (mFavouriteMomentsListPosition < mFavouriteMomentsCount - 1) {
             x = true;
 
             temp = Arrays.copyOfRange(mFavouriteMomentsList, 0, mFavouriteMomentsCount + 1);
             currentPosition = mediaPlayer.getCurrentPosition();
-            Log.d("favouritemoment", String.valueOf(currentPosition));
+            // Log.d("nextfavouritemoment", String.valueOf(currentPosition));
             temp[mFavouriteMomentsCount] = currentPosition;
             Arrays.sort(temp);
             int currentPositionIndex;
@@ -363,32 +315,24 @@ public class PlayScreenActivity extends AppCompatActivity implements View.OnClic
             if (currentPositionIndex < temp.length - 1)
                 mediaPlayer.seekTo(temp[currentPositionIndex + 1]);
 
-            //mediaPlayer.seekTo(mFavouriteMomentsList[++mFavouriteMomentsListPosition]);
-            // Log.d("favouritemoment", String.valueOf(temp[currentPositionIndex]));
-            Log.d("favouritemoment", String.valueOf(mediaPlayer.getCurrentPosition()));
-            Log.d("favouritemoment", Arrays.toString(temp));
+            Log.d("nextfavouritemoment", String.valueOf(mediaPlayer.getCurrentPosition()));
+            Log.d("nextfavouritemoment", Arrays.toString(temp));
             x = false;
             seekBarFunctions();
-            temp = Arrays.copyOfRange(mFavouriteMomentsList, 0, mFavouriteMomentsCount + 1);
-            //  }
+
         }
     }
 
     public void previousFavouriteMoment() {
         int[] temp;
         if (isFavouriteMomentsExist) {
-            //  if (mFavouriteMomentsListPosition > 0) {
             x = true;
-
             temp = Arrays.copyOfRange(mFavouriteMomentsList, 0, mFavouriteMomentsCount + 1);
-
             int currentPosition = mediaPlayer.getCurrentPosition();
-            //    Log.d("favouritemoment", String.valueOf(currentPosition));
             temp[mFavouriteMomentsCount] = currentPosition;
             Arrays.sort(temp);
             int currentPositionIndex;
             currentPositionIndex = Arrays.binarySearch(temp, currentPosition);
-            //if(currentPositionIndex>2)
             if (y) {
                 if (currentPositionIndex >= 2)
                     mediaPlayer.seekTo(temp[currentPositionIndex - 2]);
@@ -396,12 +340,10 @@ public class PlayScreenActivity extends AppCompatActivity implements View.OnClic
                     mediaPlayer.seekTo(temp[currentPositionIndex - 1]);
             } else
                 mediaPlayer.seekTo(temp[currentPositionIndex - 1]);
-            //mediaPlayer.seekTo(mFavouriteMomentsList[--mFavouriteMomentsListPosition]);
-            Log.d("favouritemoment", String.valueOf(mediaPlayer.getCurrentPosition()));
-            Log.d("favouritemoment", Arrays.toString(temp));
+            Log.d("prevfavouritemoment", String.valueOf(mediaPlayer.getCurrentPosition()));
+            Log.d("prevfavouritemoment", Arrays.toString(temp));
             x = false;
             seekBarFunctions();
-            //   }
         }
     }
 
@@ -440,6 +382,15 @@ public class PlayScreenActivity extends AppCompatActivity implements View.OnClic
                 previousFavouriteMoment();
                 break;
 
+            case R.id.next_fav:
+                nextFavouriteMoment();
+                break;
+
+            case R.id.play_or_pause:
+                playPausePress();
+                break;
+
+
             default:
                 break;
 
@@ -447,4 +398,28 @@ public class PlayScreenActivity extends AppCompatActivity implements View.OnClic
         }
 
     }
+
+    public void databaseDeleteFunction() {
+        databaseDeleteOperation(mId, "music");
+
+    }
+
+    public void databaseGetFavouriteMomentsFunction() {
+
+
+        databaseGetFavouritesOperation(mId, "music");
+    }
+
+    public void databaseInsertFunction() {
+
+        databaseInsertOperation(mId, this.mFavouriteMomentsCount, this.mFavouriteMomentsList, "music");
+
+    }
+
+    public void resetFavouriteMoments() {
+        resetFavouritesOperation("music");
+
+    }
+
+
 }
