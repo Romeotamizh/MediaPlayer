@@ -19,10 +19,10 @@ import com.romeotamizh.MusicPlayer.R;
 
 import java.util.Arrays;
 
-import static com.romeotamizh.MusicPlayer.FavouriteMoment.FavouriteMomentsRepository.databaseDeleteOperation;
-import static com.romeotamizh.MusicPlayer.FavouriteMoment.FavouriteMomentsRepository.databaseGetFavouritesOperation;
-import static com.romeotamizh.MusicPlayer.FavouriteMoment.FavouriteMomentsRepository.databaseInsertOperation;
-import static com.romeotamizh.MusicPlayer.FavouriteMoment.FavouriteMomentsRepository.resetFavouritesOperation;
+import static com.romeotamizh.MusicPlayer.FavouriteMoments.FavouriteMomentsRepository.databaseDeleteOperation;
+import static com.romeotamizh.MusicPlayer.FavouriteMoments.FavouriteMomentsRepository.databaseGetFavouritesOperation;
+import static com.romeotamizh.MusicPlayer.FavouriteMoments.FavouriteMomentsRepository.databaseInsertOperation;
+import static com.romeotamizh.MusicPlayer.FavouriteMoments.FavouriteMomentsRepository.resetFavouritesOperation;
 import static com.romeotamizh.MusicPlayer.Helpers.SetAlphabetImages.setAlphabetImages;
 import static com.romeotamizh.MusicPlayer.PlayMusic.mediaPlayer;
 import static com.romeotamizh.MusicPlayer.PlayMusic.mediaPlayerDuration;

@@ -1,4 +1,4 @@
-package com.romeotamizh.MusicPlayer.FavouriteMoment;
+package com.romeotamizh.MusicPlayer.FavouriteMoments;
 
 public class FavouriteMoments {
     public int[] mFavouriteMomentsList = new int[100];

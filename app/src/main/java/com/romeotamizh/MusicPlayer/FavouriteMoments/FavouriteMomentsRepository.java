@@ -1,4 +1,4 @@
-package com.romeotamizh.MusicPlayer.FavouriteMoment;
+package com.romeotamizh.MusicPlayer.FavouriteMoments;
 
 import android.util.Log;
 
