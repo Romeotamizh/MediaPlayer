@@ -1,9 +1,9 @@
 package com.romeotamizh.MusicPlayer.Activities;
 
-import android.graphics.Canvas;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -18,9 +18,6 @@ import com.romeotamizh.MusicPlayer.Helpers.FormatTime;
 import com.romeotamizh.MusicPlayer.MusicRoomDatabase;
 import com.romeotamizh.MusicPlayer.PlayMusic;
 import com.romeotamizh.MusicPlayer.R;
-import com.warkiz.widget.IndicatorSeekBar;
-import com.warkiz.widget.OnSeekChangeListener;
-import com.warkiz.widget.SeekParams;
 
 import java.util.Arrays;
 
@@ -47,7 +44,7 @@ public class PlayScreenActivity extends AppCompatActivity implements View.OnClic
     String mTitle;
     String mData;
     public static boolean isFavouriteMomentsExist = false;
-    IndicatorSeekBar seekBar;
+    public static int seekBarMax;
     Runnable runnable;
     Boolean isSongChanged = false;
     public static int mFavouriteMomentsCount = 1;
@@ -62,10 +59,11 @@ public class PlayScreenActivity extends AppCompatActivity implements View.OnClic
     int mFavouriteMomentsListPosition = 0;
     boolean x = false;
     boolean z = true;
-    final Handler handler = new Handler();
+    public static int seekBarwidth;
 
     ConstraintLayout imageViewBackground;
     DatabaseOperationObject databaseOperationObject;
+    DottedSeekbar seekBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,24 +82,30 @@ public class PlayScreenActivity extends AppCompatActivity implements View.OnClic
         mId = getIntent().getIntExtra("id", 0);
         Log.d("id", String.valueOf(mId));
 
+        seekBarMax = seekBar.getMax();
+        //  onCreateView(findViewById(R.id.seekBar_parent), "seekbar", getBaseContext(), getBaseContext().obtainStyledAttributes(new ttributeSet, R.styleable.DottedSeekbar, 0, 0));
+        seekBar.post(new Runnable() {
+            @Override
+            public void run() {
+                seekBarwidth = seekBar.getMeasuredWidth();
+                //    seekBarMax = seekBar.getMax();
+
+            }
+        });
         PlayMusic.playMusic(mData, mTitle);
         titleTextView.setText(mTitle);
         imageView.setImageResource(setAlphabetImages(mTitle));
         musicRoomDatabase = MusicRoomDatabase.getInstance(getApplicationContext());
 
         initializeButtons();
+        seekBar.setDots(mFavouriteMomentsList);
 
         imageViewBackground = findViewById(R.id.pic_layout);
         initialize();
-        seekBar.setThumbAdjustAuto(false);
-
-
-
+        seekBar.setDotsDrawable(R.mipmap.red_play);
 
 
     }
-
-
 
     private void initializeButtons() {
         favTextView = findViewById(R.id.next_fav_textView);
@@ -195,34 +199,7 @@ public class PlayScreenActivity extends AppCompatActivity implements View.OnClic
 
             }
         });*/
-        seekBar.setOnSeekChangeListener(new OnSeekChangeListener() {
-            @Override
-            public void onSeeking(SeekParams seekParams) {
-                handler.postDelayed(runnable = new Runnable() {
-                    @Override
-                    public void run() {
-                        currentPositionTextView.setText(FormatTime.formatTime(mediaPlayer.getCurrentPosition()));
-                    }
-                }, 1000);
-
-            }
-
-            @Override
-            public void onStartTrackingTouch(IndicatorSeekBar seekBar) {
-                mediaPlayer.pause();
-
-            }
-
-            @Override
-            public void onStopTrackingTouch(IndicatorSeekBar seekBar) {
-                mediaPlayer.seekTo(seekBar.getProgress());
-                mediaPlayer.start();
-                seekBarFunctions();
-                if (mediaPlayer.isPlaying())
-                    playPause.setImageResource(R.mipmap.red_pause);
-
-            }
-/*
+        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
 
@@ -253,7 +230,7 @@ public class PlayScreenActivity extends AppCompatActivity implements View.OnClic
                     playPause.setImageResource(R.mipmap.red_pause);
 
 
-            }*/
+            }
         });
         mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
@@ -273,8 +250,8 @@ public class PlayScreenActivity extends AppCompatActivity implements View.OnClic
 
     public void seekBarFunctions() {
         maxLengthTextView.setText(FormatTime.formatTime(mediaPlayerDuration));
-        seekBar.setTickCount(mFavouriteMomentsCount);
-
+        seekBar.setMax(mediaPlayer.getDuration());
+        seekBarMax = seekBar.getMax();
         // seekBar.setRange(0f,(float)mediaPlayerDuration);
         if (mediaPlayerDuration < 1000)
             seekBar.setProgress(seekBar.getMax());
@@ -286,8 +263,10 @@ public class PlayScreenActivity extends AppCompatActivity implements View.OnClic
                     int currentPosition;
                     while (mediaPlayer.isPlaying()) {
                         if (z) {
-                            Log.d("mpduration", String.valueOf(mediaPlayerDuration));
+                            databaseGetFavouriteMomentsFunction();
                             seekBar.setMax(mediaPlayer.getDuration());
+                            seekBarMax = mediaPlayer.getDuration();
+                            Log.d("mpduration", String.valueOf(mediaPlayerDuration));
                             z = false;
                         }
                         currentPosition = mediaPlayer.getCurrentPosition();
@@ -301,13 +280,9 @@ public class PlayScreenActivity extends AppCompatActivity implements View.OnClic
                     }
 
 
-
                 }
             }).start();
         }
-
-
-
 
     }
 
@@ -456,7 +431,7 @@ public class PlayScreenActivity extends AppCompatActivity implements View.OnClic
 
     public void databaseInsertFunction() {
 
-        databaseInsertOperation(mId, this.mFavouriteMomentsCount, this.mFavouriteMomentsList, "music");
+        databaseInsertOperation(mId, mFavouriteMomentsCount, mFavouriteMomentsList, "music");
 
     }
 
@@ -464,7 +439,6 @@ public class PlayScreenActivity extends AppCompatActivity implements View.OnClic
         resetFavouritesOperation("music");
 
     }
-
 
 
 }

@@ -4,6 +4,7 @@ import android.util.Log;
 
 import java.util.Arrays;
 
+import static com.romeotamizh.MusicPlayer.Activities.DottedSeekbar.mDotsPositions;
 import static com.romeotamizh.MusicPlayer.Activities.PlayScreenActivity.isFavouriteMomentsExist;
 import static com.romeotamizh.MusicPlayer.Activities.PlayScreenActivity.mFavouriteMomentsCount;
 import static com.romeotamizh.MusicPlayer.Activities.PlayScreenActivity.mFavouriteMomentsList;
@@ -86,6 +87,7 @@ public class FavouriteMomentsRepository {
         mFavouriteMomentsCount = databaseOperationObject.mFavouriteMomentsCount;
         mFavouriteMomentsList = databaseOperationObject.mFavouriteMomentsList;
         isFavouriteMomentsExist = databaseOperationObject.isFavouriteMomentsExist;
+        mDotsPositions = mFavouriteMomentsList;
         Log.d("getfavfno", Arrays.toString(mFavouriteMomentsList));
         Log.d("getfavfno", String.valueOf(mFavouriteMomentsCount));
     }
@@ -100,7 +102,7 @@ public class FavouriteMomentsRepository {
 
                 boolean isFavouriteMomentsExist = false;
                 for (int i = 0; i < mFavouriteMomentsCount; i++) {
-                    Music music = new Music(String.valueOf(mId) + "." + String.valueOf(mFavouriteMomentsList[i]), mId, mFavouriteMomentsList[i]);
+                    Music music = new Music(mId + "." + mFavouriteMomentsList[i], mId, mFavouriteMomentsList[i]);
                     musicRoomDatabase.musicDao().insertData(music);
 
                 }
@@ -120,6 +122,7 @@ public class FavouriteMomentsRepository {
 
     public static void resetFavouritesOperation(final String s) {
         mFavouriteMomentsCount = 1;
+        mDotsPositions = new int[100];
         mFavouriteMomentsList = new int[100];
         isFavouriteMomentsExist = false;
         Log.d("resetfav", "resetdone");
