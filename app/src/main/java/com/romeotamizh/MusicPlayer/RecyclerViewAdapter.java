@@ -17,8 +17,14 @@ import java.util.ArrayList;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
+import static com.romeotamizh.MusicPlayer.Activities.MainActivity.isFirstTime;
+import static com.romeotamizh.MusicPlayer.Activities.MainActivity.isFromMainActivity;
 import static com.romeotamizh.MusicPlayer.Activities.MainActivity.openPlayScreen;
+import static com.romeotamizh.MusicPlayer.Activities.PlayScreenActivity.isBackPressed;
+import static com.romeotamizh.MusicPlayer.Activities.PlayScreenActivity.isSongChanged;
+import static com.romeotamizh.MusicPlayer.FavouriteMoments.FavouriteMomentsRepository.resetFavouritesOperation;
 import static com.romeotamizh.MusicPlayer.Helpers.SetAlphabetImages.setAlphabetImages;
+
 
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder> {
     //ArrayList<String> mImages = new ArrayList<>();
@@ -88,9 +94,13 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
             @Override
             public void onClick(View v) {
-                // PlayMusic.playMusic(mDataList.get(position), titleOnly.toString());
-                // openPlayScreen(mDataList.get(position),titleOnly.toString());
-                openPlayScreen(cursor, position, mDataList.get(position), titleOnly.toString(), mIdList.get(position));
+                resetFavouritesOperation("music");
+                isSongChanged = true;
+                isFromMainActivity = false;
+                isBackPressed = false;
+                isFirstTime = false;
+
+                openPlayScreen(mDataList.get(position), titleOnly.toString(), mIdList.get(position));
 
 
             }

@@ -1,31 +1,28 @@
 package com.romeotamizh.MusicPlayer.Activities;
 
-import android.media.MediaPlayer;
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.SeekBar;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.romeotamizh.MusicPlayer.Helpers.SeekbarWithFavourites;
-import com.romeotamizh.MusicPlayer.Helpers.TimeFormat;
 import com.romeotamizh.MusicPlayer.PlayMusic;
 import com.romeotamizh.MusicPlayer.R;
+import com.romeotamizh.MusicPlayer.SeekBarWithFavouritesHelper;
 
 import java.util.Arrays;
 
+import static com.romeotamizh.MusicPlayer.Activities.MainActivity.isFromMainActivity;
 import static com.romeotamizh.MusicPlayer.FavouriteMoments.FavouriteMomentsRepository.databaseDeleteOperation;
 import static com.romeotamizh.MusicPlayer.FavouriteMoments.FavouriteMomentsRepository.databaseGetFavouritesOperation;
 import static com.romeotamizh.MusicPlayer.FavouriteMoments.FavouriteMomentsRepository.databaseInsertOperation;
 import static com.romeotamizh.MusicPlayer.FavouriteMoments.FavouriteMomentsRepository.resetFavouritesOperation;
 import static com.romeotamizh.MusicPlayer.Helpers.SetAlphabetImages.setAlphabetImages;
 import static com.romeotamizh.MusicPlayer.PlayMusic.mediaPlayer;
-import static com.romeotamizh.MusicPlayer.PlayMusic.mediaPlayerDuration;
 
 
 public class PlayScreenActivity extends AppCompatActivity implements View.OnClickListener, View.OnLongClickListener {
@@ -35,26 +32,26 @@ public class PlayScreenActivity extends AppCompatActivity implements View.OnClic
     public static int seekBarMax;
     public static int mFavouriteMomentsCount = 1;
     public static int seekBarWidth;
-    static int mId;
-    ImageView playPause;
+    public static int mId;
+    public static ImageView playPause;
     ImageView imageView;
     TextView titleTextView;
-    TextView currentPositionTextView;
-    TextView maxLengthTextView;
+    public static TextView currentPositionTextView;
+    public static TextView maxLengthTextView;
     String mTitle;
     String mData;
     Runnable runnable;
-    Boolean isSongChanged = false;
+    public static Boolean isSongChanged = false;
     TextView favTextView;
     ImageView favButton;
     ImageView nextFavButton;
     ImageView previousButton;
     boolean isPreviousButtonLongPressed;
-    int mFavouriteMomentsListPosition = 0;
-    boolean isSeekBarFlagSet = false;
-    boolean isListenerFlagSet = true;
+    public static boolean isSeekBarFlagSet = false;
+    public static boolean isListenerFlagSet = true;
     ConstraintLayout imageViewBackground;
-    SeekbarWithFavourites seekBar;
+    public static SeekbarWithFavourites seekBar;
+    public static boolean isBackPressed = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -145,9 +142,14 @@ public class PlayScreenActivity extends AppCompatActivity implements View.OnClic
     public void onBackPressed() {
 
 
-        databaseInsertFunction();
-        resetFavouriteMoments();
-        isSongChanged = true;
+        //  databaseInsertFunction();
+        // resetFavouriteMoments();
+        //isSongChanged = true;
+
+        isBackPressed = true;
+        //Thread.currentThread().interrupt();
+        isFromMainActivity = true;
+
         super.onBackPressed();
 
     }
@@ -180,7 +182,7 @@ public class PlayScreenActivity extends AppCompatActivity implements View.OnClic
         }).start();
 
 
-        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+        /*seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
 
@@ -227,12 +229,12 @@ public class PlayScreenActivity extends AppCompatActivity implements View.OnClic
             }
         });
 
-
+*/
     }
 
 
     public void seekBarFunctions() {
-        maxLengthTextView.setText(TimeFormat.formatTime(mediaPlayerDuration));
+       /* maxLengthTextView.setText(TimeFormat.formatTime(mediaPlayerDuration));
         seekBar.setMax(mediaPlayer.getDuration());
         seekBarMax = seekBar.getMax();
         if (mediaPlayerDuration < 1000)
@@ -264,7 +266,11 @@ public class PlayScreenActivity extends AppCompatActivity implements View.OnClic
 
                 }
             }).start();
-        }
+        }*/
+
+
+        SeekBarWithFavouritesHelper.seekBarListener(seekBar, currentPositionTextView, "play");
+        SeekBarWithFavouritesHelper.seekBarOperations(seekBar, maxLengthTextView, "play");
 
     }
 
@@ -420,12 +426,12 @@ public class PlayScreenActivity extends AppCompatActivity implements View.OnClic
     }
 
     public void databaseDeleteFunction() {
+
         databaseDeleteOperation(mId, "music");
 
     }
 
     public void databaseGetFavouriteMomentsFunction() {
-
 
         databaseGetFavouritesOperation(mId, "music");
     }

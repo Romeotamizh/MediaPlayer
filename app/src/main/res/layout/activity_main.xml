@@ -5,16 +5,15 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:id="@+id/activity_main_parent"
     >
 
-<LinearLayout
-    android:orientation="vertical"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+
     <include layout="@layout/activity_main_toolbar" />
 
 
     <androidx.recyclerview.widget.RecyclerView
+        android:layout_marginTop="?actionBarSize"
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -22,8 +21,13 @@
         android:scrollbars="vertical"
         />
 
-    </LinearLayout>
-
+    <FrameLayout
+        android:id="@+id/activity_main_seekBar_frame"
+        layout="@layout/layout_seekbar"
+        android:layout_width="match_parent"
+        android:layout_height="72dp"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="12dp" />
 
 
      </RelativeLayout>

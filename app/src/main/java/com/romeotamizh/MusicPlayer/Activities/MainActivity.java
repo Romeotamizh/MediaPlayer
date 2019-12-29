@@ -6,8 +6,16 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.CountDownTimer;
+import android.os.Handler;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewStub;
+import android.widget.FrameLayout;
+import android.widget.TextView;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
@@ -17,10 +25,14 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.gun0912.tedpermission.PermissionListener;
 import com.gun0912.tedpermission.TedPermission;
+import com.romeotamizh.MusicPlayer.Helpers.SeekbarWithFavourites;
 import com.romeotamizh.MusicPlayer.R;
 import com.romeotamizh.MusicPlayer.RecyclerViewAdapter;
 
 import java.util.ArrayList;
+
+import static com.romeotamizh.MusicPlayer.SeekBarWithFavouritesHelper.seekBarListener;
+import static com.romeotamizh.MusicPlayer.SeekBarWithFavouritesHelper.seekBarOperations;
 
 public class MainActivity extends AppCompatActivity   {
 
@@ -33,16 +45,86 @@ public class MainActivity extends AppCompatActivity   {
     //public static Cursor cursor;
     Toolbar toolbar;
     RecyclerView recyclerView;
+    public static boolean isFirstTime = true;
+    public static boolean isFromMainActivity;
+    static ViewStub viewStub;
+    static View childLayout;
+    static SeekbarWithFavourites seekBar;
+    static FrameLayout parentLayout;
+    static TextView currentPositionTextView;
+    static TextView maxLengthTextView;
+    Handler handler = new Handler();
+
+    public static void onReturn() {
+
+        /*Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+
+                if (!isFirstTime) {
+                    isFromMainActivity = true;
+                    Log.d("m", "true");
+                    seekBar = childLayout.findViewById(R.id.seekBar);
+                    maxLengthTextView = childLayout.findViewById(R.id.max_length);
+                    currentPositionTextView = childLayout.findViewById(R.id.current_position);
+                    seekBar.setmFavouriteBitmap(R.mipmap.red_play);
+                    seekBarListener(seekBar, currentPositionTextView, "main");
+                    seekBarOperations(seekBar, maxLengthTextView, "main");
+
+                }
+            }
+        };*/
+
+        if (!isFirstTime) {
+            isFromMainActivity = true;
+            Log.d("m", "true");
+            seekBar = childLayout.findViewById(R.id.seekBar);
+            maxLengthTextView = childLayout.findViewById(R.id.max_length);
+            currentPositionTextView = childLayout.findViewById(R.id.current_position);
+            seekBar.setmFavouriteBitmap(R.mipmap.red_play);
+            seekBarListener(seekBar, currentPositionTextView, "main");
+            seekBarOperations(seekBar, maxLengthTextView, "main");
+
+        }
+    }
+
+    public static void openPlayScreen(final String mData, final String mTitle, final int mId) {
+
+        Intent intent = new Intent(context, PlayScreenActivity.class);
+        intent.putExtra("title", mTitle);
+        intent.putExtra("data", mData);
+        intent.putExtra("id", mId);
+        context.startActivity(intent);
+        CountDownTimer countDownTimer = new CountDownTimer(2000, 1000) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+
+            }
+
+            @Override
+            public void onFinish() {
+                if (!isFirstTime) {
+                    parentLayout.addView(childLayout);
+                }
+                Log.d("pp", "ppp");
 
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        toolbar = findViewById(R.id.toolbar_main);
-        recyclerView = findViewById(R.id.recyclerView);
-        setSupportActionBar(toolbar);
-        initialize();
+            }
+        };
+        countDownTimer.start();
+
+        /*Handler h =new Handler();
+        Runnable r =(new Runnable() {
+            @Override
+            public void run() {
+                if(!isFirstTime){
+                parentLayout.addView(childLayout);
+            }
+                Log.d("pp","ppp");
+
+            }
+        });
+        h.postDelayed(r,2000);*/
 
 
     }
@@ -57,15 +139,33 @@ public class MainActivity extends AppCompatActivity   {
 
     }
 
-    public static void openPlayScreen(final Cursor cursor, final int position, final String mData, final String mTitle, final int mId) {
-        Intent intent = new Intent(context, PlayScreenActivity.class);
-        intent.putExtra("title", mTitle);
-        intent.putExtra("data", mData);
-        intent.putExtra("id", mId);
-        context.startActivity(intent);
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        toolbar = findViewById(R.id.toolbar_main);
+        recyclerView = findViewById(R.id.recyclerView);
+
+
+        LayoutInflater inflater = (LayoutInflater) this.getSystemService(LAYOUT_INFLATER_SERVICE);
+
+        childLayout = inflater.inflate(R.layout.layout_seekbar, (ViewGroup) findViewById(R.id.seekBar_parent));
+        parentLayout = findViewById(R.id.activity_main_seekBar_frame);
+        /*SeekbarWithFavourites seekBar;
+
+        seekBar = findViewById(R.id.seekBar);
+*/
+
+
+        setSupportActionBar(toolbar);
+        if (!isFirstTime) {
+            parentLayout.addView(childLayout);
+        }
+        initialize();
 
 
     }
+
 
     void initialize(){
         context = this;

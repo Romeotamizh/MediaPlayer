@@ -7,14 +7,12 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.widget.SeekBar;
 
 import com.romeotamizh.MusicPlayer.R;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.Arrays;
 
 import static com.romeotamizh.MusicPlayer.Activities.PlayScreenActivity.seekBarMax;
 import static com.romeotamizh.MusicPlayer.Activities.PlayScreenActivity.seekBarWidth;
@@ -76,17 +74,19 @@ public class SeekbarWithFavourites extends SeekBar {
     @Override
     protected synchronized void onDraw(final Canvas canvas) {
         super.onDraw(canvas);
+        final BigDecimal max = BigDecimal.valueOf(seekBarMax);
 
-
-        final BigDecimal step = BigDecimal.valueOf(seekBarWidth).divide(BigDecimal.valueOf(seekBarMax), 10, RoundingMode.CEILING);
-        Log.d("pos", Arrays.toString(mFavouritesPositionsList));
+        BigDecimal step = BigDecimal.valueOf(0);
+        if (max.intValue() != 0)
+            step = BigDecimal.valueOf(seekBarWidth).divide(max, 10, RoundingMode.CEILING);
+        //Log.d("pos", Arrays.toString(mFavouritesPositionsList));
 
         if (null != mFavouritesPositionsList && 0 != mFavouritesPositionsList.length && null != mFavouriteBitmap) {
             // draw dots if we have ones
             for (int position : mFavouritesPositionsList) {
-                Log.d("pos", String.valueOf(position));
-                Log.d("step", String.valueOf(step));
-                Log.d("width", String.valueOf(seekBarWidth));
+                //   Log.d("pos", String.valueOf(position));
+                //Log.d("step", String.valueOf(step));
+                //Log.d("width", String.valueOf(seekBarWidth));
                 int x = (step.multiply(BigDecimal.valueOf((double) position))).intValue();
                 canvas.drawBitmap(mFavouriteBitmap, x, 10, null);
             }
