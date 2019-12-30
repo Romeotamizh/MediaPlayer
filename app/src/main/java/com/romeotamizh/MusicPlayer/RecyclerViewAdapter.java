@@ -99,9 +99,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                 isFromMainActivity = false;
                 isBackPressed = false;
                 isFirstTime = false;
-
                 openPlayScreen(mDataList.get(position), titleOnly.toString(), mIdList.get(position));
-
 
             }
         });

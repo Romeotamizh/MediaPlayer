@@ -12,25 +12,28 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import com.romeotamizh.MusicPlayer.Helpers.SeekbarWithFavourites;
 import com.romeotamizh.MusicPlayer.PlayMusic;
 import com.romeotamizh.MusicPlayer.R;
-import com.romeotamizh.MusicPlayer.SeekBarWithFavouritesHelper;
 
-import java.util.Arrays;
-
-import static com.romeotamizh.MusicPlayer.Activities.MainActivity.isFromMainActivity;
+import static com.romeotamizh.MusicPlayer.FavouriteMoments.FavouriteMomentsRepository.addFavouriteMomentsOperation;
 import static com.romeotamizh.MusicPlayer.FavouriteMoments.FavouriteMomentsRepository.databaseDeleteOperation;
 import static com.romeotamizh.MusicPlayer.FavouriteMoments.FavouriteMomentsRepository.databaseGetFavouritesOperation;
-import static com.romeotamizh.MusicPlayer.FavouriteMoments.FavouriteMomentsRepository.databaseInsertOperation;
+import static com.romeotamizh.MusicPlayer.FavouriteMoments.FavouriteMomentsRepository.nextFavouriteMomentOperation;
+import static com.romeotamizh.MusicPlayer.FavouriteMoments.FavouriteMomentsRepository.previousFavouriteMomentOperation;
 import static com.romeotamizh.MusicPlayer.FavouriteMoments.FavouriteMomentsRepository.resetFavouritesOperation;
 import static com.romeotamizh.MusicPlayer.Helpers.SetAlphabetImages.setAlphabetImages;
 import static com.romeotamizh.MusicPlayer.PlayMusic.mediaPlayer;
+import static com.romeotamizh.MusicPlayer.SeekBarWithFavouritesHelper.seekBarListener;
+import static com.romeotamizh.MusicPlayer.SeekBarWithFavouritesHelper.seekBarOperations;
 
 
 public class PlayScreenActivity extends AppCompatActivity implements View.OnClickListener, View.OnLongClickListener {
 
     public static int[] mFavouriteMomentsList = new int[100];
     public static boolean isFavouriteMomentsExist = false;
-    public static int seekBarMax;
     public static int mFavouriteMomentsCount = 1;
+
+
+    public static int seekBarMax;
+
     public static int seekBarWidth;
     public static int mId;
     public static ImageView playPause;
@@ -40,14 +43,12 @@ public class PlayScreenActivity extends AppCompatActivity implements View.OnClic
     public static TextView maxLengthTextView;
     String mTitle;
     String mData;
-    Runnable runnable;
     public static Boolean isSongChanged = false;
     TextView favTextView;
     ImageView favButton;
     ImageView nextFavButton;
     ImageView previousButton;
-    boolean isPreviousButtonLongPressed;
-    public static boolean isSeekBarFlagSet = false;
+    public static boolean isPreviousButtonLongPressed;
     public static boolean isListenerFlagSet = true;
     ConstraintLayout imageViewBackground;
     public static SeekbarWithFavourites seekBar;
@@ -85,17 +86,19 @@ public class PlayScreenActivity extends AppCompatActivity implements View.OnClic
 
     }
 
-    private void setSeekBarProperties() {
+    public void setSeekBarProperties() {
         seekBarMax = seekBar.getMax();
+        seekBar.setmFavouritesPositionsList(mFavouriteMomentsList);
         seekBar.setmFavouriteBitmap(R.mipmap.red_play);
         seekBar.post(new Runnable() {
             @Override
             public void run() {
-                seekBarWidth = seekBar.getMeasuredWidth();
-                //    seekBarMax = seekBar.getMax();
+                seekBarWidth = seekBar.getMeasuredWidth() - seekBar.getPaddingStart() - seekBar.getPaddingEnd();
+
 
             }
         });
+
     }
 
     private void getIntentFunction() {
@@ -128,7 +131,6 @@ public class PlayScreenActivity extends AppCompatActivity implements View.OnClic
 
         favTextView.setOnClickListener(this);
         nextFavButton.setOnClickListener(this);
-
         previousButton.setOnClickListener(this);
         previousButton.setOnLongClickListener(this);
         favButton.setOnClickListener(this);
@@ -142,31 +144,27 @@ public class PlayScreenActivity extends AppCompatActivity implements View.OnClic
     public void onBackPressed() {
 
 
-        //  databaseInsertFunction();
-        // resetFavouriteMoments();
-        //isSongChanged = true;
-
         isBackPressed = true;
-        //Thread.currentThread().interrupt();
-        isFromMainActivity = true;
-
         super.onBackPressed();
 
     }
 
-    void listenerFunction() {
+    private void listenerFunction() {
         isListenerFlagSet = true;
         isSongChanged = false;
-
 
         new Thread(new Runnable() {
             @Override
             public void run() {
                 while (true) {
                     if (mediaPlayer.isPlaying() || isSongChanged) {
-                        databaseGetFavouriteMomentsFunction();
-                        resetFavouriteMoments();
-                        seekBarFunctions();
+                        resetFavouritesOperation("music");
+                        databaseGetFavouritesOperation(mId, "music");
+                        // databaseGetFavouritesOperation(mId, "music");
+                        seekBarListener(seekBar, currentPositionTextView, "play");
+                        seekBarOperations(seekBar, maxLengthTextView, "play");
+                        databaseGetFavouritesOperation(mId, "music");
+
                         Thread.currentThread().interrupt();
                         return;
                     }
@@ -182,99 +180,11 @@ public class PlayScreenActivity extends AppCompatActivity implements View.OnClic
         }).start();
 
 
-        /*seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-
-                final Handler handler = new Handler();
-                handler.postDelayed(runnable = new Runnable() {
-                    @Override
-                    public void run() {
-                        currentPositionTextView.setText(TimeFormat.formatTime(mediaPlayer.getCurrentPosition()));
-                    }
-                }, 1000);
-
-
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-                mediaPlayer.pause();
-
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-
-                mediaPlayer.seekTo(seekBar.getProgress());
-                mediaPlayer.start();
-                seekBarFunctions();
-                if (mediaPlayer.isPlaying())
-                    playPause.setImageResource(R.mipmap.red_pause);
-
-
-            }
-        });
-
-
-        mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-            @Override
-            public void onCompletion(MediaPlayer mp) {
-
-                databaseGetFavouriteMomentsFunction();
-                resetFavouriteMoments();
-                mFavouriteMomentsListPosition = 0;
-                playPause.setImageResource(R.mipmap.red_play);
-
-            }
-        });
-
-*/
-    }
-
-
-    public void seekBarFunctions() {
-       /* maxLengthTextView.setText(TimeFormat.formatTime(mediaPlayerDuration));
-        seekBar.setMax(mediaPlayer.getDuration());
-        seekBarMax = seekBar.getMax();
-        if (mediaPlayerDuration < 1000)
-            seekBar.setProgress(seekBar.getMax());
-        else {
-
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    int currentPosition;
-                    while (mediaPlayer.isPlaying()) {
-                        if (isListenerFlagSet) {
-                            databaseGetFavouriteMomentsFunction();
-                            seekBar.setMax(mediaPlayer.getDuration());
-                            seekBarMax = mediaPlayer.getDuration();
-                            Log.d("mpduration", String.valueOf(mediaPlayerDuration));
-                            isListenerFlagSet = false;
-                        }
-                        currentPosition = mediaPlayer.getCurrentPosition();
-                        currentPosition++;
-                        seekBar.setProgress(currentPosition);
-                        if (currentPosition >= mediaPlayerDuration || isSeekBarFlagSet) {
-                            Thread.currentThread().interrupt();
-                            return;
-
-                        }
-                    }
-
-
-                }
-            }).start();
-        }*/
-
-
-        SeekBarWithFavouritesHelper.seekBarListener(seekBar, currentPositionTextView, "play");
-        SeekBarWithFavouritesHelper.seekBarOperations(seekBar, maxLengthTextView, "play");
 
     }
 
-    public void playPausePress() {
+
+    private void playPausePress() {
         if (mediaPlayer != null) {
 
             if (mediaPlayer.isPlaying()) {
@@ -284,106 +194,25 @@ public class PlayScreenActivity extends AppCompatActivity implements View.OnClic
             } else {
                 playPause.setImageResource(R.mipmap.red_pause);
                 mediaPlayer.start();
-                seekBarFunctions();
             }
         }
 
 
     }
 
-    public void addFavouriteMoments() {
-        isFavouriteMomentsExist = true;
-
-
-        mFavouriteMomentsList[mFavouriteMomentsCount++] = mediaPlayer.getCurrentPosition();
-        Arrays.sort(mFavouriteMomentsList, 0, mFavouriteMomentsCount);
-        Log.d("favouritemomentadded", Arrays.toString(mFavouriteMomentsList));
-
-        databaseInsertFunction();
-
-
-    }
-
-    public void nextFavouriteMoment() {
-        int[] temp;
-        int currentPosition;
-
-        if (isFavouriteMomentsExist) {
-            isSeekBarFlagSet = true;
-
-            temp = Arrays.copyOfRange(mFavouriteMomentsList, 0, mFavouriteMomentsCount + 1);
-            currentPosition = mediaPlayer.getCurrentPosition();
-            // Log.d("nextfavouritemoment", String.valueOf(currentPosition));
-            temp[mFavouriteMomentsCount] = currentPosition;
-            Arrays.sort(temp);
-            int currentPositionIndex;
-            currentPositionIndex = Arrays.binarySearch(temp, currentPosition);
-            if (currentPositionIndex < temp.length - 1) {
-                if (!mediaPlayer.isPlaying())
-                    seekBar.setProgress(temp[currentPositionIndex + 1]);
-                mediaPlayer.seekTo(temp[currentPositionIndex + 1]);
-            }
-
-            Log.d("nextfavouritemoment", String.valueOf(mediaPlayer.getCurrentPosition()));
-            Log.d("nextfavouritemoment", Arrays.toString(temp));
-            isSeekBarFlagSet = false;
-            seekBarFunctions();
-
-
-        }
-
-    }
-
-    public void previousFavouriteMoment() {
-        int[] temp;
-        if (isFavouriteMomentsExist) {
-            isSeekBarFlagSet = true;
-            temp = Arrays.copyOfRange(mFavouriteMomentsList, 0, mFavouriteMomentsCount + 1);
-            int currentPosition = mediaPlayer.getCurrentPosition();
-            temp[mFavouriteMomentsCount] = currentPosition;
-            Arrays.sort(temp);
-            int currentPositionIndex;
-            currentPositionIndex = Arrays.binarySearch(temp, currentPosition);
-            if (isPreviousButtonLongPressed) {
-                if (currentPositionIndex >= 2) {
-                    if (!mediaPlayer.isPlaying())
-                        seekBar.setProgress(temp[currentPositionIndex - 2]);
-                    mediaPlayer.seekTo(temp[currentPositionIndex - 2]);
-                } else if (currentPositionIndex >= 1) {
-                    if (!mediaPlayer.isPlaying())
-                        seekBar.setProgress(temp[currentPositionIndex - 1]);
-                    mediaPlayer.seekTo(temp[currentPositionIndex - 1]);
-                }
-            } else {
-                if (!mediaPlayer.isPlaying())
-                    seekBar.setProgress(temp[currentPositionIndex - 1]);
-                mediaPlayer.seekTo(temp[currentPositionIndex - 1]);
-            }
-            Log.d("prevfavouritemoment", String.valueOf(mediaPlayer.getCurrentPosition()));
-            Log.d("prevfavouritemoment", Arrays.toString(temp));
-            isSeekBarFlagSet = false;
-
-        } else {
-            isSeekBarFlagSet = true;
-            mediaPlayer.seekTo(0);
-            isSeekBarFlagSet = false;
-
-
-        }
-        seekBarFunctions();
-    }
 
     @Override
     public boolean onLongClick(View v) {
         switch (v.getId()) {
 
             case R.id.fav:
-                databaseDeleteFunction();
+                databaseDeleteOperation(mId, "music");
                 break;
 
             case R.id.back:
                 isPreviousButtonLongPressed = true;
-                previousFavouriteMoment();
+                previousFavouriteMomentOperation(mId, mFavouriteMomentsCount, mFavouriteMomentsList, isFavouriteMomentsExist, isPreviousButtonLongPressed, seekBar);
+
                 break;
 
 
@@ -400,16 +229,17 @@ public class PlayScreenActivity extends AppCompatActivity implements View.OnClic
 
         switch (v.getId()) {
             case R.id.fav:
-                addFavouriteMoments();
+                addFavouriteMomentsOperation(mId, mFavouriteMomentsCount, mFavouriteMomentsList, isFavouriteMomentsExist, "music");
                 break;
 
             case R.id.back:
                 isPreviousButtonLongPressed = false;
-                previousFavouriteMoment();
+                previousFavouriteMomentOperation(mId, mFavouriteMomentsCount, mFavouriteMomentsList, isFavouriteMomentsExist, isPreviousButtonLongPressed, seekBar);
+
                 break;
 
             case R.id.next_fav:
-                nextFavouriteMoment();
+                nextFavouriteMomentOperation(mId, mFavouriteMomentsCount, mFavouriteMomentsList, isFavouriteMomentsExist, seekBar);
                 break;
 
             case R.id.play_or_pause:
@@ -425,27 +255,12 @@ public class PlayScreenActivity extends AppCompatActivity implements View.OnClic
 
     }
 
-    public void databaseDeleteFunction() {
 
-        databaseDeleteOperation(mId, "music");
 
-    }
 
-    public void databaseGetFavouriteMomentsFunction() {
 
-        databaseGetFavouritesOperation(mId, "music");
-    }
 
-    public void databaseInsertFunction() {
 
-        databaseInsertOperation(mId, mFavouriteMomentsCount, mFavouriteMomentsList, "music");
-
-    }
-
-    public void resetFavouriteMoments() {
-        resetFavouritesOperation("music");
-
-    }
 
 
 }

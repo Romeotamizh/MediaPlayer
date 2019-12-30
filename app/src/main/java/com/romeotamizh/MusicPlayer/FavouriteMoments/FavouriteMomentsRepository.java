@@ -2,16 +2,16 @@ package com.romeotamizh.MusicPlayer.FavouriteMoments;
 
 import android.util.Log;
 
+import com.romeotamizh.MusicPlayer.Activities.PlayScreenActivity;
+import com.romeotamizh.MusicPlayer.Helpers.SeekbarWithFavourites;
 import com.romeotamizh.MusicPlayer.Music;
 import com.romeotamizh.MusicPlayer.MusicRoomDatabase;
 
 import java.util.Arrays;
 
-import static com.romeotamizh.MusicPlayer.Activities.PlayScreenActivity.isFavouriteMomentsExist;
-import static com.romeotamizh.MusicPlayer.Activities.PlayScreenActivity.mFavouriteMomentsCount;
-import static com.romeotamizh.MusicPlayer.Activities.PlayScreenActivity.mFavouriteMomentsList;
 import static com.romeotamizh.MusicPlayer.Helpers.MyApplication.getContext;
 import static com.romeotamizh.MusicPlayer.Helpers.SeekbarWithFavourites.mFavouritesPositionsList;
+import static com.romeotamizh.MusicPlayer.PlayMusic.mediaPlayer;
 
 
 public class FavouriteMomentsRepository {
@@ -21,7 +21,7 @@ public class FavouriteMomentsRepository {
     static MusicRoomDatabase musicRoomDatabase = MusicRoomDatabase.getInstance(getContext());
 
 
-    public static void databaseDeleteOperation(final int mId, final String s) {
+    public static void databaseDeleteOperation(final int mId, final String context) {
 
         new Thread(new Runnable() {
             @Override
@@ -31,7 +31,7 @@ public class FavouriteMomentsRepository {
                 favouriteMoments = new FavouriteMoments(new int[100], 1, false);
 
                 Log.d("dbdel ", String.valueOf(temp));
-                resetFavouritesOperation("music");
+                resetFavouritesOperation(context);
 
 
             }
@@ -40,7 +40,7 @@ public class FavouriteMomentsRepository {
 
     }
 
-    public static void databaseGetFavouritesOperation(final int mId, final String s) {
+    public static void databaseGetFavouritesOperation(final int mId, final String context) {
         Thread t1 = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -67,7 +67,7 @@ public class FavouriteMomentsRepository {
 
 
                 favouriteMoments = new FavouriteMoments(mFavouriteMomentsList, mFavouriteMomentsCount, isFavouriteMomentsExist);
-                setFavouritesDataMusic(favouriteMoments, s);
+                setFavouritesData(favouriteMoments, context);
                 Thread.currentThread().interrupt();
                 return;
 
@@ -79,24 +79,28 @@ public class FavouriteMomentsRepository {
 
     }
 
-    private static void setFavouritesDataMusic(FavouriteMoments favouriteMoments, final String s) {
-        mFavouriteMomentsCount = favouriteMoments.mFavouriteMomentsCount;
-        mFavouriteMomentsList = favouriteMoments.mFavouriteMomentsList;
-        isFavouriteMomentsExist = favouriteMoments.isFavouriteMomentsExist;
-        mFavouritesPositionsList = mFavouriteMomentsList;
-        Log.d("getfavfno", Arrays.toString(mFavouriteMomentsList));
-        Log.d("getfavfno", String.valueOf(mFavouriteMomentsCount));
+    public static void setFavouritesData(FavouriteMoments favouriteMoments, final String context) {
+        if (context.equals("music")) {
+            PlayScreenActivity.mFavouriteMomentsCount = favouriteMoments.mFavouriteMomentsCount;
+            PlayScreenActivity.mFavouriteMomentsList = favouriteMoments.mFavouriteMomentsList;
+            PlayScreenActivity.isFavouriteMomentsExist = favouriteMoments.isFavouriteMomentsExist;
+            mFavouritesPositionsList = favouriteMoments.mFavouriteMomentsList;
+//            seekBar.setmFavouritesPositionsList(PlayScreenActivity.mFavouriteMomentsList);
+
+            Log.d("getfavfno", Arrays.toString(mFavouritesPositionsList));
+            Log.d("getfavfno", String.valueOf(PlayScreenActivity.mFavouriteMomentsCount));
+        }
     }
 
 
-    public static void databaseInsertOperation(final int mId, final int mFavouriteMomentsCount, final int[] mFavouriteMomentsList, final String s) {
+    public static void databaseInsertOperation(final int mId, final int mFavouriteMomentsCount, final int[] mFavouriteMomentsList, final boolean isFavouriteMomentsExist, final String context) {
 
         new Thread(new Runnable() {
             @Override
             public void run() {
                 favouriteMoments = new FavouriteMoments(mFavouriteMomentsList, mFavouriteMomentsCount, isFavouriteMomentsExist);
 
-                setFavouritesDataMusic(favouriteMoments, s);
+                setFavouritesData(favouriteMoments, context);
 
                 for (int i = 0; i < mFavouriteMomentsCount; i++) {
                     Music music = new Music(mId + "." + mFavouriteMomentsList[i], mId, mFavouriteMomentsList[i]);
@@ -117,13 +121,94 @@ public class FavouriteMomentsRepository {
 
     }
 
-    public static void resetFavouritesOperation(final String s) {
-        mFavouriteMomentsCount = 1;
+    public static void resetFavouritesOperation(final String context) {
+
         mFavouritesPositionsList = new int[100];
-        mFavouriteMomentsList = new int[100];
-        isFavouriteMomentsExist = false;
+
+        favouriteMoments = new FavouriteMoments(new int[100], 1, false);
+        setFavouritesData(favouriteMoments, context);
+
         Log.d("resetfav", "resetdone");
 
+    }
+
+
+    public static void addFavouriteMomentsOperation(int mId, int mFavouriteMomentsCount, int[] mFavouriteMomentsList, boolean isFavouriteMomentsExist, String context) {
+
+        isFavouriteMomentsExist = true;
+        int mFavouriteMomentLag = 0;
+        mFavouriteMomentsList[mFavouriteMomentsCount++] = mediaPlayer.getCurrentPosition() - mFavouriteMomentLag;
+        Arrays.sort(mFavouriteMomentsList, 0, mFavouriteMomentsCount);
+        Log.d("favouritemomentadded", Arrays.toString(mFavouriteMomentsList));
+        favouriteMoments = new FavouriteMoments(mFavouriteMomentsList, mFavouriteMomentsCount, isFavouriteMomentsExist);
+        setFavouritesData(favouriteMoments, context);
+
+        databaseInsertOperation(mId, mFavouriteMomentsCount, mFavouriteMomentsList, isFavouriteMomentsExist, context);
+
+
+    }
+
+
+    public static void nextFavouriteMomentOperation(final int mId, final int mFavouriteMomentsCount, final int[] mFavouriteMomentsList, final boolean isFavouriteMomentsExist, SeekbarWithFavourites seekBar) {
+        int[] temp;
+        int currentPosition;
+
+        if (isFavouriteMomentsExist) {
+
+            temp = Arrays.copyOfRange(mFavouriteMomentsList, 0, mFavouriteMomentsCount + 1);
+            currentPosition = mediaPlayer.getCurrentPosition();
+            temp[mFavouriteMomentsCount] = currentPosition;
+            Arrays.sort(temp);
+            int currentPositionIndex;
+            currentPositionIndex = Arrays.binarySearch(temp, currentPosition);
+            if (currentPositionIndex < temp.length - 1) {
+                if (!mediaPlayer.isPlaying())
+                    seekBar.setProgress(temp[currentPositionIndex + 1]);
+                mediaPlayer.seekTo(temp[currentPositionIndex + 1]);
+            }
+
+            Log.d("nextfavouritemoment", String.valueOf(mediaPlayer.getCurrentPosition()));
+            Log.d("nextfavouritemoment", Arrays.toString(temp));
+
+
+        }
+
+    }
+
+
+    public static void previousFavouriteMomentOperation(final int mId, final int mFavouriteMomentsCount, final int[] mFavouriteMomentsList, final boolean isFavouriteMomentsExist, final boolean isPreviousButtonLongPressed, SeekbarWithFavourites seekBar) {
+        int[] temp;
+        if (isFavouriteMomentsExist) {
+            temp = Arrays.copyOfRange(mFavouriteMomentsList, 0, mFavouriteMomentsCount + 1);
+            int currentPosition = mediaPlayer.getCurrentPosition();
+            temp[mFavouriteMomentsCount] = currentPosition;
+            Arrays.sort(temp);
+            int currentPositionIndex;
+            currentPositionIndex = Arrays.binarySearch(temp, currentPosition);
+            if (isPreviousButtonLongPressed) {
+                if (currentPositionIndex >= 2) {
+                    if (!mediaPlayer.isPlaying())
+                        seekBar.setProgress(temp[currentPositionIndex - 2]);
+                    mediaPlayer.seekTo(temp[currentPositionIndex - 2]);
+                } else if (currentPositionIndex >= 1) {
+                    if (!mediaPlayer.isPlaying())
+                        seekBar.setProgress(temp[currentPositionIndex - 1]);
+                    mediaPlayer.seekTo(temp[currentPositionIndex - 1]);
+                }
+            } else {
+                if (!mediaPlayer.isPlaying())
+                    seekBar.setProgress(temp[currentPositionIndex - 1]);
+                mediaPlayer.seekTo(temp[currentPositionIndex - 1]);
+            }
+            Log.d("prevfavouritemoment", String.valueOf(mediaPlayer.getCurrentPosition()));
+            Log.d("prevfavouritemoment", Arrays.toString(temp));
+
+        } else {
+
+            mediaPlayer.seekTo(0);
+
+
+        }
     }
 
 

@@ -1,19 +1,16 @@
 package com.romeotamizh.MusicPlayer.Activities;
 
 import android.Manifest;
-import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.os.Handler;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewStub;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
@@ -25,6 +22,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.gun0912.tedpermission.PermissionListener;
 import com.gun0912.tedpermission.TedPermission;
+import com.romeotamizh.MusicPlayer.Helpers.MyApplication;
 import com.romeotamizh.MusicPlayer.Helpers.SeekbarWithFavourites;
 import com.romeotamizh.MusicPlayer.R;
 import com.romeotamizh.MusicPlayer.RecyclerViewAdapter;
@@ -41,47 +39,28 @@ public class MainActivity extends AppCompatActivity   {
             Manifest.permission.WRITE_EXTERNAL_STORAGE,
     };
 
-    public static Context context;
-    //public static Cursor cursor;
     Toolbar toolbar;
     RecyclerView recyclerView;
     public static boolean isFirstTime = true;
     public static boolean isFromMainActivity;
-    static ViewStub viewStub;
     static View childLayout;
     static SeekbarWithFavourites seekBar;
     static FrameLayout parentLayout;
     static TextView currentPositionTextView;
     static TextView maxLengthTextView;
-    Handler handler = new Handler();
+
 
     public static void onReturn() {
 
-        /*Runnable runnable = new Runnable() {
-            @Override
-            public void run() {
-
-                if (!isFirstTime) {
-                    isFromMainActivity = true;
-                    Log.d("m", "true");
-                    seekBar = childLayout.findViewById(R.id.seekBar);
-                    maxLengthTextView = childLayout.findViewById(R.id.max_length);
-                    currentPositionTextView = childLayout.findViewById(R.id.current_position);
-                    seekBar.setmFavouriteBitmap(R.mipmap.red_play);
-                    seekBarListener(seekBar, currentPositionTextView, "main");
-                    seekBarOperations(seekBar, maxLengthTextView, "main");
-
-                }
-            }
-        };*/
 
         if (!isFirstTime) {
+
             isFromMainActivity = true;
             Log.d("m", "true");
             seekBar = childLayout.findViewById(R.id.seekBar);
             maxLengthTextView = childLayout.findViewById(R.id.max_length);
             currentPositionTextView = childLayout.findViewById(R.id.current_position);
-            seekBar.setmFavouriteBitmap(R.mipmap.red_play);
+            // seekBar.setmFavouriteBitmap(R.mipmap.red_play);
             seekBarListener(seekBar, currentPositionTextView, "main");
             seekBarOperations(seekBar, maxLengthTextView, "main");
 
@@ -90,12 +69,13 @@ public class MainActivity extends AppCompatActivity   {
 
     public static void openPlayScreen(final String mData, final String mTitle, final int mId) {
 
-        Intent intent = new Intent(context, PlayScreenActivity.class);
+        Intent intent = new Intent(MyApplication.getContext(), PlayScreenActivity.class);
         intent.putExtra("title", mTitle);
         intent.putExtra("data", mData);
         intent.putExtra("id", mId);
-        context.startActivity(intent);
-        CountDownTimer countDownTimer = new CountDownTimer(2000, 1000) {
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        MyApplication.getContext().startActivity(intent);
+        CountDownTimer countDownTimer = new CountDownTimer(1000, 500) {
             @Override
             public void onTick(long millisUntilFinished) {
 
@@ -113,31 +93,11 @@ public class MainActivity extends AppCompatActivity   {
         };
         countDownTimer.start();
 
-        /*Handler h =new Handler();
-        Runnable r =(new Runnable() {
-            @Override
-            public void run() {
-                if(!isFirstTime){
-                parentLayout.addView(childLayout);
-            }
-                Log.d("pp","ppp");
-
-            }
-        });
-        h.postDelayed(r,2000);*/
-
 
     }
 
 
-    public static void openPlayScreen(final String mData, final String mTitle) {
-        Intent intent = new Intent(context, PlayScreenActivity.class);
-        intent.putExtra("title", mTitle);
-        intent.putExtra("data", mData);
-        context.startActivity(intent);
 
-
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -151,10 +111,7 @@ public class MainActivity extends AppCompatActivity   {
 
         childLayout = inflater.inflate(R.layout.layout_seekbar, (ViewGroup) findViewById(R.id.seekBar_parent));
         parentLayout = findViewById(R.id.activity_main_seekBar_frame);
-        /*SeekbarWithFavourites seekBar;
 
-        seekBar = findViewById(R.id.seekBar);
-*/
 
 
         setSupportActionBar(toolbar);
@@ -168,7 +125,6 @@ public class MainActivity extends AppCompatActivity   {
 
 
     void initialize(){
-        context = this;
         checkPermissions();
         addMusic();
 
@@ -180,7 +136,6 @@ public class MainActivity extends AppCompatActivity   {
         PermissionListener permissionListener = new PermissionListener() {
             @Override
             public void onPermissionGranted() {
-                // Toast.makeText(getBaseContext(),"permission granted",Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -226,7 +181,7 @@ public class MainActivity extends AppCompatActivity   {
             // Log.d("data", cursor.getString(cursor.getColumnIndex("track")));
 
 
-            //cursor.close();
+            cursor.close();
             initializeRecyclerView(mTitleList, mDurationList, mDataList, mIdList);
             // initializeRecyclerView(cursor);
         }
@@ -239,14 +194,14 @@ public class MainActivity extends AppCompatActivity   {
         recyclerView.setAdapter(recyclerViewAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
     }
-
+/*
     void initializeRecyclerView(Cursor cursor) {
 
         RecyclerViewAdapter recyclerViewAdapter = new RecyclerViewAdapter(cursor, this);
         recyclerView.setAdapter(recyclerViewAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-    }
+    }*/
 
 
 }
