@@ -1,5 +1,6 @@
 package com.romeotamizh.MusicPlayer.Activities;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -21,6 +22,7 @@ import static com.romeotamizh.MusicPlayer.FavouriteMoments.FavouriteMomentsRepos
 import static com.romeotamizh.MusicPlayer.FavouriteMoments.FavouriteMomentsRepository.resetFavouritesOperation;
 import static com.romeotamizh.MusicPlayer.Helpers.SetAlphabetImages.setAlphabetImages;
 import static com.romeotamizh.MusicPlayer.PlayMusic.mediaPlayer;
+import static com.romeotamizh.MusicPlayer.SeekBarWithFavouritesHelper.playPausePress;
 import static com.romeotamizh.MusicPlayer.SeekBarWithFavouritesHelper.seekBarListener;
 import static com.romeotamizh.MusicPlayer.SeekBarWithFavouritesHelper.seekBarOperations;
 
@@ -44,7 +46,6 @@ public class PlayScreenActivity extends AppCompatActivity implements View.OnClic
     String mTitle;
     String mData;
     public static Boolean isSongChanged = false;
-    TextView favTextView;
     ImageView favButton;
     ImageView nextFavButton;
     ImageView previousButton;
@@ -53,11 +54,13 @@ public class PlayScreenActivity extends AppCompatActivity implements View.OnClic
     ConstraintLayout imageViewBackground;
     public static SeekbarWithFavourites seekBar;
     public static boolean isBackPressed = false;
+    public static Context context;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_play_screen);
+        context = this;
 
         //initialize views
         initializeViews();
@@ -117,7 +120,6 @@ public class PlayScreenActivity extends AppCompatActivity implements View.OnClic
         currentPositionTextView = findViewById(R.id.current_position);
         maxLengthTextView = findViewById(R.id.max_length);
         seekBar = findViewById(R.id.seekBar);
-        favTextView = findViewById(R.id.next_fav_textView);
         nextFavButton = findViewById(R.id.next_fav);
         favButton = findViewById(R.id.fav);
         previousButton = findViewById(R.id.back);
@@ -129,7 +131,6 @@ public class PlayScreenActivity extends AppCompatActivity implements View.OnClic
 
     private void setButtonsClickFunctions() {
 
-        favTextView.setOnClickListener(this);
         nextFavButton.setOnClickListener(this);
         previousButton.setOnClickListener(this);
         previousButton.setOnLongClickListener(this);
@@ -184,22 +185,6 @@ public class PlayScreenActivity extends AppCompatActivity implements View.OnClic
     }
 
 
-    private void playPausePress() {
-        if (mediaPlayer != null) {
-
-            if (mediaPlayer.isPlaying()) {
-
-                playPause.setImageResource(R.mipmap.red_play);
-                mediaPlayer.pause();
-            } else {
-                playPause.setImageResource(R.mipmap.red_pause);
-                mediaPlayer.start();
-            }
-        }
-
-
-    }
-
 
     @Override
     public boolean onLongClick(View v) {
@@ -243,7 +228,7 @@ public class PlayScreenActivity extends AppCompatActivity implements View.OnClic
                 break;
 
             case R.id.play_or_pause:
-                playPausePress();
+                playPausePress("play");
                 break;
 
 

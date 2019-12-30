@@ -7,14 +7,12 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.widget.SeekBar;
 
 import com.romeotamizh.MusicPlayer.R;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.Arrays;
 
 import static com.romeotamizh.MusicPlayer.Activities.PlayScreenActivity.seekBarMax;
 import static com.romeotamizh.MusicPlayer.Activities.PlayScreenActivity.seekBarWidth;
@@ -87,14 +85,16 @@ public class SeekbarWithFavourites extends SeekBar {
             // draw dots if we have ones
             for (int position : mFavouritesPositionsList) {
 
-                Log.d("posArray", Arrays.toString(mFavouritesPositionsList));
+               /* Log.d("posArray", Arrays.toString(mFavouritesPositionsList));
                 Log.d("pos", String.valueOf(position));
                 Log.d("max", String.valueOf(max));
                 Log.d("step", String.valueOf(step));
-                Log.d("width", String.valueOf(seekBarWidth));
-                //  position = 2;
+                Log.d("width", String.valueOf(seekBarWidth));*/
+
+
                 int x = (step.multiply(BigDecimal.valueOf(position)).intValue());
-                canvas.drawBitmap(mFavouriteBitmap, x, 10, null);
+                if (position > 0)
+                    canvas.drawBitmap(mFavouriteBitmap, x, 10, null);
             }
         }
     }

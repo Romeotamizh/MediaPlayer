@@ -23,11 +23,22 @@
 
     <FrameLayout
         android:id="@+id/activity_main_seekBar_frame"
-        layout="@layout/layout_seekbar"
         android:layout_width="match_parent"
         android:layout_height="72dp"
         android:layout_alignParentBottom="true"
-        android:layout_marginBottom="12dp" />
+        android:layout_marginBottom="12dp"
+        android:visibility="invisible" />
+
+
+    <ImageView
+        android:id="@+id/main_activity__play_or_pause"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="90dp"
+        android:src="@mipmap/pause"
+        android:visibility="invisible" />
 
 
      </RelativeLayout>

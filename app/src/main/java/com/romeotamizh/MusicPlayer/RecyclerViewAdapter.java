@@ -1,7 +1,6 @@
 package com.romeotamizh.MusicPlayer;
 
 import android.content.Context;
-import android.database.Cursor;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,15 +26,14 @@ import static com.romeotamizh.MusicPlayer.Helpers.SetAlphabetImages.setAlphabetI
 
 
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder> {
-    //ArrayList<String> mImages = new ArrayList<>();
-    ArrayList<String> mTitleList = new ArrayList<String>();
-    ArrayList<Integer> mDurationList = new ArrayList<Integer>();
-    ArrayList<Integer> mIdList = new ArrayList<Integer>();
-    ArrayList<String> mDataList = new ArrayList<String>();
-    LayoutInflater mInflater;
-    Cursor cursor;
+    //private ArrayList<String> mImages = new ArrayList<>();
+    private ArrayList<String> mTitleList = new ArrayList<String>();
+    private ArrayList<Integer> mDurationList = new ArrayList<Integer>();
+    private ArrayList<Integer> mIdList = new ArrayList<Integer>();
+    private ArrayList<String> mDataList = new ArrayList<String>();
+    private LayoutInflater mInflater;
 
-    Context mContext;
+    private Context mContext;
 
     public RecyclerViewAdapter(ArrayList<String> mTitleList, ArrayList<Integer> mDurationList, ArrayList<String> mDataList, ArrayList<Integer> mIdList, Context context) {
         //this.mImages = mImages;
@@ -47,20 +45,6 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         this.mIdList = mIdList;
     }
 
-    public RecyclerViewAdapter(Cursor cursor, Context context) {
-        mInflater = LayoutInflater.from(context);
-        this.cursor = cursor;
-
-        if (cursor != null) {
-            while (cursor.moveToNext()) {
-                this.mTitleList.add(cursor.getString(cursor.getColumnIndex("_display_name")));
-                this.mDurationList.add(cursor.getInt(cursor.getColumnIndex("duration")));
-                this.mDataList.add(cursor.getString(cursor.getColumnIndex("_data")));
-                this.mIdList.add(cursor.getInt(cursor.getColumnIndex("_id")));
-            }
-        }
-
-    }
 
     @NonNull
     @Override
@@ -112,17 +96,6 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         return mTitleList.size();
     }
 
-    @Override
-    public void onViewAttachedToWindow(@NonNull ViewHolder holder) {
-        super.onViewAttachedToWindow(holder);
-    }
-
-    @Override
-    public void onViewDetachedFromWindow(@NonNull ViewHolder holder) {
-        //mTitleList.get(position)
-
-        super.onViewDetachedFromWindow(holder);
-    }
 
     class ViewHolder extends RecyclerView.ViewHolder {
         CircleImageView image;

@@ -102,11 +102,19 @@ public class FavouriteMomentsRepository {
 
                 setFavouritesData(favouriteMoments, context);
 
-                for (int i = 0; i < mFavouriteMomentsCount; i++) {
+                /*for (int i = 0; i < mFavouriteMomentsCount; i++) {
                     Music music = new Music(mId + "." + mFavouriteMomentsList[i], mId, mFavouriteMomentsList[i]);
                     musicRoomDatabase.musicDao().insertData(music);
 
+                }*/
+
+
+                for (int mFavouritesPosition : mFavouriteMomentsList) {
+                    Music music = new Music(mId + "." + mFavouriteMomentsList[mFavouritesPosition], mId, mFavouriteMomentsList[mFavouritesPosition]);
+                    musicRoomDatabase.musicDao().insertData(music);
                 }
+
+
                 Log.d("dbinsfn", Arrays.toString(musicRoomDatabase.musicDao().getFavouriteMoments(mId)));
                 Log.d("dbinsfn", Arrays.toString(musicRoomDatabase.musicDao().getId(mId)));
 

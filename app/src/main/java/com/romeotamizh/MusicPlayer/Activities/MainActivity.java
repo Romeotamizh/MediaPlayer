@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.RequiresApi;
@@ -29,26 +30,27 @@ import com.romeotamizh.MusicPlayer.RecyclerViewAdapter;
 
 import java.util.ArrayList;
 
+import static com.romeotamizh.MusicPlayer.SeekBarWithFavouritesHelper.playPausePress;
 import static com.romeotamizh.MusicPlayer.SeekBarWithFavouritesHelper.seekBarListener;
 import static com.romeotamizh.MusicPlayer.SeekBarWithFavouritesHelper.seekBarOperations;
 
-public class MainActivity extends AppCompatActivity   {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     private static final String[] permissions = new String[]{
             Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.WRITE_EXTERNAL_STORAGE,
     };
-
-    Toolbar toolbar;
-    RecyclerView recyclerView;
     public static boolean isFirstTime = true;
     public static boolean isFromMainActivity;
+    public static ImageView playPause;
     static View childLayout;
+    static View childLayout_two;
     static SeekbarWithFavourites seekBar;
     static FrameLayout parentLayout;
     static TextView currentPositionTextView;
     static TextView maxLengthTextView;
-
+    Toolbar toolbar;
+    RecyclerView recyclerView;
 
     public static void onReturn() {
 
@@ -60,7 +62,7 @@ public class MainActivity extends AppCompatActivity   {
             seekBar = childLayout.findViewById(R.id.seekBar);
             maxLengthTextView = childLayout.findViewById(R.id.max_length);
             currentPositionTextView = childLayout.findViewById(R.id.current_position);
-            // seekBar.setmFavouriteBitmap(R.mipmap.red_play);
+            seekBar.setmFavouriteBitmap(R.mipmap.red_play);
             seekBarListener(seekBar, currentPositionTextView, "main");
             seekBarOperations(seekBar, maxLengthTextView, "main");
 
@@ -84,7 +86,8 @@ public class MainActivity extends AppCompatActivity   {
             @Override
             public void onFinish() {
                 if (!isFirstTime) {
-                    parentLayout.addView(childLayout);
+                    parentLayout.setVisibility(View.VISIBLE);
+                    playPause.setVisibility(View.VISIBLE);
                 }
                 Log.d("pp", "ppp");
 
@@ -95,8 +98,6 @@ public class MainActivity extends AppCompatActivity   {
 
 
     }
-
-
 
 
     @Override
@@ -110,13 +111,17 @@ public class MainActivity extends AppCompatActivity   {
         LayoutInflater inflater = (LayoutInflater) this.getSystemService(LAYOUT_INFLATER_SERVICE);
 
         childLayout = inflater.inflate(R.layout.layout_seekbar, (ViewGroup) findViewById(R.id.seekBar_parent));
-        parentLayout = findViewById(R.id.activity_main_seekBar_frame);
+        playPause = findViewById(R.id.main_activity__play_or_pause);
+        playPause.setOnClickListener(this);
 
+        parentLayout = findViewById(R.id.activity_main_seekBar_frame);
+        parentLayout.addView(childLayout);
 
 
         setSupportActionBar(toolbar);
         if (!isFirstTime) {
-            parentLayout.addView(childLayout);
+            parentLayout.setVisibility(View.VISIBLE);
+            playPause.setVisibility(View.VISIBLE);
         }
         initialize();
 
@@ -124,7 +129,7 @@ public class MainActivity extends AppCompatActivity   {
     }
 
 
-    void initialize(){
+    void initialize() {
         checkPermissions();
         addMusic();
 
@@ -158,7 +163,6 @@ public class MainActivity extends AppCompatActivity   {
 //        cursorAlbum = getApplicationContext().getContentResolver().query(MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,null,null,null,"upper("+MediaStore.Audio.Albums.ALBUM_ID);
 
 
-
         cursor = getApplicationContext().getContentResolver().query(
                 MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, null, null, null, "upper(" + MediaStore.Audio.Media.DISPLAY_NAME + ")ASC");
         if (cursor != null) {
@@ -183,7 +187,6 @@ public class MainActivity extends AppCompatActivity   {
 
             cursor.close();
             initializeRecyclerView(mTitleList, mDurationList, mDataList, mIdList);
-            // initializeRecyclerView(cursor);
         }
 
 
@@ -194,16 +197,21 @@ public class MainActivity extends AppCompatActivity   {
         recyclerView.setAdapter(recyclerViewAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
     }
-/*
-    void initializeRecyclerView(Cursor cursor) {
-
-        RecyclerViewAdapter recyclerViewAdapter = new RecyclerViewAdapter(cursor, this);
-        recyclerView.setAdapter(recyclerViewAdapter);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-
-    }*/
 
 
+    @Override
+    public void onClick(View v) {
+
+        switch (v.getId()) {
+            case R.id.main_activity__play_or_pause:
+                playPausePress("main");
+                break;
+
+            default:
+                break;
+        }
+
+    }
 }
 
 

@@ -5,35 +5,18 @@ import android.util.Log;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import com.romeotamizh.MusicPlayer.Activities.MainActivity;
 import com.romeotamizh.MusicPlayer.Activities.PlayScreenActivity;
 import com.romeotamizh.MusicPlayer.Helpers.SeekbarWithFavourites;
 import com.romeotamizh.MusicPlayer.Helpers.TimeFormat;
 
 import static com.romeotamizh.MusicPlayer.Activities.MainActivity.isFromMainActivity;
-import static com.romeotamizh.MusicPlayer.Activities.MainActivity.onReturn;
 import static com.romeotamizh.MusicPlayer.Activities.PlayScreenActivity.isBackPressed;
-import static com.romeotamizh.MusicPlayer.Activities.PlayScreenActivity.playPause;
 import static com.romeotamizh.MusicPlayer.PlayMusic.mediaPlayer;
 import static com.romeotamizh.MusicPlayer.PlayMusic.mediaPlayerDuration;
 
 
-
 public class SeekBarWithFavouritesHelper {
-
-
-   /* public static void setSeekBarProperties(final SeekbarWithFavourites seekBar , int seekBarWidth,int seekBarMax) {
-        seekBarMax = seekBar.getMax();
-        seekBar.setmFavouriteBitmap(R.mipmap.red_play);
-        seekBar.post(new Runnable() {
-            @Override
-            public void run() {
-                seekBarWidth = seekBar.getMeasuredWidth();
-                //    seekBarMax = seekBar.getMax();
-
-            }
-        });
-    }*/
-
 
 
     public static void seekBarListener(final SeekbarWithFavourites seekBar, final TextView currentPositionTextView, final String context) {
@@ -63,7 +46,10 @@ public class SeekBarWithFavouritesHelper {
                     mediaPlayer.start();
                     //seekBarOperations( seekBar , maxLengthTextView , context);
                     if (mediaPlayer.isPlaying())
-                        playPause.setImageResource(R.mipmap.red_pause);
+                        if (context.equals("play"))
+                            PlayScreenActivity.playPause.setImageResource(R.mipmap.pause);
+                        else if (context.equals("main"))
+                            MainActivity.playPause.setImageResource(R.mipmap.pause);
 
 
                 }
@@ -74,9 +60,12 @@ public class SeekBarWithFavouritesHelper {
                 @Override
                 public void onCompletion(MediaPlayer mp) {
 
-                    // databaseGetFavouritesOperation(mId, "music");
-                    // resetFavouritesOperation("music");
-                    playPause.setImageResource(R.mipmap.red_play);
+                    if (context.equals("play"))
+                        PlayScreenActivity.playPause.setImageResource(R.mipmap.play);
+                    else if (context.equals("main"))
+                        MainActivity.playPause.setImageResource(R.mipmap.play);
+
+                    seekBar.setProgress(seekBar.getMax());
 
 
                 }
@@ -94,46 +83,68 @@ public class SeekBarWithFavouritesHelper {
         Log.d("mpdurations", String.valueOf(mediaPlayerDuration));
 
         PlayScreenActivity.seekBarMax = seekBar.getMax();
-        if (mediaPlayerDuration < 1000)
+        /*if (mediaPlayerDuration < 1000)
             seekBar.setProgress(seekBar.getMax());
-        else {
+        else {*/
 
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    int currentPosition = 0;
-                    while (true) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                int currentPosition = 0;
+                while (true) {
 
-                        if (mediaPlayer.isPlaying()) {
-                            currentPosition = mediaPlayer.getCurrentPosition();
-                            currentPosition++;
-                            seekBar.setProgress(currentPosition);
-                        }
-
-                        if (currentPosition >= mediaPlayerDuration) {
-                            currentPosition = 0;
-
-                        }
-
-                        if (!isFromMainActivity && context.equals("main")) {
-                            Thread.currentThread().interrupt();
-                            return;
-
-                        }
-                        if (isBackPressed && context.equals("play")) {
-                            onReturn();
-                            Thread.currentThread().interrupt();
-                            return;
-
-                        }
+                    if (mediaPlayer.isPlaying()) {
+                        currentPosition = mediaPlayer.getCurrentPosition();
+                        currentPosition++;
+                        seekBar.setProgress(currentPosition);
                     }
 
+                    if (currentPosition >= mediaPlayerDuration) {
+                        currentPosition = 0;
 
+                    }
+
+                    if (!isFromMainActivity && context.equals("main")) {
+                        Thread.currentThread().interrupt();
+                        return;
+
+                    }
+                    if (isBackPressed && context.equals("play")) {
+                        MainActivity.onReturn();
+                        Thread.currentThread().interrupt();
+                        return;
+
+                    }
                 }
-            }).start();
+
+
+            }
+        }).start();
+        //}
+
+
+    }
+
+    public static void playPausePress(String context) {
+        if (mediaPlayer != null) {
+
+            if (mediaPlayer.isPlaying()) {
+                if (context.equals("play"))
+                    PlayScreenActivity.playPause.setImageResource(R.mipmap.play);
+                else if (context.equals("main"))
+                    MainActivity.playPause.setImageResource(R.mipmap.play);
+                mediaPlayer.pause();
+            } else {
+                if (context.equals("play"))
+                    PlayScreenActivity.playPause.setImageResource(R.mipmap.pause);
+                else if (context.equals("main"))
+                    MainActivity.playPause.setImageResource(R.mipmap.pause);
+                mediaPlayer.start();
+            }
         }
 
 
     }
+
 
 }
