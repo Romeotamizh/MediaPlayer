@@ -110,7 +110,7 @@ public class FavouriteMomentsRepository {
 
 
                 for (int mFavouritesPosition : mFavouriteMomentsList) {
-                    Music music = new Music(mId + "." + mFavouriteMomentsList[mFavouritesPosition], mId, mFavouriteMomentsList[mFavouritesPosition]);
+                    Music music = new Music(mId + "." + mFavouritesPosition, mId, mFavouritesPosition);
                     musicRoomDatabase.musicDao().insertData(music);
                 }
 
