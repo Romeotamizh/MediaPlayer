@@ -1,44 +1,136 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+
+<com.sothree.slidinguppanel.SlidingUpPanelLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:sothree="http://schemas.android.com/apk/res-auto"
     style="@style/AppThemeDark"
-    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/activity_main_parent"
-    >
+    android:gravity="bottom"
+    sothree:umanoPanelHeight="100dp"
+    sothree:umanoShadowHeight="4dp">
 
+    <RelativeLayout
 
-    <include layout="@layout/activity_main_toolbar" />
-
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:layout_marginTop="?actionBarSize"
-        android:id="@+id/recyclerView"
+        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:scrollbarSize="4dp"
-        android:scrollbars="vertical"
-        />
+        android:id="@+id/activity_main_parent">
 
-    <FrameLayout
-        android:id="@+id/activity_main_seekBar_frame"
+
+        <include layout="@layout/activity_main_toolbar" />
+
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:layout_marginTop="?actionBarSize"
+            android:id="@+id/recyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scrollbarSize="4dp"
+            android:scrollbars="vertical" />
+
+        <FrameLayout
+            android:id="@+id/activity_main_seekBar_frame"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:layout_alignParentBottom="true"
+            android:visibility="visible" />
+
+
+    </RelativeLayout>
+
+
+    <RelativeLayout xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/parent_linear"
+        style="@style/AppThemeDark"
         android:layout_width="match_parent"
-        android:layout_height="72dp"
-        android:layout_alignParentBottom="true"
-        android:layout_marginBottom="12dp"
-        android:visibility="invisible" />
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        tools:context=".Activities.PlayScreenActivity">
+
+        <ImageView
+            android:id="@+id/divider"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true" />
 
 
-    <ImageView
-        android:id="@+id/main_activity__play_or_pause"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="90dp"
-        android:src="@mipmap/pause"
-        android:visibility="invisible" />
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/pic_layout"
+            android:layout_width="match_parent"
+            android:layout_height="360dp"
+            android:layout_alignBottom="@id/divider"
+            android:layout_alignParentTop="true"
+            android:gravity="center_vertical|center_horizontal"
+            app:layout_constraintBottom_toTopOf="@id/bootom_half"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:alpha=".35"
+                android:scaleType="centerCrop"
+                android:src="@mipmap/wallpaper"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:alpha=".35"
+                android:src="@color/Black"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
 
-     </RelativeLayout>
+            <ImageView
+
+                android:id="@+id/circle_image_view"
+                android:layout_width="match_parent"
+                android:layout_height="150dp"
+                android:layout_marginLeft="4dp"
+                android:layout_marginTop="4dp"
+                android:scaleType="fitCenter"
+                android:src="@mipmap/white_backgound_with_shadow"
+
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageView
+
+                android:id="@+id/image_view"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:scaleType="fitCenter"
+                android:src="@mipmap/a"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="72dp"
+            android:layout_centerInParent="true"
+            android:src="@mipmap/seekbar_bg_white" />
+
+        <include layout="@layout/layout_seekbar" />
+
+
+        <include layout="@layout/layout_circle_controls" />
+
+
+    </RelativeLayout>
+
+</com.sothree.slidinguppanel.SlidingUpPanelLayout>

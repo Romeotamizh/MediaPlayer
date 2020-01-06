@@ -2,15 +2,16 @@ package com.romeotamizh.MusicPlayer;
 
 import android.media.MediaPlayer;
 import android.util.Log;
+import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
-import com.romeotamizh.MusicPlayer.Activities.MainActivity;
 import com.romeotamizh.MusicPlayer.Activities.PlayScreenActivity;
 import com.romeotamizh.MusicPlayer.Helpers.SeekbarWithFavourites;
 import com.romeotamizh.MusicPlayer.Helpers.TimeFormat;
 
 import static com.romeotamizh.MusicPlayer.Activities.MainActivity.isFromMainActivity;
+import static com.romeotamizh.MusicPlayer.Activities.MainActivity.onReturnListener;
 import static com.romeotamizh.MusicPlayer.Activities.PlayScreenActivity.isBackPressed;
 import static com.romeotamizh.MusicPlayer.PlayMusic.mediaPlayer;
 import static com.romeotamizh.MusicPlayer.PlayMusic.mediaPlayerDuration;
@@ -18,8 +19,25 @@ import static com.romeotamizh.MusicPlayer.PlayMusic.mediaPlayerDuration;
 
 public class SeekBarWithFavouritesHelper {
 
+    private SeekbarWithFavourites seekBar;
+    private TextView currentPositionTextView;
+    private TextView maxLengthTextView;
+    private String context;
+    private ImageView playPause;
 
-    public static void seekBarListener(final SeekbarWithFavourites seekBar, final TextView currentPositionTextView, final String context) {
+
+    public SeekBarWithFavouritesHelper(final SeekbarWithFavourites seekBar, final TextView currentPositionTextView, final TextView maxLengthTextView, final ImageView playPause, final String context) {
+
+        this.seekBar = seekBar;
+        this.currentPositionTextView = currentPositionTextView;
+        this.maxLengthTextView = maxLengthTextView;
+        this.playPause = playPause;
+        this.context = context;
+
+    }
+
+
+    public void seekBarListener() {
 
         if ((!isBackPressed && context.equals("play")) || (isFromMainActivity && context.equals("main"))) {
             seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -44,12 +62,8 @@ public class SeekBarWithFavouritesHelper {
 
                     mediaPlayer.seekTo(seekBar.getProgress());
                     mediaPlayer.start();
-                    //seekBarOperations( seekBar , maxLengthTextView , context);
                     if (mediaPlayer.isPlaying())
-                        if (context.equals("play"))
-                            PlayScreenActivity.playPause.setImageResource(R.mipmap.pause);
-                        else if (context.equals("main"))
-                            MainActivity.playPause.setImageResource(R.mipmap.pause);
+                        playPause.setImageResource(R.mipmap.pause);
 
 
                 }
@@ -60,10 +74,7 @@ public class SeekBarWithFavouritesHelper {
                 @Override
                 public void onCompletion(MediaPlayer mp) {
 
-                    if (context.equals("play"))
-                        PlayScreenActivity.playPause.setImageResource(R.mipmap.play);
-                    else if (context.equals("main"))
-                        MainActivity.playPause.setImageResource(R.mipmap.play);
+                    playPause.setImageResource(R.mipmap.play);
 
                     seekBar.setProgress(seekBar.getMax());
 
@@ -75,7 +86,7 @@ public class SeekBarWithFavouritesHelper {
 
     }
 
-    public static void seekBarOperations(final SeekbarWithFavourites seekBar, final TextView maxLengthTextView, final String context) {
+    public void seekBarOperations() {
         maxLengthTextView.setText(TimeFormat.formatTime(mediaPlayerDuration));
         seekBar.setMax(mediaPlayer.getDuration());
         seekBar.setmFavouriteBitmap(R.mipmap.red_play);
@@ -83,9 +94,7 @@ public class SeekBarWithFavouritesHelper {
         Log.d("mpdurations", String.valueOf(mediaPlayerDuration));
 
         PlayScreenActivity.seekBarMax = seekBar.getMax();
-        /*if (mediaPlayerDuration < 1000)
-            seekBar.setProgress(seekBar.getMax());
-        else {*/
+
 
         new Thread(new Runnable() {
             @Override
@@ -110,7 +119,7 @@ public class SeekBarWithFavouritesHelper {
 
                     }
                     if (isBackPressed && context.equals("play")) {
-                        MainActivity.onReturn();
+                        onReturnListener.callBack();
                         Thread.currentThread().interrupt();
                         return;
 
@@ -120,25 +129,18 @@ public class SeekBarWithFavouritesHelper {
 
             }
         }).start();
-        //}
 
 
     }
 
-    public static void playPausePress(String context) {
+    public void playPausePress() {
         if (mediaPlayer != null) {
 
             if (mediaPlayer.isPlaying()) {
-                if (context.equals("play"))
-                    PlayScreenActivity.playPause.setImageResource(R.mipmap.play);
-                else if (context.equals("main"))
-                    MainActivity.playPause.setImageResource(R.mipmap.play);
+                playPause.setImageResource(R.mipmap.play);
                 mediaPlayer.pause();
             } else {
-                if (context.equals("play"))
-                    PlayScreenActivity.playPause.setImageResource(R.mipmap.pause);
-                else if (context.equals("main"))
-                    MainActivity.playPause.setImageResource(R.mipmap.pause);
+                playPause.setImageResource(R.mipmap.pause);
                 mediaPlayer.start();
             }
         }

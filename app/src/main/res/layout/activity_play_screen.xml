@@ -24,11 +24,32 @@
         android:layout_alignBottom="@id/divider"
         android:gravity="center_vertical|center_horizontal"
         android:layout_alignParentTop="true"
-        android:background="@mipmap/wallpaper_blur"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintBottom_toTopOf="@id/bootom_half"
         app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:alpha=".35"
+            android:scaleType="centerCrop"
+            android:src="@mipmap/wallpaper"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:alpha=".35"
+            android:src="@color/Black"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
 
         <ImageView
 
@@ -48,8 +69,8 @@
         <ImageView
 
             android:id="@+id/image_view"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
             android:scaleType="fitCenter"
             android:src="@mipmap/a"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -59,7 +80,14 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="72dp"
+        android:layout_centerInParent="true"
+        android:src="@mipmap/seekbar_bg_white" />
+
     <include layout="@layout/layout_seekbar" />
+
 
     <include layout="@layout/layout_circle_controls" />
 

@@ -94,7 +94,7 @@ public class SeekbarWithFavourites extends SeekBar {
 
                 int x = (step.multiply(BigDecimal.valueOf(position)).intValue());
                 if (position > 0)
-                    canvas.drawBitmap(mFavouriteBitmap, x, 10, null);
+                    canvas.drawBitmap(mFavouriteBitmap, x, 0, null);
             }
         }
     }

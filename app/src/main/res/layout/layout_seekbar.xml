@@ -10,49 +10,48 @@
     app:layout_constraintTop_toTopOf="parent">
 
 
-    <ImageView
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginLeft="6dp"
-        android:layout_marginTop="6dp"
-        android:src="@mipmap/seekbar_bg_red_with_shadow" />
+        android:orientation="horizontal"
+        android:weightSum="8">
 
 
     <TextView
         android:id="@+id/current_position"
-        android:layout_width="40dp"
+        android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_alignParentStart="true"
-        android:layout_marginStart="12dp"
         android:layout_weight="1"
-        android:gravity="start|center"
+        android:gravity="center_horizontal|center_vertical"
         android:text="00:00"
         android:textColor="@color/Black"
         android:textSize="12dp" />
 
     <com.romeotamizh.MusicPlayer.Helpers.SeekbarWithFavourites
         android:id="@+id/seekBar"
-        android:layout_width="320dp"
-        android:layout_height="30dp"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
+        android:layout_width="0dp"
+        android:layout_height="24dp"
+        android:layout_gravity="center_vertical"
+        android:layout_weight="6"
         android:indeterminateTint="@color/White"
-        android:paddingStart="9dp"
-        android:paddingEnd="9dp"
+
 
         app:dots_Position="@array/dots"
         app:dots_drawable="@mipmap/red_play" />
 
     <TextView
         android:id="@+id/max_length"
-        android:layout_width="40dp"
+        android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_alignParentEnd="true"
-        android:layout_marginEnd="12dp"
-        android:gravity="end|center"
+        android:layout_weight="1"
+        android:gravity="center_horizontal|center_vertical"
         android:text="00:01"
         android:textColor="@color/Black"
         android:textSize="12dp" />
+
+    </LinearLayout>
 
 
 </RelativeLayout>

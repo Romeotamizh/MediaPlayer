@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.CountDownTimer;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -23,82 +22,41 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.gun0912.tedpermission.PermissionListener;
 import com.gun0912.tedpermission.TedPermission;
-import com.romeotamizh.MusicPlayer.Helpers.MyApplication;
 import com.romeotamizh.MusicPlayer.Helpers.SeekbarWithFavourites;
 import com.romeotamizh.MusicPlayer.R;
 import com.romeotamizh.MusicPlayer.RecyclerViewAdapter;
+import com.romeotamizh.MusicPlayer.SeekBarWithFavouritesHelper;
 
 import java.util.ArrayList;
 
-import static com.romeotamizh.MusicPlayer.SeekBarWithFavouritesHelper.playPausePress;
-import static com.romeotamizh.MusicPlayer.SeekBarWithFavouritesHelper.seekBarListener;
-import static com.romeotamizh.MusicPlayer.SeekBarWithFavouritesHelper.seekBarOperations;
+import static com.romeotamizh.MusicPlayer.PlayMusic.mediaPlayer;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+
+public class MainActivity extends AppCompatActivity implements View.OnClickListener, OnReturnListener.OnReturnListenerInterface, OpenPlayScreenListener.OpenPlayScreenListenerInterface {
 
     private static final String[] permissions = new String[]{
             Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.WRITE_EXTERNAL_STORAGE,
     };
     public static boolean isFirstTime = true;
+    public static boolean isOpenPlayScreen = false;
     public static boolean isFromMainActivity;
-    public static ImageView playPause;
-    static View childLayout;
-    static View childLayout_two;
-    static SeekbarWithFavourites seekBar;
-    static FrameLayout parentLayout;
-    static TextView currentPositionTextView;
-    static TextView maxLengthTextView;
+    public static boolean isOnReturn = false;
+    public static String mData;
+    public static String mTitle;
+    public static int mId;
+    public static OnReturnListener onReturnListener;
+    public static OpenPlayScreenListener openPlayScreenListener;
+    public ImageView playPause;
+    View childLayout;
+    SeekbarWithFavourites seekBar;
+    FrameLayout parentLayout;
+    TextView mainTitle;
     Toolbar toolbar;
     RecyclerView recyclerView;
-
-    public static void onReturn() {
-
-
-        if (!isFirstTime) {
-
-            isFromMainActivity = true;
-            Log.d("m", "true");
-            seekBar = childLayout.findViewById(R.id.seekBar);
-            maxLengthTextView = childLayout.findViewById(R.id.max_length);
-            currentPositionTextView = childLayout.findViewById(R.id.current_position);
-            seekBar.setmFavouriteBitmap(R.mipmap.red_play);
-            seekBarListener(seekBar, currentPositionTextView, "main");
-            seekBarOperations(seekBar, maxLengthTextView, "main");
-
-        }
-    }
-
-    public static void openPlayScreen(final String mData, final String mTitle, final int mId) {
-
-        Intent intent = new Intent(MyApplication.getContext(), PlayScreenActivity.class);
-        intent.putExtra("title", mTitle);
-        intent.putExtra("data", mData);
-        intent.putExtra("id", mId);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        MyApplication.getContext().startActivity(intent);
-        CountDownTimer countDownTimer = new CountDownTimer(1000, 500) {
-            @Override
-            public void onTick(long millisUntilFinished) {
-
-            }
-
-            @Override
-            public void onFinish() {
-                if (!isFirstTime) {
-                    parentLayout.setVisibility(View.VISIBLE);
-                    playPause.setVisibility(View.VISIBLE);
-                }
-                Log.d("pp", "ppp");
-
-
-            }
-        };
-        countDownTimer.start();
-
-
-    }
-
+    TextView currentPositionTextView;
+    TextView maxLengthTextView;
+    SeekBarWithFavouritesHelper seekBarWithFavouritesHelperMain;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -110,24 +68,44 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         LayoutInflater inflater = (LayoutInflater) this.getSystemService(LAYOUT_INFLATER_SERVICE);
 
-        childLayout = inflater.inflate(R.layout.layout_seekbar, (ViewGroup) findViewById(R.id.seekBar_parent));
-        playPause = findViewById(R.id.main_activity__play_or_pause);
-        playPause.setOnClickListener(this);
 
+        childLayout = inflater.inflate(R.layout.layout_linear_controls, (ViewGroup) findViewById(R.id.parent_layout_linear_controls));
         parentLayout = findViewById(R.id.activity_main_seekBar_frame);
         parentLayout.addView(childLayout);
+        playPause = findViewById(R.id.main_play_or_pause);
+        playPause.setOnClickListener(this);
+        seekBar = childLayout.findViewById(R.id.seekBar);
+        maxLengthTextView = childLayout.findViewById(R.id.max_length);
+        currentPositionTextView = childLayout.findViewById(R.id.current_position);
+        mainTitle = childLayout.findViewById(R.id.title_linear_screen);
+        currentPositionTextView.setTextColor(getResources().getColor(R.color.White, getTheme()));
+        maxLengthTextView.setTextColor(getResources().getColor(R.color.White, getTheme()));
+
+
+        seekBarWithFavouritesHelperMain = new SeekBarWithFavouritesHelper(seekBar, currentPositionTextView, maxLengthTextView, playPause, "main");
+
+
+        seekBar.setmFavouriteBitmap(R.mipmap.red_play);
+
+
 
 
         setSupportActionBar(toolbar);
         if (!isFirstTime) {
             parentLayout.setVisibility(View.VISIBLE);
-            playPause.setVisibility(View.VISIBLE);
         }
         initialize();
 
+        onReturnListener = new OnReturnListener();
+        onReturnListener.setListener(this);
+
+        openPlayScreenListener = new OpenPlayScreenListener();
+        openPlayScreenListener.setListener(this);
+
+
+
 
     }
-
 
     void initialize() {
         checkPermissions();
@@ -203,14 +181,48 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View v) {
 
         switch (v.getId()) {
-            case R.id.main_activity__play_or_pause:
-                playPausePress("main");
+            case R.id.main_play_or_pause:
+                seekBarWithFavouritesHelperMain.playPausePress();
                 break;
 
             default:
                 break;
         }
 
+    }
+
+    @Override
+    public void onReturn() {
+        if (mediaPlayer.isPlaying())
+            playPause.setImageResource(R.mipmap.pause);
+
+        Log.d("jjjlist", "list");
+        if (!isFirstTime) {
+            isFromMainActivity = true;
+            Log.d("m", "true");
+            isOnReturn = false;
+            seekBarWithFavouritesHelperMain.seekBarListener();
+            seekBarWithFavouritesHelperMain.seekBarOperations();
+
+        }
+
+    }
+
+    @Override
+    public void openPlayScreen() {
+        Intent intent = new Intent(getBaseContext(), PlayScreenActivity.class);
+        startActivity(intent);
+        mainTitle.setText(mTitle);
+        if (!isFirstTime) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    parentLayout.setVisibility(View.VISIBLE);
+                    Log.d("pp", "ppp");
+
+                }
+            });
+        }
     }
 }
 

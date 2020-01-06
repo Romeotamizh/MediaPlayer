@@ -113,34 +113,36 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical|end"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
+        android:orientation="horizontal"
+        android:weightSum="2.5"
         app:layout_constraintTop_toBottomOf="@id/title_play_screen">
+
+        <ImageView
+            android:layout_width="0dp"
+            android:layout_height="110dp"
+            android:layout_weight="1.6" />
 
 
         <ImageView
             android:id="@+id/next_fav"
-            android:layout_width="180dp"
+            android:layout_width="0dp"
+            android:layout_marginBottom="12dp"
+            android:layout_weight="0.9"
             android:layout_height="110dp"
-            android:layout_marginStart="290dp"
-            android:layout_marginTop="4dp"
-            android:scaleType="fitXY"
+            android:scaleType="fitEnd"
             android:src="@mipmap/full_next_fav"
 
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            />
 
 
-
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    </LinearLayout>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

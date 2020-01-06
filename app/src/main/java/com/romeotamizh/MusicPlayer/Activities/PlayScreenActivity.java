@@ -1,6 +1,5 @@
 package com.romeotamizh.MusicPlayer.Activities;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -8,12 +7,15 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.romeotamizh.MusicPlayer.Helpers.SeekbarWithFavourites;
 import com.romeotamizh.MusicPlayer.PlayMusic;
 import com.romeotamizh.MusicPlayer.R;
+import com.romeotamizh.MusicPlayer.SeekBarWithFavouritesHelper;
 
+import static com.romeotamizh.MusicPlayer.Activities.MainActivity.mData;
+import static com.romeotamizh.MusicPlayer.Activities.MainActivity.mId;
+import static com.romeotamizh.MusicPlayer.Activities.MainActivity.mTitle;
 import static com.romeotamizh.MusicPlayer.FavouriteMoments.FavouriteMomentsRepository.addFavouriteMomentsOperation;
 import static com.romeotamizh.MusicPlayer.FavouriteMoments.FavouriteMomentsRepository.databaseDeleteOperation;
 import static com.romeotamizh.MusicPlayer.FavouriteMoments.FavouriteMomentsRepository.databaseGetFavouritesOperation;
@@ -22,9 +24,6 @@ import static com.romeotamizh.MusicPlayer.FavouriteMoments.FavouriteMomentsRepos
 import static com.romeotamizh.MusicPlayer.FavouriteMoments.FavouriteMomentsRepository.resetFavouritesOperation;
 import static com.romeotamizh.MusicPlayer.Helpers.SetAlphabetImages.setAlphabetImages;
 import static com.romeotamizh.MusicPlayer.PlayMusic.mediaPlayer;
-import static com.romeotamizh.MusicPlayer.SeekBarWithFavouritesHelper.playPausePress;
-import static com.romeotamizh.MusicPlayer.SeekBarWithFavouritesHelper.seekBarListener;
-import static com.romeotamizh.MusicPlayer.SeekBarWithFavouritesHelper.seekBarOperations;
 
 
 public class PlayScreenActivity extends AppCompatActivity implements View.OnClickListener, View.OnLongClickListener {
@@ -32,41 +31,40 @@ public class PlayScreenActivity extends AppCompatActivity implements View.OnClic
     public static int[] mFavouriteMomentsList = new int[100];
     public static boolean isFavouriteMomentsExist = false;
     public static int mFavouriteMomentsCount = 1;
-
-
     public static int seekBarMax;
-
     public static int seekBarWidth;
-    public static int mId;
-    public static ImageView playPause;
+
+    public static Boolean isSongChanged = false;
+    public static boolean isPreviousButtonLongPressed = false;
+    public static boolean isBackPressed = false;
+
+
+    public SeekbarWithFavourites seekBar;
+    ImageView playPause;
     ImageView imageView;
     TextView titleTextView;
-    public static TextView currentPositionTextView;
-    public static TextView maxLengthTextView;
-    String mTitle;
-    String mData;
-    public static Boolean isSongChanged = false;
+    TextView currentPositionTextView;
+    TextView maxLengthTextView;
     ImageView favButton;
     ImageView nextFavButton;
     ImageView previousButton;
-    public static boolean isPreviousButtonLongPressed;
-    public static boolean isListenerFlagSet = true;
-    ConstraintLayout imageViewBackground;
-    public static SeekbarWithFavourites seekBar;
-    public static boolean isBackPressed = false;
-    public static Context context;
+    SeekBarWithFavouritesHelper seekBarWithFavouritesHelperPlay;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_play_screen);
-        context = this;
+
 
         //initialize views
         initializeViews();
 
+        //initialize seekBarWithFavouritesHelper
+        seekBarWithFavouritesHelperPlay = new SeekBarWithFavouritesHelper(seekBar, currentPositionTextView, maxLengthTextView, playPause, "play");
+
         //get intent
-        getIntentFunction();
+        // getIntentFunction();
 
 
         //seekBar properties
@@ -80,7 +78,7 @@ public class PlayScreenActivity extends AppCompatActivity implements View.OnClic
         titleTextView.setText(mTitle);
         imageView.setImageResource(setAlphabetImages(mTitle));
 
-        // set buttons onClick and onLongCick
+        // set buttons onClick and onLongClick
         setButtonsClickFunctions();
 
         //listen for seekBar and media changes
@@ -101,6 +99,7 @@ public class PlayScreenActivity extends AppCompatActivity implements View.OnClic
 
             }
         });
+
 
     }
 
@@ -124,7 +123,6 @@ public class PlayScreenActivity extends AppCompatActivity implements View.OnClic
         favButton = findViewById(R.id.fav);
         previousButton = findViewById(R.id.back);
         playPause = findViewById(R.id.play_or_pause);
-        imageViewBackground = findViewById(R.id.pic_layout);
 
 
     }
@@ -151,19 +149,19 @@ public class PlayScreenActivity extends AppCompatActivity implements View.OnClic
     }
 
     private void listenerFunction() {
-        isListenerFlagSet = true;
         isSongChanged = false;
 
         new Thread(new Runnable() {
             @Override
             public void run() {
+
                 while (true) {
                     if (mediaPlayer.isPlaying() || isSongChanged) {
                         resetFavouritesOperation("music");
                         databaseGetFavouritesOperation(mId, "music");
                         // databaseGetFavouritesOperation(mId, "music");
-                        seekBarListener(seekBar, currentPositionTextView, "play");
-                        seekBarOperations(seekBar, maxLengthTextView, "play");
+                        seekBarWithFavouritesHelperPlay.seekBarListener();
+                        seekBarWithFavouritesHelperPlay.seekBarOperations();
                         databaseGetFavouritesOperation(mId, "music");
 
                         Thread.currentThread().interrupt();
@@ -181,9 +179,7 @@ public class PlayScreenActivity extends AppCompatActivity implements View.OnClic
         }).start();
 
 
-
     }
-
 
 
     @Override
@@ -228,7 +224,7 @@ public class PlayScreenActivity extends AppCompatActivity implements View.OnClic
                 break;
 
             case R.id.play_or_pause:
-                playPausePress("play");
+                seekBarWithFavouritesHelperPlay.playPausePress();
                 break;
 
 
@@ -239,13 +235,6 @@ public class PlayScreenActivity extends AppCompatActivity implements View.OnClic
         }
 
     }
-
-
-
-
-
-
-
 
 
 }

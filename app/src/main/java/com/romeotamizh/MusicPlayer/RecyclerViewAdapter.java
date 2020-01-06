@@ -18,7 +18,10 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 import static com.romeotamizh.MusicPlayer.Activities.MainActivity.isFirstTime;
 import static com.romeotamizh.MusicPlayer.Activities.MainActivity.isFromMainActivity;
-import static com.romeotamizh.MusicPlayer.Activities.MainActivity.openPlayScreen;
+import static com.romeotamizh.MusicPlayer.Activities.MainActivity.mData;
+import static com.romeotamizh.MusicPlayer.Activities.MainActivity.mId;
+import static com.romeotamizh.MusicPlayer.Activities.MainActivity.mTitle;
+import static com.romeotamizh.MusicPlayer.Activities.MainActivity.openPlayScreenListener;
 import static com.romeotamizh.MusicPlayer.Activities.PlayScreenActivity.isBackPressed;
 import static com.romeotamizh.MusicPlayer.Activities.PlayScreenActivity.isSongChanged;
 import static com.romeotamizh.MusicPlayer.FavouriteMoments.FavouriteMomentsRepository.resetFavouritesOperation;
@@ -83,7 +86,12 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                 isFromMainActivity = false;
                 isBackPressed = false;
                 isFirstTime = false;
-                openPlayScreen(mDataList.get(position), titleOnly.toString(), mIdList.get(position));
+                mData = mDataList.get(position);
+                mTitle = titleOnly.toString();
+                mId = mIdList.get(position);
+                openPlayScreenListener.callBack();
+                //isOpenPlayScreen=true;
+                // openPlayScreen(mDataList.get(position), titleOnly.toString(), mIdList.get(position));
 
             }
         });
