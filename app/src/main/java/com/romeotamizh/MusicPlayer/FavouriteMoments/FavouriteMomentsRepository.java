@@ -2,7 +2,7 @@ package com.romeotamizh.MusicPlayer.FavouriteMoments;
 
 import android.util.Log;
 
-import com.romeotamizh.MusicPlayer.Activities.PlayScreenActivity;
+import com.romeotamizh.MusicPlayer.Activities.MainActivity;
 import com.romeotamizh.MusicPlayer.Helpers.SeekbarWithFavourites;
 import com.romeotamizh.MusicPlayer.Music;
 import com.romeotamizh.MusicPlayer.MusicRoomDatabase;
@@ -81,14 +81,14 @@ public class FavouriteMomentsRepository {
 
     public static void setFavouritesData(FavouriteMoments favouriteMoments, final String context) {
         if (context.equals("music")) {
-            PlayScreenActivity.mFavouriteMomentsCount = favouriteMoments.mFavouriteMomentsCount;
-            PlayScreenActivity.mFavouriteMomentsList = favouriteMoments.mFavouriteMomentsList;
-            PlayScreenActivity.isFavouriteMomentsExist = favouriteMoments.isFavouriteMomentsExist;
+            MainActivity.mFavouriteMomentsCount = favouriteMoments.mFavouriteMomentsCount;
+            MainActivity.mFavouriteMomentsList = favouriteMoments.mFavouriteMomentsList;
+            MainActivity.isFavouriteMomentsExist = favouriteMoments.isFavouriteMomentsExist;
             mFavouritesPositionsList = favouriteMoments.mFavouriteMomentsList;
-//            seekBar.setmFavouritesPositionsList(PlayScreenActivity.mFavouriteMomentsList);
+//            seekBar.setmFavouritesPositionsList(MainActivity.mFavouriteMomentsList);
 
             Log.d("getfavfno", Arrays.toString(mFavouritesPositionsList));
-            Log.d("getfavfno", String.valueOf(PlayScreenActivity.mFavouriteMomentsCount));
+            Log.d("getfavfno", String.valueOf(MainActivity.mFavouriteMomentsCount));
         }
     }
 

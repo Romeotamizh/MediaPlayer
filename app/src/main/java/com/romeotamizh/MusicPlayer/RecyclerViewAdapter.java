@@ -17,13 +17,11 @@ import java.util.ArrayList;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 import static com.romeotamizh.MusicPlayer.Activities.MainActivity.isFirstTime;
-import static com.romeotamizh.MusicPlayer.Activities.MainActivity.isFromMainActivity;
+import static com.romeotamizh.MusicPlayer.Activities.MainActivity.isSongChanged;
 import static com.romeotamizh.MusicPlayer.Activities.MainActivity.mData;
 import static com.romeotamizh.MusicPlayer.Activities.MainActivity.mId;
 import static com.romeotamizh.MusicPlayer.Activities.MainActivity.mTitle;
-import static com.romeotamizh.MusicPlayer.Activities.MainActivity.openPlayScreenListener;
-import static com.romeotamizh.MusicPlayer.Activities.PlayScreenActivity.isBackPressed;
-import static com.romeotamizh.MusicPlayer.Activities.PlayScreenActivity.isSongChanged;
+import static com.romeotamizh.MusicPlayer.Activities.MainActivity.playMusicListener;
 import static com.romeotamizh.MusicPlayer.FavouriteMoments.FavouriteMomentsRepository.resetFavouritesOperation;
 import static com.romeotamizh.MusicPlayer.Helpers.SetAlphabetImages.setAlphabetImages;
 
@@ -83,15 +81,11 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             public void onClick(View v) {
                 resetFavouritesOperation("music");
                 isSongChanged = true;
-                isFromMainActivity = false;
-                isBackPressed = false;
                 isFirstTime = false;
                 mData = mDataList.get(position);
                 mTitle = titleOnly.toString();
                 mId = mIdList.get(position);
-                openPlayScreenListener.callBack();
-                //isOpenPlayScreen=true;
-                // openPlayScreen(mDataList.get(position), titleOnly.toString(), mIdList.get(position));
+                playMusicListener.callBack();
 
             }
         });

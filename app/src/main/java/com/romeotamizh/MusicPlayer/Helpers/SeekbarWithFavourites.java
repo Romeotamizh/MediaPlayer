@@ -14,8 +14,8 @@ import com.romeotamizh.MusicPlayer.R;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
-import static com.romeotamizh.MusicPlayer.Activities.PlayScreenActivity.seekBarMax;
-import static com.romeotamizh.MusicPlayer.Activities.PlayScreenActivity.seekBarWidth;
+import static com.romeotamizh.MusicPlayer.Activities.MainActivity.seekBarMax;
+import static com.romeotamizh.MusicPlayer.Activities.MainActivity.seekBarWidth;
 
 @SuppressLint("AppCompatCustomView")
 public class SeekbarWithFavourites extends SeekBar {

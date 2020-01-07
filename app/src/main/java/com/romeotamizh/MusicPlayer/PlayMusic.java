@@ -18,7 +18,7 @@ public class PlayMusic {
                 mediaPlayer.reset();
                 mediaPlayer.setVolume(1.0f, 1.0f);
                 mediaPlayer.setDataSource(mData);
-                mediaPlayer.prepare();
+                mediaPlayer.prepareAsync();
                 mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                     @Override
                     public void onPrepared(MediaPlayer mp) {

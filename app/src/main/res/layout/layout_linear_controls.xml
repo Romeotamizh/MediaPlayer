@@ -79,7 +79,7 @@
                 android:longClickable="true"
                 android:paddingStart="8dp"
                 android:scaleType="fitCenter"
-                android:src="@mipmap/pause" />
+                android:src="@mipmap/play" />
 
 
             <ImageView

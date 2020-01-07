@@ -6,8 +6,8 @@
     style="@style/AppThemeDark"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     tools:context=".Activities.PlayScreenActivity">
+
 
     <ImageView
         android:id="@+id/divider"
@@ -32,7 +32,6 @@
         <ImageView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:alpha=".35"
             android:scaleType="centerCrop"
             android:src="@mipmap/wallpaper"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -79,6 +78,14 @@
             app:layout_constraintTop_toTopOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <FrameLayout
+
+        android:id="@+id/activity_main_seekBar_frame"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:layout_alignParentTop="true"
+        android:visibility="visible" />
 
     <ImageView
         android:layout_width="match_parent"
