@@ -6,27 +6,28 @@ import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 import androidx.room.Update;
 
+
 @Dao
-public interface MusicDao {
+public interface MediaDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void insertData(Music music);
+    void insertData(Media media);
 
 
-    @Query("DELETE FROM Music")
+    @Query("DELETE FROM Media")
     void deleteAll();
 
-    @Query("DELETE FROM Music WHERE musicId =:mId")
+    @Query("DELETE FROM Media WHERE mediaId =:mId")
     int delete(Integer mId);
 
     @Update
-    void update(Music music);
+    void update(Media media);
 
 
-    @Query("SELECT favouriteMoments FROM Music WHERE musicId = :mId ORDER BY favouriteMoments ASC")
+    @Query("SELECT favouriteMoments FROM Media WHERE mediaId = :mId ORDER BY favouriteMoments ASC")
     int[] getFavouriteMoments(Integer mId);
 
-    @Query("SELECT id FROM Music WHERE musicId = :mId ORDER BY favouriteMoments ASC")
+    @Query("SELECT id FROM Media WHERE mediaId = :mId ORDER BY favouriteMoments ASC")
     String[] getId(Integer mId);
 
 

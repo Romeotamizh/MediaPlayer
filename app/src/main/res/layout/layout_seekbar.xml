@@ -28,7 +28,7 @@
         android:textColor="@color/Black"
         android:textSize="12dp" />
 
-    <com.romeotamizh.MusicPlayer.Helpers.SeekbarWithFavourites
+        <com.romeotamizh.MusicPlayer.Helpers.SeekBarWithFavourites
         android:id="@+id/seekBar"
         android:layout_width="0dp"
         android:layout_height="24dp"

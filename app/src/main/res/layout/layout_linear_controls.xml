@@ -3,7 +3,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/parent_layout_linear_controls"
     android:layout_width="match_parent"
-    android:layout_height="200dp">
+    android:layout_height="100dp">
 
     <ImageView
         android:layout_width="match_parent"
@@ -20,44 +20,38 @@
         android:src="@color/Black" />
 
 
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <LinearLayout
         style="@style/AppThemeDark"
         android:layout_width="match_parent"
-        android:layout_height="200dp"
+        android:layout_height="100dp"
         android:layout_gravity="center_horizontal|center_vertical"
-        android:orientation="vertical">
+        android:orientation="horizontal"
+        android:paddingStart="12dp"
+        android:paddingBottom="20dp"
+        android:weightSum="10">
 
 
         <TextView
             android:id="@+id/title_linear_screen"
-            android:layout_width="match_parent"
-            android:layout_height="46dp"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="6"
             android:ellipsize="end"
-            android:gravity="center_horizontal|center_vertical"
+            android:gravity="center_vertical"
             android:paddingVertical="6dp"
             android:singleLine="true"
             android:text="Title"
-            android:textAlignment="center"
             android:textColor="@color/White"
             android:textSize="24dp" />
 
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="92dp"
-            android:orientation="horizontal">
-
-            <ImageView
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1.5" />
 
 
             <ImageView
                 android:id="@+id/main_back"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="1"
+                android:layout_weight=".80"
 
                 android:clickable="true"
                 android:focusable="true"
@@ -71,13 +65,12 @@
             <ImageView
                 android:id="@+id/main_play_or_pause"
                 android:layout_width="0dp"
-                android:layout_height="match_parent"
+                android:layout_height="60dp"
                 android:layout_gravity="center"
-                android:layout_weight="2.5"
+                android:layout_weight="1.6"
                 android:clickable="true"
                 android:focusable="true"
                 android:longClickable="true"
-                android:paddingStart="8dp"
                 android:scaleType="fitCenter"
                 android:src="@mipmap/play" />
 
@@ -86,35 +79,25 @@
                 android:id="@+id/main_next"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="1"
-
+                android:layout_weight="1.75"
                 android:clickable="true"
                 android:focusable="true"
                 android:longClickable="true"
-                android:paddingHorizontal="8dp"
+                android:paddingStart="4dp"
                 android:scaleType="fitCenter"
-                android:src="@mipmap/white_next"
-                android:tint="@color/White" />
-
-
-            <ImageView
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1.5" />
+                android:src="@mipmap/full_next_fav" />
 
 
         </LinearLayout>
 
 
-        <include
-            android:id="@+id/seekBar_linear_holder"
-            layout="@layout/layout_seekbar"
-            android:layout_width="match_parent"
-            android:layout_height="62dp"
+    <include
+        android:id="@+id/seekBar_linear_holder"
+        layout="@layout/layout_seekbar"
+        android:layout_width="match_parent"
+        android:layout_height="32dp"
+        android:layout_alignParentBottom="true"
 
-            />
-
-
-    </LinearLayout>
+        />
 
 </RelativeLayout>

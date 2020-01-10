@@ -7,6 +7,7 @@ import java.io.IOException;
 public class PlayMusic {
     public static MediaPlayer mediaPlayer = new MediaPlayer();
     public static int mediaPlayerDuration = 0;
+    private static PlayMusicListener listener;
 
     public static void playMusic(final String mData, final String mTitle) {
         if (mediaPlayer != null) {
@@ -34,5 +35,20 @@ public class PlayMusic {
             }
         }
 
+    }
+
+
+    public static void setPlayMusicListener(PlayMusicListener listener) {
+        PlayMusic.listener = listener;
+
+    }
+
+    public static void callBack(int position) {
+        if (listener != null)
+            listener.playMusic(position);
+    }
+
+    public interface PlayMusicListener {
+        void playMusic(int position);
     }
 }

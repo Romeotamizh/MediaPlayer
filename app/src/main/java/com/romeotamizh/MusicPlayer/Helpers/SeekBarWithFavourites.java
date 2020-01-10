@@ -18,28 +18,25 @@ import static com.romeotamizh.MusicPlayer.Activities.MainActivity.seekBarMax;
 import static com.romeotamizh.MusicPlayer.Activities.MainActivity.seekBarWidth;
 
 @SuppressLint("AppCompatCustomView")
-public class SeekbarWithFavourites extends SeekBar {
+public class SeekBarWithFavourites extends SeekBar {
     public static int[] mFavouritesPositionsList = null;
     private Bitmap mFavouriteBitmap = null;
 
-    public SeekbarWithFavourites(Context context) {
+    private static OnSeekBarProgressListener listener;
+
+    public SeekBarWithFavourites(Context context) {
         super(context);
         init(null);
 
     }
 
-    public SeekbarWithFavourites(Context context, AttributeSet attrs) {
+    public SeekBarWithFavourites(Context context, AttributeSet attrs) {
         super(context, attrs);
         init(attrs);
     }
 
-    public SeekbarWithFavourites(Context context, AttributeSet attrs, int defStyleAttr) {
+    public SeekBarWithFavourites(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        init(attrs);
-    }
-
-    public SeekbarWithFavourites(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr, defStyleRes);
         init(attrs);
     }
 
@@ -59,16 +56,34 @@ public class SeekbarWithFavourites extends SeekBar {
 
     }
 
+    public SeekBarWithFavourites(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+        super(context, attrs, defStyleAttr, defStyleRes);
+        init(attrs);
+    }
 
-    public void setmFavouritesPositionsList(final int[] favouritesPositionsList) {
+    public static void setSeekBarProgress(OnSeekBarProgressListener listener) {
+        SeekBarWithFavourites.listener = listener;
+
+    }
+
+    public static void callBack(int progress) {
+        if (listener != null)
+            listener.onSeekBarProgressChange(progress);
+    }
+
+    public void setFavouritesPositionsList(final int[] favouritesPositionsList) {
         mFavouritesPositionsList = favouritesPositionsList;
         invalidate();
     }
 
-
-    public void setmFavouriteBitmap(final int mFavouriteBitmapResource) {
+    public void setFavouriteBitmap(final int mFavouriteBitmapResource) {
         mFavouriteBitmap = BitmapFactory.decodeResource(getResources(), mFavouriteBitmapResource).createScaledBitmap(mFavouriteBitmap, 18, 18, false);
         invalidate();
+    }
+
+
+    public interface OnSeekBarProgressListener {
+        void onSeekBarProgressChange(int progress);
     }
 
     @Override
@@ -85,11 +100,6 @@ public class SeekbarWithFavourites extends SeekBar {
             // draw dots if we have ones
             for (int position : mFavouritesPositionsList) {
 
-               /* Log.d("posArray", Arrays.toString(mFavouritesPositionsList));
-                Log.d("pos", String.valueOf(position));
-                Log.d("max", String.valueOf(max));
-                Log.d("step", String.valueOf(step));
-                Log.d("width", String.valueOf(seekBarWidth));*/
 
 
                 int x = (step.multiply(BigDecimal.valueOf(position)).intValue());

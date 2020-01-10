@@ -18,9 +18,7 @@
         android:fullBackupContent="true"
         android:theme="@style/AppThemeDark"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity
-            android:name=".Activities.PlayScreenActivity"
-            android:parentActivityName=".Activities.MainActivity" />
+
         <activity
             android:name=".Activities.MainActivity"
             android:screenOrientation="portrait">

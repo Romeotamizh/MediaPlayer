@@ -1,6 +1,7 @@
 package com.romeotamizh.MusicPlayer;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,25 +19,21 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 import static com.romeotamizh.MusicPlayer.Activities.MainActivity.isFirstTime;
 import static com.romeotamizh.MusicPlayer.Activities.MainActivity.isSongChanged;
-import static com.romeotamizh.MusicPlayer.Activities.MainActivity.mData;
-import static com.romeotamizh.MusicPlayer.Activities.MainActivity.mId;
-import static com.romeotamizh.MusicPlayer.Activities.MainActivity.mTitle;
-import static com.romeotamizh.MusicPlayer.Activities.MainActivity.playMusicListener;
-import static com.romeotamizh.MusicPlayer.FavouriteMoments.FavouriteMomentsRepository.resetFavouritesOperation;
 import static com.romeotamizh.MusicPlayer.Helpers.SetAlphabetImages.setAlphabetImages;
 
 
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder> {
-    //private ArrayList<String> mImages = new ArrayList<>();
-    private ArrayList<String> mTitleList = new ArrayList<String>();
-    private ArrayList<Integer> mDurationList = new ArrayList<Integer>();
+    //private ArrayList<String> mImages
+    private ArrayList<String> mTitleList;
+    private ArrayList<Integer> mDurationList;
     private ArrayList<Integer> mIdList = new ArrayList<Integer>();
     private ArrayList<String> mDataList = new ArrayList<String>();
     private LayoutInflater mInflater;
+    private com.romeotamizh.MusicPlayer.Helpers.Context.MEDIATYPE mediaType;
 
     private Context mContext;
 
-    public RecyclerViewAdapter(ArrayList<String> mTitleList, ArrayList<Integer> mDurationList, ArrayList<String> mDataList, ArrayList<Integer> mIdList, Context context) {
+    public RecyclerViewAdapter(ArrayList<String> mTitleList, ArrayList<Integer> mDurationList, ArrayList<String> mDataList, ArrayList<Integer> mIdList, Context context, com.romeotamizh.MusicPlayer.Helpers.Context.MEDIATYPE mediaType) {
         //this.mImages = mImages;
         mInflater = LayoutInflater.from(context);
         this.mTitleList = mTitleList;
@@ -44,6 +41,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         this.mDataList = mDataList;
         this.mContext = context;
         this.mIdList = mIdList;
+        this.mediaType = mediaType;
     }
 
 
@@ -56,6 +54,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
     @Override
     public void onBindViewHolder(@NonNull final ViewHolder holder, final int position) {
+        final RecyclerViewAdapter recyclerViewAdapter = this;
         final StringBuffer titleOnly = new StringBuffer();
         StringBuffer extension = new StringBuffer();
         titleOnly.append(mTitleList.get(position));
@@ -79,13 +78,12 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
             @Override
             public void onClick(View v) {
-                resetFavouritesOperation("music");
                 isSongChanged = true;
                 isFirstTime = false;
-                mData = mDataList.get(position);
-                mTitle = titleOnly.toString();
-                mId = mIdList.get(position);
-                playMusicListener.callBack();
+                if (recyclerViewAdapter.mediaType == com.romeotamizh.MusicPlayer.Helpers.Context.MEDIATYPE.AUDIO)
+                    PlayMusic.callBack(position);
+                else
+                    Log.d("hahahaah", "ajjaajja");
 
             }
         });

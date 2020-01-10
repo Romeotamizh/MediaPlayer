@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/video_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RecyclerView
+        android:id="@+id/recyclerView_video"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scrollbarSize="4dp"
+        android:scrollbars="vertical" />
+
+</RelativeLayout>
