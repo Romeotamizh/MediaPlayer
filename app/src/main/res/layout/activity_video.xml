@@ -43,6 +43,7 @@
                 android:ellipsize="end"
                 android:gravity="center_horizontal|center_vertical"
                 android:text="Title"
+                android:maxLines="1"
                 android:textAlignment="center"
                 android:textSize="24dp" />
 
@@ -114,7 +115,7 @@
                         android:layout_gravity="center"
                         android:layout_marginHorizontal="8dp"
                         android:layout_weight="2"
-                        android:foreground="?android:selectableItemBackground"
+                        android:foreground="@drawable/ripple_effect"
                         android:scaleType="fitCenter"
                         android:src="@mipmap/final_pause" />
 

@@ -2,7 +2,6 @@ package com.romeotamizh.MediaPlayer.Activities_Fragments;
 
 import android.graphics.Bitmap;
 import android.media.MediaPlayer;
-import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.Size;
@@ -19,6 +18,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
 import com.romeotamizh.MediaPlayer.Adapters.RecyclerViewAdapter;
 import com.romeotamizh.MediaPlayer.Helpers.Context;
@@ -35,16 +35,16 @@ import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 import java.util.ArrayList;
 
 import static android.content.Context.LAYOUT_INFLATER_SERVICE;
-import static com.romeotamizh.MediaPlayer.Activities_Fragments.MainActivity.isExit;
+import static com.romeotamizh.MediaPlayer.Activities_Fragments.MainActivity.groupByAudio;
+import static com.romeotamizh.MediaPlayer.Activities_Fragments.MainActivity.isExitAudio;
 import static com.romeotamizh.MediaPlayer.Activities_Fragments.MainActivity.isFirstTime;
 import static com.romeotamizh.MediaPlayer.Activities_Fragments.MainActivity.isSongChanged;
 import static com.romeotamizh.MediaPlayer.Helpers.CustomSeekBar.mFavouritesPositionsList;
-import static com.romeotamizh.MediaPlayer.Helpers.Thumbnail.setAlphabetImage;
 import static com.romeotamizh.MediaPlayer.Helpers.Thumbnail.setThumbnailImage;
 import static com.romeotamizh.MediaPlayer.MediaController.PlayMedia.mediaPlayer;
 import static com.romeotamizh.MediaPlayer.MediaController.PlayMedia.mediaPlayerDuration;
 
-public class AudioFragment extends Fragment implements MyApplication.SetFragmentOnBackPressedListener, View.OnClickListener, View.OnLongClickListener, FavouriteMoments.OnFavouriteMomentsOperationsListener, MenuItem.OnMenuItemClickListener, SlidingUpPanelLayout.PanelSlideListener, PlayMedia.OnPlayMediaListener, MediaPlayer.OnCompletionListener {
+public class AudioFragment extends Fragment implements MyApplication.SetFragmentOnBackPressedListener, View.OnClickListener, MyApplication.SetFragmentOnOptionsMenuClickedListener, View.OnLongClickListener, FavouriteMoments.OnFavouriteMomentsOperationsListener, SlidingUpPanelLayout.PanelSlideListener, PlayMedia.OnPlayMediaListener, MediaPlayer.OnCompletionListener {
 
 
     private MediaInfoDatabase audioInfoDatabase;
@@ -119,63 +119,9 @@ public class AudioFragment extends Fragment implements MyApplication.SetFragment
 
     private int prevId;
 
-    private void populate() {
-        //initialize views
-        initializeViews();
-
-        favouriteMomentsAudio = new FavouriteMoments(new int[100], 1, false, Context.MEDIATYPE.AUDIO);
-        FavouriteMoments.setOnFavouriteMomentsOperationsListener(this);
-
-        //initialize seekBarWithFavouritesHelper
-        mediaControllerMain = new MediaController(seekBarMain, currentPositionTextViewMain, maxLengthTextViewMain, playPauseMain, Context.CONTEXT.MAIN);
-
-        //initialize seekBarWithFavouritesHelper
-        mediaControllerPlay = new MediaController(seekBarPlay, currentPositionTextViewPlay, maxLengthTextViewPlay, playPausePlay, Context.CONTEXT.PLAY);
-
-        //alter playScreen Views
-        // currentPositionTextViewPlay.setTextColor(getResources().getColor(R.color.Black, getActivity().getTheme()));
-        //maxLengthTextViewPlay.setTextColor(getResources().getColor(R.color.Black, getActivity().getTheme()));
-
-        //add music
-        audioInfoDatabase = new MediaInfoDatabase(Context.MEDIATYPE.AUDIO);
-
-        //initialize recyclerViewAudioMain
-        initializeRecyclerView(audioInfoDatabase);
-
-        //playMusicListener
-        PlayMedia.setPlayMusicListener(this);
-
-        // set buttons onClick and onLongClick
-        setButtonsClickFunctions();
-
-        //set mediaPlayerCompletion listener
-        mediaPlayer.setOnCompletionListener(this);
-
-        //set slideUpPanel listener
-        slidingUpPanelLayout.addPanelSlideListener(this);
-
-        //set SeekBar properties
-        setSeekBarProperties();
-
-        slidingUpPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
-        isFirstTime = true;
-
-        slidingUpPanelLayout.setDragView(backGroundMain);
-
-        MyApplication.setOnBackPressed(this);
-    }
-
-    @Override
-    public void onBackPressed() {
-        Log.d("mom", "mom");
-        if (slidingUpPanelLayout.getPanelState() == SlidingUpPanelLayout.PanelState.COLLAPSED || isFirstTime)
-            isExit = true;
-        else {
-            slidingUpPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
-            isExit = false;
-        }
-
-    }
+    public static ArrayList<Bitmap> tAudio;
+    public static int ls;
+    RecyclerViewAdapter recyclerViewAdapter;
 
     private void initializeViews() {
 
@@ -289,17 +235,108 @@ public class AudioFragment extends Fragment implements MyApplication.SetFragment
 
     }
 
-    private void initializeRecyclerView(MediaInfoDatabase mediaInfoDatabase) {
-        ArrayList<CharSequence> titleList = mediaInfoDatabase.getTitleList();
-        ArrayList<CharSequence> durationList = mediaInfoDatabase.getDurationList();
-        ArrayList<CharSequence> extensionList = mediaInfoDatabase.getExtensionList();
-        ArrayList<Uri> uriList = mediaInfoDatabase.getUriList();
-        ArrayList<Integer> idList = mediaInfoDatabase.getIdList();
-        RecyclerViewAdapter recyclerViewAdapter = new RecyclerViewAdapter(idList, uriList, titleList, extensionList, durationList, Context.MEDIATYPE.AUDIO, Context.CONTEXT.MAIN, getActivity());
-        recyclerViewAudioMain.setAdapter(recyclerViewAdapter);
-        recyclerViewAudioMain.setLayoutManager(new LinearLayoutManager(this.getContext()));
+    private void populate() {
+        //initialize views
+        initializeViews();
+
+        favouriteMomentsAudio = new FavouriteMoments(new int[100], 1, false, Context.MEDIATYPE.AUDIO);
+        FavouriteMoments.setOnFavouriteMomentsOperationsListener(this);
+
+        //initialize seekBarWithFavouritesHelper
+        mediaControllerMain = new MediaController(seekBarMain, currentPositionTextViewMain, maxLengthTextViewMain, playPauseMain, Context.CONTEXT.MAIN);
+
+        //initialize seekBarWithFavouritesHelper
+        mediaControllerPlay = new MediaController(seekBarPlay, currentPositionTextViewPlay, maxLengthTextViewPlay, playPausePlay, Context.CONTEXT.PLAY);
+
+        //alter playScreen Views
+        // currentPositionTextViewPlay.setTextColor(getResources().getColor(R.color.Black, getActivity().getTheme()));
+        //maxLengthTextViewPlay.setTextColor(getResources().getColor(R.color.Black, getActivity().getTheme()));
+
+        //add music
+        audioInfoDatabase = new MediaInfoDatabase(Context.MEDIATYPE.AUDIO);
+
+        //initialize recyclerViewAudioMain
+        initializeRecyclerView(audioInfoDatabase);
+
+        //recyclerViewAdapter.
+
+        //playMusicListener
+        PlayMedia.setPlayMusicListener(this);
+
+        // set buttons onClick and onLongClick
+        setButtonsClickFunctions();
+
+        //set mediaPlayerCompletion listener
+        mediaPlayer.setOnCompletionListener(this);
+
+        //set slideUpPanel listener
+        slidingUpPanelLayout.addPanelSlideListener(this);
+
+        //set SeekBar properties
+        setSeekBarProperties();
+
+        slidingUpPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
+        isFirstTime = true;
+
+        slidingUpPanelLayout.setDragView(backGroundMain);
+
+        MyApplication.setOnBackPressed(this);
+        MyApplication.setOnOptionsSelected(this);
+    }
+
+    @Override
+    public void onBackPressed() {
+        Log.d("mom", "mom");
+        if (slidingUpPanelLayout.getPanelState() == SlidingUpPanelLayout.PanelState.COLLAPSED || isFirstTime)
+            isExitAudio = true;
+        else {
+            slidingUpPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
+            isExitAudio = false;
+        }
 
     }
+
+    private void initializeRecyclerView(MediaInfoDatabase mediaInfoDatabase) {
+
+        if (recyclerViewAdapter == null) {
+            recyclerViewAdapter = new RecyclerViewAdapter(audioInfoDatabase, null, Context.CONTEXT.MAIN, getActivity());
+        }
+        recyclerViewAudioMain.setAdapter(recyclerViewAdapter);
+        if (groupByAudio == Context.GROUPBY.ALBUM) {
+            Size size = new Size(200, 200);
+            ArrayList<CharSequence> albumTitleList = mediaInfoDatabase.getAlbumTitleList();
+            recyclerViewAudioMain.setLayoutManager(new StaggeredGridLayoutManager(4, StaggeredGridLayoutManager.VERTICAL));
+            recyclerViewAdapter.setTitleList(albumTitleList);
+            ArrayList<Integer> i = new ArrayList<>();
+            recyclerViewAdapter.setListSize(albumTitleList.size());
+            ls = albumTitleList.size();
+            ArrayList<Bitmap> bitmaps = new ArrayList<>(ls);
+            for (CharSequence album : albumTitleList) {
+                int firstId = mediaInfoDatabase.getIdsInAlbum(album).get(0);
+                i.add(firstId);
+                bitmaps.add(setThumbnailImage(mediaInfoDatabase.getUriById(firstId), size, album));
+            }
+            recyclerViewAdapter.setThumbs(bitmaps);
+            recyclerViewAdapter.notifyDataSetChanged();
+
+
+        }
+        if (groupByAudio == Context.GROUPBY.NOTHING) {
+            recyclerViewAudioMain.setLayoutManager(new LinearLayoutManager(this.getContext()));
+            recyclerViewAdapter.setTitleList(mediaInfoDatabase.getTitleList());
+            recyclerViewAdapter.setIdList(mediaInfoDatabase.getIdList());
+            recyclerViewAdapter.setDurationList(mediaInfoDatabase.getDurationList());
+            recyclerViewAdapter.setExtensionList(mediaInfoDatabase.getExtensionList());
+            recyclerViewAdapter.setListSize(mediaInfoDatabase.getMediaCount());
+            recyclerViewAdapter.setThumbs(tAudio);
+            recyclerViewAdapter.notifyDataSetChanged();
+
+
+        }
+
+
+    }
+
 
     @Override
     public void playMedia(final int id, Context.MEDIATYPE mediaType) {
@@ -385,16 +422,12 @@ public class AudioFragment extends Fragment implements MyApplication.SetFragment
             Bitmap bitmapMain = setThumbnailImage(audioInfoDatabase.getUriById(id), new Size(width, 100), null);
 
             if (bitmapPlay == null) {
-                imageViewPlay.setImageBitmap(setAlphabetImage(mTitle.charAt(0)));
-                if (trackInfo.getIdsInAlbum().size() == 1)
-                    imageViewPlay.setVisibility(View.VISIBLE);
-                else
-                    imageViewPlay.setVisibility(View.GONE);
                 backGroundPlay.setImageResource(R.mipmap.wallpaper);
             } else {
                 backGroundPlay.setImageBitmap(bitmapPlay);
-                imageViewPlay.setVisibility(View.GONE);
             }
+            imageViewPlay.setVisibility(View.GONE);
+
 
             Log.d("soso", "sss");
 
@@ -410,23 +443,14 @@ public class AudioFragment extends Fragment implements MyApplication.SetFragment
         isFirstTime = false;
 
 
-        ArrayList<CharSequence> titleList = new ArrayList<>();
-        ArrayList<CharSequence> durationList = new ArrayList<>();
-        ArrayList<CharSequence> extensionList = new ArrayList<>();
-        ArrayList<Uri> uriList = new ArrayList<>();
-        ArrayList<Integer> idList;
-        idList = trackInfo.getIdsInAlbum();
-        for (Integer ide : idList) {
-            titleList.add(audioInfoDatabase.getTitleById(ide));
-            uriList.add(audioInfoDatabase.getUriById(ide));
-            extensionList.add((audioInfoDatabase.getExtensionList().get(audioInfoDatabase.getIdList().indexOf(ide))));
-            durationList.add((audioInfoDatabase.getDurationList().get(audioInfoDatabase.getIdList().indexOf(ide))));
 
-        }
+
         RecyclerViewAdapter recyclerViewAdapter;
         if (!trackInfo.getIdsInAlbum().contains(prevId)) {
-            recyclerViewAdapter = new RecyclerViewAdapter(idList, uriList, titleList, extensionList, durationList, Context.MEDIATYPE.AUDIO, Context.CONTEXT.PLAY, this.getContext());
+            recyclerViewAdapter = new RecyclerViewAdapter(audioInfoDatabase, trackInfo, Context.CONTEXT.PLAY, this.getContext());
             recyclerViewAudioPlay.setAdapter(recyclerViewAdapter);
+            recyclerViewAdapter.setContextScreen(Context.CONTEXT.PLAY);
+            recyclerViewAdapter.notifyDataSetChanged();
             recyclerViewAudioPlay.setLayoutManager(new LinearLayoutManager(this.getContext()));
         }
         prevId = id;
@@ -574,10 +598,6 @@ public class AudioFragment extends Fragment implements MyApplication.SetFragment
 
     }
 
-    @Override
-    public boolean onMenuItemClick(MenuItem item) {
-        return true;
-    }
 
     @Override
     public void onFavouriteMomentsOperationsCompleted(FavouriteMoments favouriteMoments) {
@@ -591,6 +611,23 @@ public class AudioFragment extends Fragment implements MyApplication.SetFragment
     }
 
 
+    @Override
+    public void onOptionSelected(MenuItem menuItem) {
+        switch (menuItem.getItemId()) {
+            case R.id.group_by:
+                if (groupByAudio == Context.GROUPBY.ALBUM) {
+                    groupByAudio = Context.GROUPBY.NOTHING;
+                    initializeRecyclerView(audioInfoDatabase);
+                } else if (groupByAudio == Context.GROUPBY.NOTHING) {
+                    groupByAudio = Context.GROUPBY.ALBUM;
+                    initializeRecyclerView(audioInfoDatabase);
+                }
+                break;
+            default:
+                break;
+        }
+
+    }
 }
 
 

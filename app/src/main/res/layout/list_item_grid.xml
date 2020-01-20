@@ -2,35 +2,36 @@
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/parent_layout"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="120dp"
+    android:padding="12dp">
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:foreground="@drawable/ripple_effect"
+        android:layout_height="match_parent"
         android:background="@color/Black"
-        android:padding="4dp">
 
+
+        >
 
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/circle_image_list"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:padding="4dp"
-            android:src="@mipmap/white_circle" />
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:layout_marginStart="4dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginEnd="4dp"
+            android:src="@mipmap/alphabets_a" />
 
         <TextView
             android:id="@+id/title"
             android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:layout_marginStart="20dp"
-            android:layout_toEndOf="@id/circle_image_list"
-            android:ellipsize="end"
-            android:gravity="start|start"
-            android:maxLines="1"
-            android:text="Empty Title"
-            android:textSize="16dp"
-            android:textStyle="bold" />
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_marginStart="4dp"
+            android:layout_marginBottom="4dp"
+            android:gravity="center_horizontal"
+            android:text="title"
+            android:textSize="12dp" />
 
         <TextView
             android:id="@+id/subText1"
@@ -41,7 +42,8 @@
             android:layout_marginBottom="4dp"
             android:layout_toEndOf="@id/circle_image_list"
             android:text="--:--"
-            android:textSize="10dp" />
+            android:textSize="10dp"
+            android:visibility="gone" />
 
         <TextView
             android:id="@+id/subText2"
@@ -53,8 +55,9 @@
             android:layout_marginBottom="4dp"
             android:padding="2dp"
             android:text="--:--"
-            android:textSize="10dp" />
+            android:textSize="10dp"
+            android:visibility="gone" />
+
 
     </RelativeLayout>
-
 </androidx.cardview.widget.CardView>

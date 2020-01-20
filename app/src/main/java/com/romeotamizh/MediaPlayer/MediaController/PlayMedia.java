@@ -25,13 +25,13 @@ public class PlayMedia {
                 }
                 mediaPlayer.reset();
                 mediaPlayer.setDataSource(getContext(), uri);
+
                 mediaPlayer.prepareAsync();
                 mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                     @Override
                     public void onPrepared(MediaPlayer mp) {
                         if (mediaType == Context.MEDIATYPE.VIDEO) {
                             mediaPlayer.setVideoScalingMode(MediaPlayer.VIDEO_SCALING_MODE_SCALE_TO_FIT);
-
                         }
                         mediaPlayer.setVolume(1.0f, 1.0f);
                         mediaPlayerDuration = mediaPlayer.getDuration();

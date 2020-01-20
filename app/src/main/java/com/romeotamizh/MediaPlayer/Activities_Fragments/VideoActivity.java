@@ -312,8 +312,7 @@ public class VideoActivity extends AppCompatActivity implements View.OnClickList
             }
             surfaceView.setLayoutParams(lp);
             mediaPlayer.setDisplay(surfaceView.getHolder());
-            if (!mediaPlayer.isPlaying())
-                mediaPlayer.start();
+
 
         }
 

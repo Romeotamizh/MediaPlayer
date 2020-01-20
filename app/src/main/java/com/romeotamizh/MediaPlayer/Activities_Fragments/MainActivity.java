@@ -1,9 +1,13 @@
 package com.romeotamizh.MediaPlayer.Activities_Fragments;
 
 import android.Manifest;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
@@ -14,10 +18,12 @@ import com.google.android.material.tabs.TabLayout;
 import com.gun0912.tedpermission.PermissionListener;
 import com.gun0912.tedpermission.TedPermission;
 import com.romeotamizh.MediaPlayer.Adapters.ViewPagerAdapter;
+import com.romeotamizh.MediaPlayer.Helpers.Context;
 import com.romeotamizh.MediaPlayer.Helpers.MyApplication;
 import com.romeotamizh.MediaPlayer.R;
 
 import java.util.ArrayList;
+
 
 
 public class MainActivity extends AppCompatActivity //BottomNavigationView.OnNavigationItemSelectedListener , View.OnClickListener, View.OnLongClickListener, CustomSeekBar.OnSeekBarProgressListener, FavouriteMoments.OnFavouriteMomentsOperationsListener, MenuItem.OnMenuItemClickListener, SlidingUpPanelLayout.PanelSlideListener, PlayMedia.PlayMusicListener, MediaPlayer.OnCompletionListener {
@@ -27,17 +33,22 @@ public class MainActivity extends AppCompatActivity //BottomNavigationView.OnNav
             Manifest.permission.WRITE_EXTERNAL_STORAGE,
     };
 
-
+    public static boolean isExitVideo = true;
     public static int seekBarMax;
     public static int seekBarWidth;
     public static boolean isFirstTime = true;
-    public static boolean isExit = true;
+    public static boolean isExitAudio = true;
     public static boolean isSlideCollapsed = true;
     public static boolean isSongChanged = false;
     public static boolean isSlideExpanded = false;
     private ViewPager viewPager;
     private TabLayout tabLayout;
     private Toolbar toolbar;
+    public static Context.GROUPBY groupByAudio = Context.GROUPBY.NOTHING;
+    public static Context.GROUPBY groupByVideo = Context.GROUPBY.NOTHING;
+    SharedPreferences sharedPreferences;
+    SharedPreferences.Editor editor;
+    Menu menu;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,15 +71,31 @@ public class MainActivity extends AppCompatActivity //BottomNavigationView.OnNav
         toolbar = findViewById(R.id.toolbar_main);
         setSupportActionBar(toolbar);
 
-        //preferences.registerOnSharedPreferenceChangeListener(this);
+        sharedPreferences = getSharedPreferences("MainSettings", MODE_PRIVATE);
+        editor = sharedPreferences.edit();
 
 
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+
+        MyApplication.callBack(item);
+        Log.d("io.", "lol");
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
     public void onBackPressed() {
         MyApplication.callBack();
-        if (isExit)
+        if (isExitAudio && isExitVideo)
             super.onBackPressed();
 
 

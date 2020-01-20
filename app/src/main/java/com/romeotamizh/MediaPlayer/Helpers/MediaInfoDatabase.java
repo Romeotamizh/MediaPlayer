@@ -12,6 +12,7 @@ import androidx.annotation.RequiresApi;
 import com.romeotamizh.MediaPlayer.Helpers.Context.MEDIATYPE;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import static com.romeotamizh.MediaPlayer.Helpers.MyApplication.getContext;
 
@@ -26,6 +27,12 @@ public class MediaInfoDatabase {
     private MEDIATYPE mediaType;
     private ArrayList<CharSequence> durationList;
     private ArrayList<Uri> uriList;
+
+    private ArrayList<CharSequence> albumTitleList;
+
+    public ArrayList<CharSequence> getAlbumTitleList() {
+        return albumTitleList;
+    }
     private int mediaCount;
 
 
@@ -77,12 +84,32 @@ public class MediaInfoDatabase {
         for (CharSequence tempAlbumId : albumIdList) {
             StringBuilder tempAlbum = new StringBuilder(tempAlbumId);
             if (tempAlbumId.toString().contains(currentAlbum + ".")) {
-                temp.add(Integer.valueOf(tempAlbum.substring(tempAlbum.indexOf(".") + 1)));
+                String x = tempAlbum.substring(tempAlbum.lastIndexOf(".") + 1);
+                while (x.contains("."))
+                    x = x.substring(tempAlbum.lastIndexOf(".") + 1);
+                temp.add(Integer.valueOf(x));
             }
-
         }
         Log.d(temp.toString(), "lolok");
 
+        getIdsInAlbum(currentAlbum);
+
+
+        return temp;
+    }
+
+    public ArrayList<Integer> getIdsInAlbum(CharSequence currentAlbum) {
+        ArrayList<Integer> temp = new ArrayList<>();
+        for (CharSequence tempAlbumId : albumIdList) {
+            StringBuilder tempAlbum = new StringBuilder(tempAlbumId);
+            if (tempAlbum.toString().contains(currentAlbum + ".")) {
+                String x = tempAlbum.substring(tempAlbum.lastIndexOf(".") + 1);
+                while (x.contains("."))
+                    x = x.substring(tempAlbum.lastIndexOf(".") + 1);
+                temp.add(Integer.valueOf(x));
+            }
+        }
+        Log.d(currentAlbum.toString(), temp.toString());
 
         return temp;
     }
@@ -114,6 +141,7 @@ public class MediaInfoDatabase {
         this.extensionList = new ArrayList<>();
         this.uriList = new ArrayList<>();
         this.albumIdList = new ArrayList<>();
+        this.albumTitleList = new ArrayList<>();
         Cursor cursor;
         Uri contentUri;
         String sortOrder;
@@ -132,6 +160,9 @@ public class MediaInfoDatabase {
         CharSequence title;
         int id;
         Uri uri;
+        String currAlbum = "";
+        ArrayList<CharSequence> albumTitleList1 = new ArrayList();
+
 
 
         if (cursor != null) {
@@ -145,8 +176,10 @@ public class MediaInfoDatabase {
                 this.idList.add(id);
                 this.extensionList.add(FormatData.getExtension(cursor.getString(cursor.getColumnIndex("_display_name"))));
                 this.uriList.add(uri);
-                if (mediaType == MEDIATYPE.AUDIO)
-                    this.albumIdList.add(cursor.getString(cursor.getColumnIndex("album_id")) + "." + id);
+                currAlbum = cursor.getString(cursor.getColumnIndex("album"));
+                if (!albumTitleList1.contains(currAlbum))
+                    albumTitleList1.add(currAlbum);
+                this.albumIdList.add(cursor.getString(cursor.getColumnIndex("album")) + "." + id);
                 this.mediaCount++;
 
             }
@@ -157,6 +190,9 @@ public class MediaInfoDatabase {
             }
 
             cursor.close();
+            CharSequence[] c = albumTitleList1.toArray(new CharSequence[0]);
+            Arrays.sort(c);
+            this.albumTitleList.addAll(Arrays.asList(c));
         }
     }
 

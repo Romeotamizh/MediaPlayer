@@ -2,6 +2,9 @@ package com.romeotamizh.MediaPlayer.Helpers;
 
 import android.app.Application;
 import android.content.Context;
+import android.view.MenuItem;
+
+import java.util.ArrayList;
 
 public class MyApplication extends Application {
 
@@ -17,18 +20,34 @@ public class MyApplication extends Application {
         MyApplication.context = getApplicationContext();
     }
 
-    public static SetFragmentOnBackPressedListener listener;
+    public static ArrayList<SetFragmentOnBackPressedListener> listeners = new ArrayList<>();
+    public static ArrayList<SetFragmentOnOptionsMenuClickedListener> listeners1 = new ArrayList<>();
 
     public static void setOnBackPressed(SetFragmentOnBackPressedListener listener) {
-        MyApplication.listener = listener;
+        MyApplication.listeners.add(listener);
+    }
+
+    public static void setOnOptionsSelected(SetFragmentOnOptionsMenuClickedListener listener) {
+        MyApplication.listeners1.add(listener);
     }
 
     public static void callBack() {
-        MyApplication.listener.onBackPressed();
+        for (SetFragmentOnBackPressedListener listener : MyApplication.listeners)
+            listener.onBackPressed();
+    }
+
+    public static void callBack(MenuItem menuItem) {
+        for (SetFragmentOnOptionsMenuClickedListener listener : MyApplication.listeners1)
+            listener.onOptionSelected(menuItem);
     }
 
     public interface SetFragmentOnBackPressedListener {
         void onBackPressed();
+
+    }
+
+    public interface SetFragmentOnOptionsMenuClickedListener {
+        void onOptionSelected(MenuItem menuItem);
 
     }
 

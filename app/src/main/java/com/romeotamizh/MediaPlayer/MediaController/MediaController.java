@@ -18,7 +18,7 @@ import static com.romeotamizh.MediaPlayer.MediaController.PlayMedia.mediaPlayer;
 import static com.romeotamizh.MediaPlayer.MediaController.PlayMedia.mediaPlayerDuration;
 
 
-public class MediaController implements SeekBar.OnSeekBarChangeListener, CustomSeekBar.OnSeekBarProgressListener {
+public class MediaController implements SeekBar.OnSeekBarChangeListener {
 
 
     private CustomSeekBar seekBar;
@@ -36,7 +36,6 @@ public class MediaController implements SeekBar.OnSeekBarChangeListener, CustomS
         this.maxLengthTextView = maxLengthTextView;
         this.playPause = playPause;
         this.context = context;
-        CustomSeekBar.setSeekBarProgress(this);
 
     }
 
@@ -64,9 +63,8 @@ public class MediaController implements SeekBar.OnSeekBarChangeListener, CustomS
 
 
                     if (mediaPlayer.isPlaying()) {
-                        currentPosition = mediaPlayer.getCurrentPosition();
-                        currentPosition++;
-                        seekBar.setProgress(currentPosition);
+                        seekBar.setProgress(mediaPlayer.getCurrentPosition() + 1);
+
                     }
 
                     if (currentPosition >= mediaPlayerDuration) {
@@ -117,7 +115,7 @@ public class MediaController implements SeekBar.OnSeekBarChangeListener, CustomS
     @Override
     public void onStopTrackingTouch(SeekBar seekBar) {
         currentPositionTextView.setText(FormatData.formatTime(seekBar.getProgress()));
-        CustomSeekBar.callBack(seekBar.getProgress());
+        mediaPlayer.seekTo(seekBar.getProgress());
         mediaPlayer.start();
         if (mediaPlayer.isPlaying())
             playPause.setImageResource(R.mipmap.final_pause);
@@ -125,10 +123,5 @@ public class MediaController implements SeekBar.OnSeekBarChangeListener, CustomS
     }
 
 
-    @Override
-    public void onSeekBarProgressChange(int progress) {
-        Log.d("lol", String.valueOf(progress));
-        mediaPlayer.seekTo(progress);
 
-    }
 }

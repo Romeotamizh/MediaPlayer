@@ -26,7 +26,6 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scrollbarSize="4dp"
-            android:foreground="?android:selectableItemBackground"
             android:scrollbars="vertical" />
 
 

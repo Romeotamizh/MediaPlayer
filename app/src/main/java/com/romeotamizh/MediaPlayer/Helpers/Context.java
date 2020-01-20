@@ -10,5 +10,7 @@ public final class Context {
 
     public enum SIGNAL {DEFAULT}
 
+    public enum GROUPBY {NOTHING, ALBUM, FOLDER}
+
 
 }

@@ -12,10 +12,12 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.romeotamizh.MediaPlayer.Helpers.MediaInfoDatabase;
 import com.romeotamizh.MediaPlayer.MediaController.PlayMedia;
 import com.romeotamizh.MediaPlayer.R;
 
@@ -25,34 +27,55 @@ import java.util.List;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 import static android.content.Context.LAYOUT_INFLATER_SERVICE;
+import static com.romeotamizh.MediaPlayer.Activities_Fragments.AudioFragment.tAudio;
+import static com.romeotamizh.MediaPlayer.Activities_Fragments.MainActivity.groupByAudio;
+import static com.romeotamizh.MediaPlayer.Activities_Fragments.MainActivity.groupByVideo;
 import static com.romeotamizh.MediaPlayer.Activities_Fragments.MainActivity.isSongChanged;
+import static com.romeotamizh.MediaPlayer.Activities_Fragments.VideoFragment.isInFinalList;
+import static com.romeotamizh.MediaPlayer.Activities_Fragments.VideoFragment.t;
 import static com.romeotamizh.MediaPlayer.Helpers.Thumbnail.setThumbnailImage;
 
 
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder> {
     private boolean one, two, three, four, five, six, seven, eight = false;
-    private ArrayList<CharSequence> titleList;
-    private ArrayList<CharSequence> durationList;
-    private ArrayList<CharSequence> extensionList;
-    private ArrayList<Integer> idList;
-    private ArrayList<Uri> uriList;
+    private ArrayList<CharSequence> titleList = new ArrayList<>();
+    private ArrayList<CharSequence> durationList = new ArrayList<>();
+    private ArrayList<CharSequence> extensionList = new ArrayList<>();
+    private ArrayList<Integer> idList = new ArrayList<>();
+    private ArrayList<Uri> uriList = new ArrayList<>();
     private ArrayList<Bitmap> thumbs;
     private com.romeotamizh.MediaPlayer.Helpers.Context.MEDIATYPE mediaType;
     private LayoutInflater inflater;
     private Context context;
     private int listSize;
-
-
+    private com.romeotamizh.MediaPlayer.Helpers.Context.CONTEXT contextScreen;
+    private MediaInfoDatabase mediaInfoDatabase;
     @RequiresApi(api = Build.VERSION_CODES.Q)
-    public RecyclerViewAdapter(ArrayList<Integer> idList, ArrayList<Uri> uriList, ArrayList<CharSequence> titleList, ArrayList<CharSequence> extensionList, ArrayList<CharSequence> durationList, com.romeotamizh.MediaPlayer.Helpers.Context.MEDIATYPE mediaType, com.romeotamizh.MediaPlayer.Helpers.Context.CONTEXT contextScreen, Context context) {
+    public RecyclerViewAdapter(MediaInfoDatabase mediaInfoDatabase, @Nullable MediaInfoDatabase.TrackInfo trackInfo, com.romeotamizh.MediaPlayer.Helpers.Context.CONTEXT contextScreen, Context context) {
         this.context = context;
         this.inflater = (LayoutInflater) context.getSystemService(LAYOUT_INFLATER_SERVICE);
-        this.idList = idList;
-        this.uriList = uriList;
-        this.titleList = titleList;
-        this.extensionList = extensionList;
-        this.durationList = durationList;
-        this.mediaType = mediaType;
+        if (trackInfo == null) {
+            this.idList = mediaInfoDatabase.getIdList();
+            this.uriList = mediaInfoDatabase.getUriList();
+            this.titleList = mediaInfoDatabase.getTitleList();
+            this.extensionList = mediaInfoDatabase.getExtensionList();
+            this.durationList = mediaInfoDatabase.getDurationList();
+            this.mediaInfoDatabase = mediaInfoDatabase;
+
+        } else {
+            this.idList = trackInfo.getIdsInAlbum();
+            for (Integer ide : idList) {
+                this.titleList.add(mediaInfoDatabase.getTitleById(ide));
+                this.uriList.add(mediaInfoDatabase.getUriById(ide));
+                this.extensionList.add((mediaInfoDatabase.getExtensionList().get(mediaInfoDatabase.getIdList().indexOf(ide))));
+                this.durationList.add((mediaInfoDatabase.getDurationList().get(mediaInfoDatabase.getIdList().indexOf(ide))));
+
+            }
+
+        }
+
+        contextScreen = contextScreen;
+        this.mediaType = mediaInfoDatabase.getMediaType();
         this.listSize = this.idList.size();
         this.thumbs = new ArrayList<>();
         if (contextScreen == com.romeotamizh.MediaPlayer.Helpers.Context.CONTEXT.MAIN)
@@ -62,6 +85,30 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                 this.thumbs.add(setThumbnailImage(uri, new Size(80, 80), titleList.get(uriList.indexOf(uri))));
 
 
+    }
+
+    public void setContextScreen(com.romeotamizh.MediaPlayer.Helpers.Context.CONTEXT contextScreen) {
+        this.contextScreen = contextScreen;
+    }
+
+    public void setDurationList(ArrayList<CharSequence> durationList) {
+        this.durationList = durationList;
+    }
+
+    public void setExtensionList(ArrayList<CharSequence> extensionList) {
+        this.extensionList = extensionList;
+    }
+
+    public void setIdList(ArrayList<Integer> idList) {
+        this.idList = idList;
+    }
+
+    public void setUriList(ArrayList<Uri> uriList) {
+        this.uriList = uriList;
+    }
+
+    public void setThumbs(ArrayList<Bitmap> thumbs) {
+        this.thumbs = thumbs;
     }
 
     @RequiresApi(api = Build.VERSION_CODES.Q)
@@ -204,6 +251,10 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                 thumbs.addAll(t6);
                 thumbs.addAll(t7);
                 thumbs.addAll(t8);
+                if (mediaType == com.romeotamizh.MediaPlayer.Helpers.Context.MEDIATYPE.VIDEO)
+                    t = thumbs;
+                if (mediaType == com.romeotamizh.MediaPlayer.Helpers.Context.MEDIATYPE.AUDIO)
+                    tAudio = thumbs;
                 break;
             }
             try {
@@ -228,12 +279,28 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     }
 
 
+    public void setTitleList(ArrayList<CharSequence> titleList) {
+        this.titleList = titleList;
+    }
+
+    public void setListSize(int listSize) {
+        this.listSize = listSize;
+    }
+
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item, parent, false);
+        View view;
+        if ((groupByVideo == com.romeotamizh.MediaPlayer.Helpers.Context.GROUPBY.ALBUM || groupByAudio == com.romeotamizh.MediaPlayer.Helpers.Context.GROUPBY.ALBUM) && !isInFinalList && contextScreen != com.romeotamizh.MediaPlayer.Helpers.Context.CONTEXT.PLAY) {
+            view = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item_grid, parent, false);
+        } else
+            view = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item, parent, false);
+        if (groupByAudio == com.romeotamizh.MediaPlayer.Helpers.Context.GROUPBY.NOTHING || groupByVideo == com.romeotamizh.MediaPlayer.Helpers.Context.GROUPBY.NOTHING)
+            view = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item, parent, false);
+
         return new ViewHolder(view);
     }
+
 
 
     @RequiresApi(api = Build.VERSION_CODES.Q)
@@ -244,22 +311,26 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         holder.duration.setText(durationList.get(position));
         holder.circleImageView.setImageBitmap(this.thumbs.get(position));
         holder.parentLayout.setOnClickListener(new View.OnClickListener() {
-
-
             @Override
             public void onClick(View v) {
                 isSongChanged = true;
                 Log.d("mmm", mediaType.toString());
-                PlayMedia.callBack(idList.get(position), mediaType);
+                if (mediaType == com.romeotamizh.MediaPlayer.Helpers.Context.MEDIATYPE.VIDEO && groupByVideo == com.romeotamizh.MediaPlayer.Helpers.Context.GROUPBY.ALBUM && !isInFinalList) {
+                    PlayMedia.callBack(mediaInfoDatabase.getIdsInAlbum(titleList.get(position)).get(0), mediaType);
+                    if (mediaType == com.romeotamizh.MediaPlayer.Helpers.Context.MEDIATYPE.VIDEO)
+                        isInFinalList = true;
+
+                } else {
+                    PlayMedia.callBack(idList.get(position), mediaType);
+                }
             }
         });
-
 
     }
 
     @Override
     public int getItemCount() {
-        return this.listSize;
+        return listSize;
     }
 
 
@@ -271,10 +342,11 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         CardView parentLayout;
 
         ViewHolder(@NonNull View itemView) {
+
             super(itemView);
             title = itemView.findViewById(R.id.title);
-            duration = itemView.findViewById(R.id.duration);
-            extension = itemView.findViewById(R.id.extension);
+            duration = itemView.findViewById(R.id.subText2);
+            extension = itemView.findViewById(R.id.subText1);
             parentLayout = itemView.findViewById(R.id.parent_layout);
             circleImageView = itemView.findViewById(R.id.circle_image_list);
         }
