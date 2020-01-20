@@ -1,11 +1,11 @@
-package com.romeotamizh.MediaPlayer;
+package com.romeotamizh.MediaPlayer.Activities_Fragments;
 
 import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.romeotamizh.MediaPlayer.Activities_Fragments.MainActivity;
+import com.romeotamizh.MediaPlayer.R;
 
 
 public class SplashScreenActivity extends AppCompatActivity {

@@ -11,6 +11,7 @@ import java.util.Arrays;
 
 import static com.romeotamizh.MediaPlayer.Helpers.CustomSeekBar.mFavouritesPositionsList;
 import static com.romeotamizh.MediaPlayer.Helpers.MyApplication.getContext;
+import static com.romeotamizh.MediaPlayer.MediaController.PlayMedia.mediaPlayer;
 
 public class FavouriteMoments {
     private static ArrayList<OnFavouriteMomentsOperationsListener> listeners = new ArrayList<>();
@@ -147,7 +148,7 @@ public class FavouriteMoments {
                 Arrays.sort(temp);
                 int currentPositionIndex = Arrays.binarySearch(temp, currentPosition);
                 if (currentPositionIndex < temp.length - 1)
-                    CustomSeekBar.callBack(temp[currentPositionIndex + 1]);
+                    mediaPlayer.seekTo(temp[currentPositionIndex + 1]);
 
 
             }
@@ -168,11 +169,11 @@ public class FavouriteMoments {
 
                 if (isPreviousButtonLongPressed)
                     if (currentPositionIndex >= 2)
-                        CustomSeekBar.callBack(temp[currentPositionIndex - 2]);
+                        mediaPlayer.seekTo(temp[currentPositionIndex - 2]);
                     else
-                        CustomSeekBar.callBack(temp[currentPositionIndex - 1]);
+                        mediaPlayer.seekTo(temp[currentPositionIndex - 1]);
                 else
-                    CustomSeekBar.callBack(temp[currentPositionIndex - 1]);
+                    mediaPlayer.seekTo(temp[currentPositionIndex - 1]);
 
             }
 

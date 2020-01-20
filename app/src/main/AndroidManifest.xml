@@ -19,7 +19,7 @@
         android:theme="@style/AppThemeDark"
         tools:ignore="GoogleAppIndexingWarning">
         <activity
-            android:name="com.romeotamizh.MediaPlayer.SplashScreenActivity"
+            android:name="com.romeotamizh.MediaPlayer.Activities_Fragments.SplashScreenActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:screenOrientation="portrait"
             android:theme="@style/FullscreenTheme">
