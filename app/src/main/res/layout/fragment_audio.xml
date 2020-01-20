@@ -10,7 +10,7 @@
     android:gravity="bottom"
     sothree:umanoPanelHeight="100dp"
     sothree:umanoShadowHeight="4dp"
-    tools:context=".AudioFragment">
+    tools:context=".Activities_Fragments.AudioFragment">
 
 
     <RelativeLayout
@@ -21,11 +21,12 @@
         android:orientation="vertical">
 
 
-        <com.romeotamizh.MusicPlayer.Helpers.MyRecyclerView
+        <com.romeotamizh.MediaPlayer.Helpers.CustomRecyclerView
             android:id="@+id/recyclerView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scrollbarSize="4dp"
+            android:foreground="?android:selectableItemBackground"
             android:scrollbars="vertical" />
 
 

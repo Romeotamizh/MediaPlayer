@@ -1,96 +1,60 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/parent_layout"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:id="@+id/parent_layout">
-<RelativeLayout
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/Black">
+    android:layout_height="wrap_content">
 
     <RelativeLayout
-        android:id="@+id/circle_image_view_recycler"
-        android:layout_width="80dp"
-        android:layout_height="80dp"
-        android:foregroundGravity="center">
-
-        <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/dummy_circle_image"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:padding="8dp"
-            android:src="@mipmap/white_circle"
-            />
-
-
-        <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/image"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_alignWithParentIfMissing="true"
-            android:layout_centerInParent="true"
-            android:layout_margin="8dp"
-
-            android:layout_marginTop="4dp"
-            android:layout_marginBottom="4dp"
-            android:padding="8dp"
-
-            android:src="@mipmap/a" />
-    </RelativeLayout>
-
-    <LinearLayout
-        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="80dp"
-        android:layout_toEndOf="@+id/circle_image_view_recycler">
+        android:layout_height="60dp"
+        android:background="@color/Black"
+        android:foreground="?selectableItemBackground"
+        android:padding="4dp">
+
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/circle_image_list"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:padding="4dp"
+            android:src="@mipmap/white_circle" />
 
         <TextView
             android:id="@+id/title"
             android:layout_width="match_parent"
-            android:layout_height="60dp"
+            android:layout_height="40dp"
             android:layout_marginStart="20dp"
-            android:gravity="center|start"
-            android:padding="2dp"
-            android:text="Empty Title"
+            android:layout_toEndOf="@id/circle_image_list"
             android:ellipsize="end"
-            android:textStyle="bold"
+            android:gravity="start|start"
             android:maxLines="1"
-            android:textSize="18dp"
-            />
+            android:text="Empty Title"
+            android:textSize="16dp"
+            android:textStyle="bold" />
 
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="20dp">
-
-    <TextView
-        android:id="@+id/extension"
-        android:layout_width="0dp"
-        android:layout_weight="1"
-        android:layout_height="match_parent"
-        android:text="--:--"
-        android:gravity="center|start"
-        android:layout_marginStart="20dp"
-        android:layout_marginEnd="6dp"
-        android:textSize="10dp"
-        android:padding="2dp"
-        />
+        <TextView
+            android:id="@+id/extension"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_marginStart="20dp"
+            android:layout_marginBottom="4dp"
+            android:layout_toEndOf="@id/circle_image_list"
+            android:text="--:--"
+            android:textSize="10dp" />
 
         <TextView
             android:id="@+id/duration"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="match_parent"
-            android:text="--:--"
-            android:gravity="center|end"
-            android:layout_marginStart="20dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignEnd="@id/title"
+            android:layout_alignParentBottom="true"
             android:layout_marginEnd="6dp"
-            android:textSize="10dp"
+            android:layout_marginBottom="4dp"
             android:padding="2dp"
-            />
-    </LinearLayout>
-    </LinearLayout>
-</RelativeLayout>
+            android:text="--:--"
+            android:textSize="10dp" />
+
+    </RelativeLayout>
 
 </androidx.cardview.widget.CardView>

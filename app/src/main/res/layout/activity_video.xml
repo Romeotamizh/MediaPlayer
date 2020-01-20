@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/Black"
+    tools:context=".Activities_Fragments.VideoActivity">
+
+    <!-- The primary full-screen view. This can be replaced with whatever view
+         is needed to present your content, e.g. VideoView, SurfaceView,
+         TextureView, etc. -->
+    <SurfaceView
+        android:id="@+id/video_View"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal|center_vertical"
+        android:gravity="center"
+        android:keepScreenOn="true"
+        android:visibility="visible" />
+
+    <!-- This FrameLayout insets its children based on system windows using
+         android:fitsSystemWindows. -->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fitsSystemWindows="true">
+
+
+        <RelativeLayout
+            android:id="@+id/fullscreen_content_controls"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="4dp"
+            android:orientation="horizontal"
+            tools:ignore="UselessParent">
+
+            <TextView
+                android:id="@+id/title_video"
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:layout_alignParentTop="true"
+                android:background="@color/black_overlay"
+                android:ellipsize="end"
+                android:gravity="center_horizontal|center_vertical"
+                android:text="Title"
+                android:textAlignment="center"
+                android:textSize="24dp" />
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="94dp"
+                android:layout_alignParentBottom="true"
+                android:background="@color/black_overlay">
+
+                <ImageView
+                    android:layout_width="16dp"
+                    android:layout_height="30dp"
+                    android:layout_alignBottom="@id/video_controls"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginEnd="50dp"
+                    android:layout_marginBottom="14dp"
+                    android:foreground="?android:selectableItemBackground"
+                    android:src="@mipmap/final_just_heart" />
+
+                <ImageView
+                    android:id="@+id/fav"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_alignBottom="@id/video_controls"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginEnd="50dp"
+                    android:layout_marginBottom="14dp"
+                    android:foreground="?android:selectableItemBackground"
+                    android:src="#00FF0000" />
+
+
+                <include
+                    android:id="@+id/seekBar_video"
+                    layout="@layout/layout_seekbar"
+                    android:layout_width="match_parent"
+                    android:layout_height="28dp"
+                    android:layout_above="@id/video_controls"
+                    android:layout_marginBottom="-12dp" />
+
+                <LinearLayout
+                    android:id="@+id/video_controls"
+                    android:layout_width="200dp"
+                    android:layout_height="60dp"
+                    android:layout_alignParentBottom="true"
+                    android:layout_centerHorizontal="true"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginBottom="4dp"
+                    android:orientation="horizontal"
+                    android:weightSum="4">
+
+                    <ImageView
+                        android:id="@+id/back"
+                        android:layout_width="0dp"
+                        android:layout_height="16dp"
+                        android:layout_gravity="center"
+                        android:layout_weight="1"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:foreground="?android:selectableItemBackground"
+                        android:longClickable="true"
+                        android:scaleType="fitCenter"
+                        android:src="@mipmap/final_prev"
+                        android:tint="@color/White" />
+
+                    <ImageView
+                        android:id="@+id/play_or_pause"
+                        android:layout_width="0dp"
+                        android:layout_height="60dp"
+                        android:layout_gravity="center"
+                        android:layout_marginHorizontal="8dp"
+                        android:layout_weight="2"
+                        android:foreground="?android:selectableItemBackground"
+                        android:scaleType="fitCenter"
+                        android:src="@mipmap/final_pause" />
+
+
+                    <ImageView
+                        android:id="@+id/next_fav"
+                        android:layout_width="0dp"
+                        android:layout_height="16dp"
+                        android:layout_gravity="center"
+                        android:layout_weight="1"
+                        android:foreground="?android:selectableItemBackground"
+                        android:scaleType="fitCenter"
+                        android:src="@mipmap/final_next"
+                        android:tint="@color/White" />
+
+                </LinearLayout>
+            </RelativeLayout>
+        </RelativeLayout>
+    </RelativeLayout>
+
+</FrameLayout>

@@ -11,94 +11,84 @@
         android:id="@+id/divider"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true" />
-
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:clickable="true"
-        android:id="@+id/pic_layout"
-        android:layout_width="match_parent"
-        android:layout_height="360dp"
-        android:layout_alignBottom="@id/divider"
-        android:gravity="center_vertical|center_horizontal"
+        android:layout_centerVertical="true"
         android:layout_alignParentTop="true"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/bootom_half"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:scaleType="centerCrop"
-            android:src="@mipmap/wallpaper"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:alpha=".35"
-            android:src="@color/Black"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+        android:layout_marginTop="260dp" />
 
 
-        <ImageView
-
-            android:id="@+id/circle_image_view"
-            android:layout_width="match_parent"
-            android:layout_height="150dp"
-            android:scaleType="fitCenter"
-            android:layout_marginLeft="4dp"
-            android:layout_marginTop="4dp"
-            android:src="@mipmap/white_backgound_with_shadow"
-
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <ImageView
-
-            android:id="@+id/image_view"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:scaleType="fitCenter"
-            android:src="@mipmap/a"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <FrameLayout
-        android:layout_height="100dp"
-
-        android:id="@+id/activity_main_seekBar_frame"
+    <ImageView
+        android:id="@+id/bg_image"
         android:layout_width="match_parent"
-        android:layout_centerInParent="true"
+        android:layout_height="260dp"
         android:layout_alignParentTop="true"
-        android:clickable="true"
-        android:visibility="visible" />
+        android:scaleType="centerCrop"
+        android:src="@mipmap/wallpaper" />
 
     <ImageView
         android:layout_width="match_parent"
-        android:layout_height="72dp"
+        android:layout_height="260dp"
+        android:layout_alignParentTop="true"
+        android:alpha=".35"
+        android:src="@color/Black" />
+
+
+
+
+
+
+
+    <FrameLayout
+        android:id="@+id/activity_main_seekBar_frame"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:layout_alignParentTop="true"
         android:layout_centerInParent="true"
         android:clickable="true"
-        android:src="@mipmap/seekbar_bg_white" />
-
-    <include layout="@layout/layout_seekbar" />
+        android:visibility="visible" />
 
 
-    <include layout="@layout/layout_circle_controls" />
+    <include
+        layout="@layout/layout_minimized_controls"
+        android:layout_width="match_parent"
+        android:layout_height="166dp"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="12dp"
 
+        />
+
+    <include
+        android:id="@+id/seekBar_frame"
+        layout="@layout/layout_seekbar"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_above="@id/recyclerView_play"
+        android:layout_marginBottom="12dp" />
+
+    <ImageView
+        android:id="@+id/circle_image_view_play"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:layout_centerInParent="true"
+        android:src="@mipmap/white_circle"
+        android:visibility="gone" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerView_play"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/divider"
+        android:paddingTop="2dp"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+
+    <ImageView
+        android:id="@+id/fav_play"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginEnd="12dp"
+        android:layout_marginBottom="12dp"
+        android:foreground="?android:selectableItemBackground"
+        android:src="@mipmap/final_filled_heart" />
 
 </RelativeLayout>

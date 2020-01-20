@@ -4,7 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/seekBar_parent"
     android:layout_width="match_parent"
-    android:layout_height="72dp"
+    android:layout_height="wrap_content"
     android:layout_centerVertical="true"
     app:layout_constraintBottom_toBottomOf="parent"
     app:layout_constraintTop_toTopOf="parent">
@@ -14,7 +14,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="horizontal"
-        android:weightSum="8">
+        android:weightSum="9">
 
 
     <TextView
@@ -25,20 +25,18 @@
         android:layout_weight="1"
         android:gravity="center_horizontal|center_vertical"
         android:text="00:00"
-        android:textColor="@color/Black"
-        android:textSize="12dp" />
+        android:textColor="@color/White"
+        android:textSize="10dp" />
 
-        <com.romeotamizh.MusicPlayer.Helpers.SeekBarWithFavourites
+        <com.romeotamizh.MediaPlayer.Helpers.CustomSeekBar
         android:id="@+id/seekBar"
         android:layout_width="0dp"
         android:layout_height="24dp"
         android:layout_gravity="center_vertical"
-        android:layout_weight="6"
+            android:layout_weight="7"
         android:indeterminateTint="@color/White"
-
-
-        app:dots_Position="@array/dots"
-        app:dots_drawable="@mipmap/red_play" />
+            app:dots_Position="@array/dots"
+            app:dots_drawable="@mipmap/final_just_heart" />
 
     <TextView
         android:id="@+id/max_length"
@@ -48,8 +46,8 @@
         android:layout_weight="1"
         android:gravity="center_horizontal|center_vertical"
         android:text="00:01"
-        android:textColor="@color/Black"
-        android:textSize="12dp" />
+        android:textColor="@color/White"
+        android:textSize="10dp" />
 
     </LinearLayout>
 

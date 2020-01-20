@@ -3,14 +3,20 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    tools:context=".Activities_Fragments.VideoFragment">
 
-    tools:context=".VideoFragment">
 
-
-    <com.romeotamizh.MusicPlayer.Helpers.MyRecyclerView
+    <com.romeotamizh.MediaPlayer.Helpers.CustomRecyclerView
         android:id="@+id/recyclerView_video"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scrollbarSize="4dp"
         android:scrollbars="vertical" />
+
+
+    <FrameLayout
+        android:id="@+id/video_holder"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
 </RelativeLayout>
