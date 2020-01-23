@@ -112,21 +112,25 @@ public class VideoFragment extends Fragment implements PlayMedia.OnPlayMediaList
             recyclerViewAdapter.notifyDataSetChanged();
             isInFinalList = true;
 
-
         }
         if (groupByVideo == Context.GROUPBY.ALBUM) {
             if (id == 0) {
                 isInFinalList = false;
                 Size size = new Size(200, 200);
                 ArrayList<CharSequence> albumTitleList = mediaInfoDatabase.getAlbumTitleList();
+                ArrayList<Integer> i = new ArrayList<>();
                 recyclerViewVideo.setLayoutManager(new StaggeredGridLayoutManager(4, StaggeredGridLayoutManager.VERTICAL));
                 recyclerViewAdapter.setTitleList(albumTitleList);
                 recyclerViewAdapter.setExtensionList(albumTitleList);
                 recyclerViewAdapter.setDurationList(albumTitleList);
                 recyclerViewAdapter.setListSize(albumTitleList.size());
                 ArrayList<Bitmap> bitmaps = new ArrayList<>();
-                for (CharSequence album : albumTitleList)
-                    bitmaps.add(setThumbnailImage(mediaInfoDatabase.getUriById(mediaInfoDatabase.getIdsInAlbum(album).get(0)), size, album));
+                for (CharSequence album : albumTitleList) {
+                    int firstId = mediaInfoDatabase.getIdsInAlbum(album).get(0);
+                    i.add(firstId);
+                    bitmaps.add(setThumbnailImage(mediaInfoDatabase.getUriById(firstId), size, album));
+                }
+                recyclerViewAdapter.setIdList(i);
                 recyclerViewAdapter.setThumbs(bitmaps);
                 recyclerViewAdapter.notifyDataSetChanged();
 

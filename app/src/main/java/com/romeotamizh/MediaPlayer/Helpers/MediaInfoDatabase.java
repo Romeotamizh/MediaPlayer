@@ -28,11 +28,11 @@ public class MediaInfoDatabase {
     private ArrayList<CharSequence> durationList;
     private ArrayList<Uri> uriList;
 
-    private ArrayList<CharSequence> albumTitleList;
-
     public ArrayList<CharSequence> getAlbumTitleList() {
         return albumTitleList;
     }
+
+    private ArrayList<CharSequence> albumTitleList;
     private int mediaCount;
 
 
@@ -90,7 +90,6 @@ public class MediaInfoDatabase {
                 temp.add(Integer.valueOf(x));
             }
         }
-        Log.d(temp.toString(), "lolok");
 
         getIdsInAlbum(currentAlbum);
 
@@ -109,7 +108,6 @@ public class MediaInfoDatabase {
                 temp.add(Integer.valueOf(x));
             }
         }
-        Log.d(currentAlbum.toString(), temp.toString());
 
         return temp;
     }
@@ -179,7 +177,7 @@ public class MediaInfoDatabase {
                 currAlbum = cursor.getString(cursor.getColumnIndex("album"));
                 if (!albumTitleList1.contains(currAlbum))
                     albumTitleList1.add(currAlbum);
-                this.albumIdList.add(cursor.getString(cursor.getColumnIndex("album")) + "." + id);
+                this.albumIdList.add(currAlbum + "." + id);
                 this.mediaCount++;
 
             }

@@ -21,7 +21,6 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.NavUtils;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.romeotamizh.MediaPlayer.Helpers.Context;
 import com.romeotamizh.MediaPlayer.Helpers.CustomSeekBar;
@@ -86,7 +85,6 @@ public class VideoActivity extends AppCompatActivity implements View.OnClickList
             return false;
         }
     };
-    private RecyclerView recyclerViewAudioVideo;
     private TextView titleTextViewVideo;
     private TextView currentPositionTextViewVideo;
     private TextView maxLengthTextViewVideo;
@@ -94,8 +92,7 @@ public class VideoActivity extends AppCompatActivity implements View.OnClickList
     private ImageView nextFavButtonVideo;
     private ImageView previousButtonVideo;
     private ImageView favButtonVideo;
-    private ImageView imageViewVideo;
-    private ImageView backGroundVideo;
+
     private CustomSeekBar seekBarVideo;
     private MediaController mediaControllerVideo;
 
@@ -211,18 +208,18 @@ public class VideoActivity extends AppCompatActivity implements View.OnClickList
         mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
             @Override
             public void onPrepared(MediaPlayer mp) {
-                float videoRatio = (float) mediaPlayer.getVideoWidth() / (float) mediaPlayer.getVideoHeight();
+                double videoRatio = (double) mediaPlayer.getVideoWidth() / (double) mediaPlayer.getVideoHeight();
                 Point size = new Point();
                 getWindowManager().getDefaultDisplay().getSize(size);
                 int screenWidth = size.x;
                 int screenHeight = size.y;
-                float screenRatio = (float) screenWidth / (float) screenHeight;
+                double screenRatio = (double) screenWidth / (double) screenHeight;
                 ViewGroup.LayoutParams lp = surfaceView.getLayoutParams();
                 if (videoRatio > screenRatio) {
                     lp.width = screenWidth;
-                    lp.height = (int) ((float) screenWidth / videoRatio);
+                    lp.height = (int) ((double) screenWidth / videoRatio);
                 } else {
-                    lp.width = (int) (videoRatio * (float) screenHeight);
+                    lp.width = (int) (videoRatio * (double) screenHeight);
                     lp.height = screenHeight;
 
                 }
@@ -241,18 +238,18 @@ public class VideoActivity extends AppCompatActivity implements View.OnClickList
             @Override
             public void onVideoSizeChanged(MediaPlayer mp, int width, int height) {
 
-                float videoRatio = (float) mediaPlayer.getVideoWidth() / (float) mediaPlayer.getVideoHeight();
+                double videoRatio = (double) mediaPlayer.getVideoWidth() / (double) mediaPlayer.getVideoHeight();
                 Point size = new Point();
                 getWindowManager().getDefaultDisplay().getSize(size);
                 int screenWidth = size.x;
                 int screenHeight = size.y;
-                float screenRatio = (float) screenWidth / (float) screenHeight;
+                double screenRatio = (double) screenWidth / (double) screenHeight;
                 ViewGroup.LayoutParams lp = surfaceView.getLayoutParams();
                 if (videoRatio > screenRatio) {
                     lp.width = screenWidth;
-                    lp.height = (int) ((float) screenWidth / videoRatio);
+                    lp.height = (int) ((double) screenWidth / videoRatio);
                 } else {
-                    lp.width = (int) (videoRatio * (float) screenHeight);
+                    lp.width = (int) (videoRatio * (double) screenHeight);
                     lp.height = screenHeight;
 
                 }
@@ -295,18 +292,18 @@ public class VideoActivity extends AppCompatActivity implements View.OnClickList
         super.onConfigurationChanged(newConfig);
         setSeekBarProperties();
         if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE || newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
-            float videoRatio = (float) mediaPlayer.getVideoWidth() / (float) mediaPlayer.getVideoHeight();
+            double videoRatio = (double) mediaPlayer.getVideoWidth() / (double) mediaPlayer.getVideoHeight();
             Point size = new Point();
             getWindowManager().getDefaultDisplay().getSize(size);
             int screenWidth = size.x;
             int screenHeight = size.y;
-            float screenRatio = (float) screenWidth / (float) screenHeight;
+            double screenRatio = (double) screenWidth / (double) screenHeight;
             ViewGroup.LayoutParams lp = surfaceView.getLayoutParams();
             if (videoRatio > screenRatio) {
                 lp.width = screenWidth;
-                lp.height = (int) ((float) screenWidth / videoRatio);
+                lp.height = (int) ((double) screenWidth / videoRatio);
             } else {
-                lp.width = (int) (videoRatio * (float) screenHeight);
+                lp.width = (int) (videoRatio * (double) screenHeight);
                 lp.height = screenHeight;
 
             }

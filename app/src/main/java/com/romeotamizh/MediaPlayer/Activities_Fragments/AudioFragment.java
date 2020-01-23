@@ -309,6 +309,7 @@ public class AudioFragment extends Fragment implements MyApplication.SetFragment
             recyclerViewAdapter.setTitleList(albumTitleList);
             ArrayList<Integer> i = new ArrayList<>();
             recyclerViewAdapter.setListSize(albumTitleList.size());
+
             ls = albumTitleList.size();
             ArrayList<Bitmap> bitmaps = new ArrayList<>(ls);
             for (CharSequence album : albumTitleList) {
@@ -316,6 +317,7 @@ public class AudioFragment extends Fragment implements MyApplication.SetFragment
                 i.add(firstId);
                 bitmaps.add(setThumbnailImage(mediaInfoDatabase.getUriById(firstId), size, album));
             }
+            recyclerViewAdapter.setIdList(i);
             recyclerViewAdapter.setThumbs(bitmaps);
             recyclerViewAdapter.notifyDataSetChanged();
 
@@ -441,8 +443,6 @@ public class AudioFragment extends Fragment implements MyApplication.SetFragment
         }
 
         isFirstTime = false;
-
-
 
 
         RecyclerViewAdapter recyclerViewAdapter;
