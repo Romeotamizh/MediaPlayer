@@ -26,6 +26,7 @@ public class PlayMedia {
 
                 mediaPlayer.reset();
                 mediaPlayer.setDataSource(getContext(), uri);
+
                 mediaPlayer.prepareAsync();
 
                 mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
