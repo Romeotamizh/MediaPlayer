@@ -8,6 +8,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="bottom"
+    sothree:umanoInitialState="hidden"
     sothree:umanoPanelHeight="100dp"
     sothree:umanoShadowHeight="4dp"
     tools:context=".Activities_Fragments.AudioFragment">

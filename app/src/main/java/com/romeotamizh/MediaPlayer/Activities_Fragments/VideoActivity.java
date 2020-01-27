@@ -29,6 +29,10 @@ import com.romeotamizh.MediaPlayer.MediaController.MediaController;
 import com.romeotamizh.MediaPlayer.MediaController.PlayMedia;
 import com.romeotamizh.MediaPlayer.R;
 
+import java.io.IOException;
+
+import static com.romeotamizh.MediaPlayer.Activities_Fragments.AudioFragment.isReturnFromVideo;
+import static com.romeotamizh.MediaPlayer.Activities_Fragments.AudioFragment.previousAudioPlayed;
 import static com.romeotamizh.MediaPlayer.Helpers.CustomSeekBar.mFavouritesPositionsList;
 import static com.romeotamizh.MediaPlayer.MediaController.PlayMedia.mediaPlayer;
 import static com.romeotamizh.MediaPlayer.MediaController.PlayMedia.mediaPlayerDuration;
@@ -153,6 +157,30 @@ public class VideoActivity extends AppCompatActivity implements View.OnClickList
         delayedHide(100);
     }
 
+    private SurfaceHolder holder;
+
+    @Override
+    public void onBackPressed() {
+
+        if (mediaPlayer.isPlaying())
+            mediaPlayer.stop();
+        holder = null;
+        if (previousAudioPlayed != null) {
+            try {
+                mediaPlayer.reset();
+                mediaPlayer.setDataSource(getBaseContext(), previousAudioPlayed);
+                isReturnFromVideo = true;
+                mediaPlayer.prepareAsync();
+
+            } catch (IllegalStateException e) {
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        super.onBackPressed();
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -173,8 +201,9 @@ public class VideoActivity extends AppCompatActivity implements View.OnClickList
         Log.d(String.valueOf(id), "pgi");
         Uri uri = Uri.parse(getIntent().getStringExtra("URI"));
         mTitle = getIntent().getCharSequenceExtra("TITLE");
-        final SurfaceHolder holder = surfaceView.getHolder();
+        holder = surfaceView.getHolder();
         holder.setKeepScreenOn(true);
+        isReturnFromVideo = false;
         titleTextViewVideo = findViewById(R.id.title_video);
         PlayMedia.playMedia(uri, Context.MEDIATYPE.VIDEO);
         surfaceView.setOnClickListener(new View.OnClickListener() {
@@ -203,6 +232,7 @@ public class VideoActivity extends AppCompatActivity implements View.OnClickList
 
     }
 
+
     private void playVideo() {
 
         mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
@@ -224,7 +254,7 @@ public class VideoActivity extends AppCompatActivity implements View.OnClickList
 
                 }
                 surfaceView.setLayoutParams(lp);
-                mediaPlayer.setDisplay(surfaceView.getHolder());
+                mediaPlayer.setDisplay(holder);
                 mediaPlayer.start();
                 mediaPlayerDuration = mediaPlayer.getDuration();
                 mediaControllerVideo.seekBarOperations();
@@ -243,6 +273,7 @@ public class VideoActivity extends AppCompatActivity implements View.OnClickList
                 getWindowManager().getDefaultDisplay().getSize(size);
                 int screenWidth = size.x;
                 int screenHeight = size.y;
+
                 double screenRatio = (double) screenWidth / (double) screenHeight;
                 ViewGroup.LayoutParams lp = surfaceView.getLayoutParams();
                 if (videoRatio > screenRatio) {
@@ -254,7 +285,7 @@ public class VideoActivity extends AppCompatActivity implements View.OnClickList
 
                 }
                 surfaceView.setLayoutParams(lp);
-                mediaPlayer.setDisplay(surfaceView.getHolder());
+                mediaPlayer.setDisplay(holder);
                 if (!mediaPlayer.isPlaying())
                     mediaPlayer.start();
 
@@ -297,6 +328,11 @@ public class VideoActivity extends AppCompatActivity implements View.OnClickList
             getWindowManager().getDefaultDisplay().getSize(size);
             int screenWidth = size.x;
             int screenHeight = size.y;
+
+            if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE)
+                screenWidth += getResources().getIdentifier("navigation_bar_height", "dimen", "android");
+            //  else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT)
+
             double screenRatio = (double) screenWidth / (double) screenHeight;
             ViewGroup.LayoutParams lp = surfaceView.getLayoutParams();
             if (videoRatio > screenRatio) {
@@ -308,7 +344,7 @@ public class VideoActivity extends AppCompatActivity implements View.OnClickList
 
             }
             surfaceView.setLayoutParams(lp);
-            mediaPlayer.setDisplay(surfaceView.getHolder());
+            mediaPlayer.setDisplay(holder);
 
 
         }

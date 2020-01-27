@@ -9,12 +9,11 @@ import android.util.Size;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
-import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.romeotamizh.MediaPlayer.Helpers.MediaInfoDatabase;
@@ -32,7 +31,7 @@ import static com.romeotamizh.MediaPlayer.Activities_Fragments.MainActivity.grou
 import static com.romeotamizh.MediaPlayer.Activities_Fragments.MainActivity.groupByVideo;
 import static com.romeotamizh.MediaPlayer.Activities_Fragments.MainActivity.isSongChanged;
 import static com.romeotamizh.MediaPlayer.Activities_Fragments.VideoFragment.isInFinalList;
-import static com.romeotamizh.MediaPlayer.Activities_Fragments.VideoFragment.t;
+import static com.romeotamizh.MediaPlayer.Activities_Fragments.VideoFragment.tVideo;
 import static com.romeotamizh.MediaPlayer.Helpers.Thumbnail.setThumbnailImage;
 
 
@@ -43,38 +42,30 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     private ArrayList<CharSequence> extensionList = new ArrayList<>();
     private ArrayList<Integer> idList = new ArrayList<>();
     private ArrayList<Uri> uriList = new ArrayList<>();
-    private ArrayList<Bitmap> thumbs;
+    private ArrayList<Bitmap> thumbs = new ArrayList<>();
     private com.romeotamizh.MediaPlayer.Helpers.Context.MEDIATYPE mediaType;
     private LayoutInflater inflater;
     private Context context;
     private int listSize;
     private com.romeotamizh.MediaPlayer.Helpers.Context.CONTEXT contextScreen;
     private MediaInfoDatabase mediaInfoDatabase;
-    @RequiresApi(api = Build.VERSION_CODES.Q)
-    public RecyclerViewAdapter(MediaInfoDatabase mediaInfoDatabase, @Nullable MediaInfoDatabase.TrackInfo trackInfo, com.romeotamizh.MediaPlayer.Helpers.Context.CONTEXT contextScreen, Context context) {
+
+
+    public RecyclerViewAdapter(MediaInfoDatabase mediaInfoDatabase, com.romeotamizh.MediaPlayer.Helpers.Context.CONTEXT contextScreen, Context context) {
         this.context = context;
         this.inflater = (LayoutInflater) context.getSystemService(LAYOUT_INFLATER_SERVICE);
-        if (trackInfo == null) {
+        if (contextScreen == com.romeotamizh.MediaPlayer.Helpers.Context.CONTEXT.MAIN) {
+            this.mediaInfoDatabase = mediaInfoDatabase;
             this.idList = mediaInfoDatabase.getIdList();
             this.uriList = mediaInfoDatabase.getUriList();
             this.titleList = mediaInfoDatabase.getTitleList();
             this.extensionList = mediaInfoDatabase.getExtensionList();
             this.durationList = mediaInfoDatabase.getDurationList();
-            this.mediaInfoDatabase = mediaInfoDatabase;
-
-        } else {
-            this.idList = trackInfo.getIdsInAlbum();
-            for (Integer ide : idList) {
-                this.titleList.add(mediaInfoDatabase.getTitleById(ide));
-                this.uriList.add(mediaInfoDatabase.getUriById(ide));
-                this.extensionList.add((mediaInfoDatabase.getExtensionList().get(mediaInfoDatabase.getIdList().indexOf(ide))));
-                this.durationList.add((mediaInfoDatabase.getDurationList().get(mediaInfoDatabase.getIdList().indexOf(ide))));
-
-            }
 
         }
 
-        contextScreen = contextScreen;
+
+        this.contextScreen = contextScreen;
         this.mediaType = mediaInfoDatabase.getMediaType();
         this.listSize = this.idList.size();
         this.thumbs = new ArrayList<>();
@@ -252,7 +243,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                 thumbs.addAll(t7);
                 thumbs.addAll(t8);
                 if (mediaType == com.romeotamizh.MediaPlayer.Helpers.Context.MEDIATYPE.VIDEO)
-                    t = thumbs;
+                    tVideo = thumbs;
                 if (mediaType == com.romeotamizh.MediaPlayer.Helpers.Context.MEDIATYPE.AUDIO)
                     tAudio = thumbs;
                 break;
@@ -291,14 +282,17 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view;
-        if ((groupByVideo == com.romeotamizh.MediaPlayer.Helpers.Context.GROUPBY.ALBUM || groupByAudio == com.romeotamizh.MediaPlayer.Helpers.Context.GROUPBY.ALBUM) && !isInFinalList && contextScreen != com.romeotamizh.MediaPlayer.Helpers.Context.CONTEXT.PLAY) {
-            view = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item_grid, parent, false);
-        } else
+        if ((groupByVideo == com.romeotamizh.MediaPlayer.Helpers.Context.GROUPBY.ALBUM || groupByAudio == com.romeotamizh.MediaPlayer.Helpers.Context.GROUPBY.ALBUM)) {
+            if (!isInFinalList && contextScreen != com.romeotamizh.MediaPlayer.Helpers.Context.CONTEXT.PLAY)
+                view = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item_grid, parent, false);
+            else
             view = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item, parent, false);
-        if (groupByAudio == com.romeotamizh.MediaPlayer.Helpers.Context.GROUPBY.NOTHING || groupByVideo == com.romeotamizh.MediaPlayer.Helpers.Context.GROUPBY.NOTHING)
+        } else {
             view = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item, parent, false);
 
+        }
         return new ViewHolder(view);
+
     }
 
 
@@ -339,7 +333,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         TextView title;
         TextView duration;
         TextView extension;
-        CardView parentLayout;
+        RelativeLayout parentLayout;
 
         ViewHolder(@NonNull View itemView) {
 

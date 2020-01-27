@@ -22,7 +22,6 @@ import com.romeotamizh.MediaPlayer.Adapters.RecyclerViewAdapter;
 import com.romeotamizh.MediaPlayer.Helpers.Context;
 import com.romeotamizh.MediaPlayer.Helpers.CustomRecyclerView;
 import com.romeotamizh.MediaPlayer.Helpers.MediaInfoDatabase;
-import com.romeotamizh.MediaPlayer.Helpers.MyApplication;
 import com.romeotamizh.MediaPlayer.MediaController.PlayMedia;
 import com.romeotamizh.MediaPlayer.R;
 
@@ -33,7 +32,7 @@ import static com.romeotamizh.MediaPlayer.Activities_Fragments.MainActivity.isEx
 import static com.romeotamizh.MediaPlayer.Helpers.Thumbnail.setThumbnailImage;
 
 
-public class VideoFragment extends Fragment implements PlayMedia.OnPlayMediaListener, MyApplication.SetFragmentOnBackPressedListener, MyApplication.SetFragmentOnOptionsMenuClickedListener {
+public class VideoFragment extends Fragment implements PlayMedia.OnPlayMediaListener, Context.SetFragmentOnBackPressedListener, Context.SetFragmentOnOptionsMenuClickedListener {
 
     MediaInfoDatabase videoInfo;
     private ArrayList<String> titleList;
@@ -67,9 +66,13 @@ public class VideoFragment extends Fragment implements PlayMedia.OnPlayMediaList
 
 
     public static boolean isInFinalList = false;
-    public static ArrayList<Bitmap> t = new ArrayList<>();
+    public static ArrayList<Bitmap> tVideo = new ArrayList<>();
     RecyclerViewAdapter recyclerViewAdapter = null;
     Intent intent;
+    ArrayList<CharSequence> albumTitleList = null;
+    ArrayList<Integer> i = new ArrayList<>();
+    ArrayList<Bitmap> b = new ArrayList<>();
+    Size size1 = new Size(200, 200);
 
     @RequiresApi(api = Build.VERSION_CODES.Q)
     private void populate() {
@@ -87,19 +90,26 @@ public class VideoFragment extends Fragment implements PlayMedia.OnPlayMediaList
 
         PlayMedia.setPlayMusicListener(this);
 
-        MyApplication.setOnBackPressed(this);
+        Context.setOnBackPressed(this);
 
-        MyApplication.setOnOptionsSelected(this);
+        Context.setOnOptionsSelected(this);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.Q)
     void initializeRecyclerView(MediaInfoDatabase mediaInfoDatabase, int id) {
 
-        if (recyclerViewAdapter == null)
-            recyclerViewAdapter = new RecyclerViewAdapter(videoInfo, null, Context.CONTEXT.MAIN, getActivity());
+        if (recyclerViewAdapter == null) {
+            albumTitleList = mediaInfoDatabase.getAlbumTitleList();
+            recyclerViewAdapter = new RecyclerViewAdapter(videoInfo, Context.CONTEXT.MAIN, getActivity());
+            for (CharSequence album : albumTitleList) {
+                int firstId = mediaInfoDatabase.getIdsInAlbum(album).get(0);
+                i.add(firstId);
+                b.add(setThumbnailImage(mediaInfoDatabase.getUriById(firstId), size1, album));
+            }
 
 
-        recyclerViewVideo.setAdapter(recyclerViewAdapter);
+        }
+
 
         if (groupByVideo == Context.GROUPBY.NOTHING) {
             recyclerViewVideo.setLayoutManager(new LinearLayoutManager(this.getContext()));
@@ -108,7 +118,7 @@ public class VideoFragment extends Fragment implements PlayMedia.OnPlayMediaList
             recyclerViewAdapter.setDurationList(mediaInfoDatabase.getDurationList());
             recyclerViewAdapter.setExtensionList(mediaInfoDatabase.getExtensionList());
             recyclerViewAdapter.setListSize(mediaInfoDatabase.getMediaCount());
-            recyclerViewAdapter.setThumbs(t);
+            recyclerViewAdapter.setThumbs(tVideo);
             recyclerViewAdapter.notifyDataSetChanged();
             isInFinalList = true;
 
@@ -116,22 +126,13 @@ public class VideoFragment extends Fragment implements PlayMedia.OnPlayMediaList
         if (groupByVideo == Context.GROUPBY.ALBUM) {
             if (id == 0) {
                 isInFinalList = false;
-                Size size = new Size(200, 200);
-                ArrayList<CharSequence> albumTitleList = mediaInfoDatabase.getAlbumTitleList();
-                ArrayList<Integer> i = new ArrayList<>();
-                recyclerViewVideo.setLayoutManager(new StaggeredGridLayoutManager(4, StaggeredGridLayoutManager.VERTICAL));
+                recyclerViewVideo.setLayoutManager(new StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.VERTICAL));
                 recyclerViewAdapter.setTitleList(albumTitleList);
                 recyclerViewAdapter.setExtensionList(albumTitleList);
                 recyclerViewAdapter.setDurationList(albumTitleList);
                 recyclerViewAdapter.setListSize(albumTitleList.size());
-                ArrayList<Bitmap> bitmaps = new ArrayList<>();
-                for (CharSequence album : albumTitleList) {
-                    int firstId = mediaInfoDatabase.getIdsInAlbum(album).get(0);
-                    i.add(firstId);
-                    bitmaps.add(setThumbnailImage(mediaInfoDatabase.getUriById(firstId), size, album));
-                }
                 recyclerViewAdapter.setIdList(i);
-                recyclerViewAdapter.setThumbs(bitmaps);
+                recyclerViewAdapter.setThumbs(b);
                 recyclerViewAdapter.notifyDataSetChanged();
 
 
@@ -162,6 +163,9 @@ public class VideoFragment extends Fragment implements PlayMedia.OnPlayMediaList
             }
         }
 
+        recyclerViewVideo.setAdapter(recyclerViewAdapter);
+
+
     }
 
     @Override
@@ -190,7 +194,9 @@ public class VideoFragment extends Fragment implements PlayMedia.OnPlayMediaList
         if (isInFinalList) {
             isExitVideo = false;
             initializeRecyclerView(videoInfo, 0);
-        } else isExitVideo = true;
+        }
+        if (groupByVideo == Context.GROUPBY.NOTHING)
+            isExitVideo = true;
 
     }
 
@@ -202,18 +208,25 @@ public class VideoFragment extends Fragment implements PlayMedia.OnPlayMediaList
         switch (menuItem.getItemId()) {
 
             case R.id.group_by:
-                Log.d("io.", "lol");
-                if (groupByVideo == Context.GROUPBY.ALBUM) {
-                    groupByVideo = Context.GROUPBY.NOTHING;
-                    initializeRecyclerView(videoInfo, 0);
-                } else if (groupByVideo == Context.GROUPBY.NOTHING) {
-                    groupByVideo = Context.GROUPBY.ALBUM;
-                    initializeRecyclerView(videoInfo, 0);
+                switch (groupByVideo) {
+                    case ALBUM:
+                        groupByVideo = Context.GROUPBY.NOTHING;
+                        initializeRecyclerView(videoInfo, 0);
+                        return;
+
+                    case NOTHING:
+                        groupByVideo = Context.GROUPBY.ALBUM;
+                        initializeRecyclerView(videoInfo, 0);
+                        return;
+
+                    default:
+                        return;
+
                 }
-                break;
+
 
             default:
-                break;
+                return;
         }
 
 

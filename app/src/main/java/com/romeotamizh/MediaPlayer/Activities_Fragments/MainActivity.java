@@ -19,7 +19,6 @@ import com.gun0912.tedpermission.PermissionListener;
 import com.gun0912.tedpermission.TedPermission;
 import com.romeotamizh.MediaPlayer.Adapters.ViewPagerAdapter;
 import com.romeotamizh.MediaPlayer.Helpers.Context;
-import com.romeotamizh.MediaPlayer.Helpers.MyApplication;
 import com.romeotamizh.MediaPlayer.R;
 
 import java.util.ArrayList;
@@ -50,11 +49,32 @@ public class MainActivity extends AppCompatActivity //BottomNavigationView.OnNav
     SharedPreferences.Editor editor;
     Menu menu;
 
+    public static int viewPagerSelectedPage;
+    private Context.GROUPBY groupBy;
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+
+    }
+
+    @Override
+    protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+        super.onCreate(null);
         setContentView(R.layout.activity_main);
 
+        viewPager = null;
+
+        for (Fragment fragment : getSupportFragmentManager().getFragments())
+            getSupportFragmentManager().beginTransaction().remove(fragment).commit();
         //check permissions
         checkPermissions();
 
@@ -73,34 +93,44 @@ public class MainActivity extends AppCompatActivity //BottomNavigationView.OnNav
 
         sharedPreferences = getSharedPreferences("MainSettings", MODE_PRIVATE);
         editor = sharedPreferences.edit();
+        groupBy = Context.GROUPBY.valueOf(sharedPreferences.getString("GROUPBY", Context.GROUPBY.NOTHING.toString()));
+        groupByAudio = groupByVideo = groupBy;
 
-
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
 
     }
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
 
-        MyApplication.callBack(item);
+
+        Context.callBack(item);
         Log.d("io.", "lol");
+
+        if (groupBy == Context.GROUPBY.NOTHING)
+            editor.putString("GROUPBY", Context.GROUPBY.ALBUM.toString()).commit();
+        else
+            editor.putString("GROUPBY", Context.GROUPBY.NOTHING.toString()).commit();
+
         return super.onOptionsItemSelected(item);
     }
 
     @Override
     public void onBackPressed() {
-        MyApplication.callBack();
-        if (isExitAudio && isExitVideo)
-            super.onBackPressed();
+        Context.callBack();
+        if (isExitAudio && isExitVideo) {
+            android.os.Process.killProcess(android.os.Process.myPid());
 
+
+        }
 
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        android.os.Process.killProcess(android.os.Process.myPid());
+
+    }
 
     void checkPermissions() {
         final TedPermission tedPermission = new TedPermission(getBaseContext());
@@ -120,11 +150,23 @@ public class MainActivity extends AppCompatActivity //BottomNavigationView.OnNav
 
     }
 
-    private void setupViewPager(ViewPager viewPager) {
-        ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager(), FragmentPagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
+    @Override
+    protected void onRestart() {
+        super.onRestart();
 
-        Fragment audioFragment = new AudioFragment();
-        Fragment videoFragment = new VideoFragment();
+    }
+
+    private void setupViewPager(final ViewPager viewPager) {
+        ViewPagerAdapter adapter;
+        for (Fragment fragment : getSupportFragmentManager().getFragments())
+            getSupportFragmentManager().beginTransaction().remove(fragment).commit();
+        adapter = new ViewPagerAdapter(getSupportFragmentManager(), FragmentPagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
+
+
+        Fragment audioFragment;
+        audioFragment = new AudioFragment();
+        Fragment videoFragment = null;
+        videoFragment = new VideoFragment();
 
         adapter.addFragment(audioFragment, "AUDIO");
         adapter.addFragment(videoFragment, "VIDEO");
@@ -136,16 +178,13 @@ public class MainActivity extends AppCompatActivity //BottomNavigationView.OnNav
 
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
+                viewPagerSelectedPage = position;
             }
 
             @Override
             public void onPageSelected(int position) {
-                if (position == 1) {
-                    Log.d("1", "1");
-                    //   tab
+                viewPagerSelectedPage = position;
 
-                }
                 // getSupportFragmentManager().findFragmentByTag("VIDEO")
 
             }
@@ -159,6 +198,7 @@ public class MainActivity extends AppCompatActivity //BottomNavigationView.OnNav
         // adapter.getItem(0).getActivity().
 
     }
+
 
 }
 

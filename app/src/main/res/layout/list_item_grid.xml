@@ -1,35 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/parent_layout"
     android:layout_width="match_parent"
-    android:layout_height="120dp"
-    android:padding="12dp">
+    android:layout_height="120dp">
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/Black"
-
-
-        >
+    <ImageView
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginEnd="4dp"
+        android:src="@drawable/ic_folder_black_24dp" />
 
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/circle_image_list"
-            android:layout_width="match_parent"
+            android:layout_width="40dp"
             android:layout_height="80dp"
             android:layout_marginStart="4dp"
-            android:layout_marginTop="4dp"
+            android:layout_centerHorizontal="true"
             android:layout_marginEnd="4dp"
+            android:layout_marginTop="6dp"
             android:src="@mipmap/alphabets_a" />
 
         <TextView
             android:id="@+id/title"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="32dp"
             android:layout_alignParentBottom="true"
             android:layout_marginStart="4dp"
             android:layout_marginBottom="4dp"
-            android:gravity="center_horizontal"
+            android:gravity="center_horizontal|top"
             android:text="title"
             android:textSize="12dp" />
 
@@ -60,4 +63,3 @@
 
 
     </RelativeLayout>
-</androidx.cardview.widget.CardView>

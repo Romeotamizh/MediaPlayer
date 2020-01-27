@@ -16,39 +16,7 @@ public class PlayMedia {
     private static ArrayList<OnPlayMediaListener> listeners = new ArrayList<>();
     private static int videoRatio;
 
-    public static void playMedia(final Uri uri, final Context.MEDIATYPE mediaType) {
-        if (mediaPlayer != null) {
-            try {
-                if (mediaPlayer.isPlaying()) {
-                    mediaPlayer.stop();
-                    mediaPlayer.reset();
-                }
-
-                mediaPlayer.reset();
-                mediaPlayer.setDataSource(getContext(), uri);
-
-                mediaPlayer.prepareAsync();
-
-                mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                    @Override
-                    public void onPrepared(MediaPlayer mp) {
-                        if (mediaType == Context.MEDIATYPE.VIDEO) {
-                            mediaPlayer.setVideoScalingMode(MediaPlayer.VIDEO_SCALING_MODE_SCALE_TO_FIT);
-                        }
-                        mediaPlayer.setVolume(1.0f, 1.0f);
-                        mediaPlayerDuration = mediaPlayer.getDuration();
-                        mediaPlayer.start();
-
-                    }
-                });
-
-
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-
-    }
+    public static boolean mpPrepared = false;
 
 
     public static void setPlayMusicListener(OnPlayMediaListener listener) {
@@ -62,7 +30,75 @@ public class PlayMedia {
 
     }
 
+    private static ArrayList<OnMediaCompletedListener> listeners1 = new ArrayList<>();
+
     public interface OnPlayMediaListener {
         void playMedia(int position, Context.MEDIATYPE mediaType);
     }
+
+    public static void playMedia(final Uri uri, final Context.MEDIATYPE mediaType) {
+        if (mediaPlayer != null) {
+            mpPrepared = false;
+                    mediaPlayer.stop();
+                    mediaPlayer.reset();
+
+            try {
+                mediaPlayer.setDataSource(getContext(), uri);
+                if (!mpPrepared)
+                    try {
+                        mediaPlayer.prepare();
+                    } catch (IllegalStateException e) {
+                        mediaPlayer.reset();
+                        mediaPlayer.setDataSource(getContext(), uri);
+                        try {
+                            Thread.sleep(1000);
+                        } catch (InterruptedException ex) {
+                            ex.printStackTrace();
+                        }
+                        return;
+                    }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+
+
+
+                mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                    @Override
+                    public void onPrepared(MediaPlayer mp) {
+                        mpPrepared = true;
+
+                        if (mediaType == Context.MEDIATYPE.VIDEO) {
+                            mediaPlayer.setVideoScalingMode(MediaPlayer.VIDEO_SCALING_MODE_SCALE_TO_FIT);
+
+                        }
+                        mediaPlayer.setVolume(1.0f, 1.0f);
+                        mediaPlayerDuration = mediaPlayer.getDuration();
+                        mediaPlayer.start();
+
+                    }
+                });
+
+
+
+        }
+
+    }
+
+    public static void callBack(Context.MEDIATYPE mediaType) {
+        for (OnMediaCompletedListener listener : listeners1)
+            listener.onCompleted(mediaType);
+    }
+
+    private static void setOnMediaCompletedListener(OnMediaCompletedListener listener) {
+        listeners1.add(listener);
+
+    }
+
+    public interface OnMediaCompletedListener {
+        void onCompleted(Context.MEDIATYPE mediaType);
+    }
+
+
 }

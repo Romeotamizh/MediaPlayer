@@ -61,7 +61,6 @@ public class MediaController implements SeekBar.OnSeekBarChangeListener {
                 int currentPosition = 0;
                 while (true) {
 
-
                     if (mediaPlayer.isPlaying()) {
                         seekBar.setProgress(mediaPlayer.getCurrentPosition() + 1);
 
@@ -120,8 +119,8 @@ public class MediaController implements SeekBar.OnSeekBarChangeListener {
         if (mediaPlayer.isPlaying())
             playPause.setImageResource(R.mipmap.final_pause);
 
-    }
 
+    }
 
 
 }

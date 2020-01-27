@@ -1,15 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/parent_layout"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
-
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:foreground="@drawable/ripple_effect"
-        android:background="@color/Black"
-        android:padding="4dp">
+    android:layout_height="60dp"
+    android:foreground="@drawable/ripple_effect"
+    android:padding="4dp">
 
 
         <de.hdodenhof.circleimageview.CircleImageView
@@ -57,4 +54,3 @@
 
     </RelativeLayout>
 
-</androidx.cardview.widget.CardView>

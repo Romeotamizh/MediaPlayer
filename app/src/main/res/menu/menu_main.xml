@@ -9,7 +9,6 @@
         android:icon="@drawable/ic_folder_black_24dp"
         android:title="Group by"
         android:visible="true"
-
         app:showAsAction="always"
 
         />
