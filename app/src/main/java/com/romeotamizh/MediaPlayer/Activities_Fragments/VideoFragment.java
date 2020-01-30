@@ -2,9 +2,9 @@ package com.romeotamizh.MediaPlayer.Activities_Fragments;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.util.Size;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -88,7 +88,7 @@ public class VideoFragment extends Fragment implements PlayMedia.OnPlayMediaList
         //initialize recyclerView
         initializeRecyclerView(videoInfo, 0);
 
-        PlayMedia.setPlayMusicListener(this);
+        PlayMedia.setPlayMediaListener(this);
 
         Context.setOnBackPressed(this);
 
@@ -173,11 +173,13 @@ public class VideoFragment extends Fragment implements PlayMedia.OnPlayMediaList
         if (mediaType == Context.MEDIATYPE.VIDEO) {
             if (id != 0) {
                 if (isInFinalList) {
+                    Uri uri = videoInfo.getUriById(id);
+                    CharSequence mTitle = videoInfo.getTitleById(id);
+                    PlayMedia.callBack(id, uri, mTitle, Context.MEDIATYPE.VIDEO);
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    intent.putExtra("URI", videoInfo.getUriById(id).toString());
-                    intent.putExtra("TITLE", videoInfo.getTitleById(id));
+                    intent.putExtra("URI", uri.toString());
+                    intent.putExtra("TITLE", mTitle);
                     intent.putExtra("ID", id);
-                    Log.d(videoInfo.getUriById(id).toString(), "dummy");
                     this.startActivity(intent);
                 } else {
                     initializeRecyclerView(videoInfo, id);
@@ -191,19 +193,23 @@ public class VideoFragment extends Fragment implements PlayMedia.OnPlayMediaList
     @Override
     public void onBackPressed() {
 
-        if (isInFinalList) {
-            isExitVideo = false;
-            initializeRecyclerView(videoInfo, 0);
-        }
-        if (groupByVideo == Context.GROUPBY.NOTHING)
+        if (groupByVideo == Context.GROUPBY.ALBUM) {
+            if (isInFinalList) {
+                isExitVideo = false;
+                initializeRecyclerView(videoInfo, 0);
+            } else
+                isExitVideo = true;
+        } else {
             isExitVideo = true;
+
+        }
+
 
     }
 
 
     @Override
     public void onOptionSelected(MenuItem menuItem) {
-        Log.d("io.", "lol.");
 
         switch (menuItem.getItemId()) {
 

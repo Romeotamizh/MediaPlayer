@@ -2,8 +2,11 @@ package com.romeotamizh.MediaPlayer.Activities_Fragments;
 
 import android.Manifest;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.util.Size;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -18,14 +21,19 @@ import com.google.android.material.tabs.TabLayout;
 import com.gun0912.tedpermission.PermissionListener;
 import com.gun0912.tedpermission.TedPermission;
 import com.romeotamizh.MediaPlayer.Adapters.ViewPagerAdapter;
+import com.romeotamizh.MediaPlayer.Adapters.lastPlayedViewPagerAdapter;
 import com.romeotamizh.MediaPlayer.Helpers.Context;
+import com.romeotamizh.MediaPlayer.MediaController.PlayMedia;
 import com.romeotamizh.MediaPlayer.R;
+import com.tbuonomo.viewpagerdotsindicator.WormDotsIndicator;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+
+import static com.romeotamizh.MediaPlayer.Helpers.Thumbnail.setThumbnailImage;
 
 
-
-public class MainActivity extends AppCompatActivity //BottomNavigationView.OnNavigationItemSelectedListener , View.OnClickListener, View.OnLongClickListener, CustomSeekBar.OnSeekBarProgressListener, FavouriteMoments.OnFavouriteMomentsOperationsListener, MenuItem.OnMenuItemClickListener, SlidingUpPanelLayout.PanelSlideListener, PlayMedia.PlayMusicListener, MediaPlayer.OnCompletionListener {
+public class MainActivity extends AppCompatActivity implements PlayMedia.OnAddToRecentListListener//BottomNavigationView.OnNavigationItemSelectedListener , View.OnClickListener, View.OnLongClickListener, CustomSeekBar.OnSeekBarProgressListener, FavouriteMoments.OnFavouriteMomentsOperationsListener, MenuItem.OnMenuItemClickListener, SlidingUpPanelLayout.PanelSlideListener, PlayMedia.PlayMusicListener, MediaPlayer.OnCompletionListener {
 {
     private static final String[] permissions = new String[]{
             Manifest.permission.READ_EXTERNAL_STORAGE,
@@ -41,12 +49,15 @@ public class MainActivity extends AppCompatActivity //BottomNavigationView.OnNav
     public static boolean isSongChanged = false;
     public static boolean isSlideExpanded = false;
     private ViewPager viewPager;
+    lastPlayedViewPagerAdapter lastPlayedViewPagerAdapter;
     private TabLayout tabLayout;
+    int[] idList = new int[5];
     private Toolbar toolbar;
     public static Context.GROUPBY groupByAudio = Context.GROUPBY.NOTHING;
     public static Context.GROUPBY groupByVideo = Context.GROUPBY.NOTHING;
     SharedPreferences sharedPreferences;
     SharedPreferences.Editor editor;
+    Uri[] uriList = new Uri[5];
     Menu menu;
 
     public static int viewPagerSelectedPage;
@@ -66,6 +77,12 @@ public class MainActivity extends AppCompatActivity //BottomNavigationView.OnNav
 
     }
 
+    CharSequence[] titleList = new CharSequence[5];
+    Context.MEDIATYPE[] mediaTypeList = new Context.MEDIATYPE[5];
+    Bitmap[] bitmaps = new Bitmap[5];
+    private ViewPager lastPlayedViewPager;
+    private WormDotsIndicator dotsIndicator;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(null);
@@ -83,6 +100,12 @@ public class MainActivity extends AppCompatActivity //BottomNavigationView.OnNav
         viewPager = findViewById(R.id.viewpager);
         setupViewPager(viewPager);
 
+        //setlastPlayedViewPager
+        lastPlayedViewPager = findViewById(R.id.last_five_media);
+
+        lastPlayedViewPagerAdapter = new lastPlayedViewPagerAdapter();
+
+
         //set tabs
         tabLayout = findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(viewPager);
@@ -93,18 +116,50 @@ public class MainActivity extends AppCompatActivity //BottomNavigationView.OnNav
 
         sharedPreferences = getSharedPreferences("MainSettings", MODE_PRIVATE);
         editor = sharedPreferences.edit();
+
         groupBy = Context.GROUPBY.valueOf(sharedPreferences.getString("GROUPBY", Context.GROUPBY.NOTHING.toString()));
         groupByAudio = groupByVideo = groupBy;
 
+        PlayMedia.setOnAddToRecentListListener(this);
+
+        for (int i_ = 0; i_ < 5; i_++) {
+            idList[i_] = sharedPreferences.getInt("id" + i_, 0);
+            uriList[i_] = sharedPreferences.getString("uri" + i_, null) == null ? null : Uri.parse(sharedPreferences.getString("uri" + i_, null));
+            mediaTypeList[i_] = sharedPreferences.getString("mediaType" + i_, null) == null ? null : Context.MEDIATYPE.valueOf(sharedPreferences.getString("mediaType" + i_, null));
+            titleList[i_] = sharedPreferences.getString("title" + i_, null);
+        }
+
+
+        int x = 0;
+
+
+        for (Uri uri_ : uriList) {
+            if (uri_ != null)
+                bitmaps[x] = (setThumbnailImage(uri_, new Size(300, 300), titleList[x]));
+            x++;
+        }
+
+        lastPlayedViewPagerAdapter.setIdList(idList);
+        lastPlayedViewPagerAdapter.setUriList(uriList);
+        lastPlayedViewPagerAdapter.setPreviews(bitmaps);
+        lastPlayedViewPagerAdapter.setTitleList(titleList);
+        lastPlayedViewPagerAdapter.setMediaTypeList(mediaTypeList);
+        lastPlayedViewPagerAdapter.notifyDataSetChanged();
+        lastPlayedViewPager.setAdapter(lastPlayedViewPagerAdapter);
+
+
+        dotsIndicator = findViewById(R.id.dots_indicator);
+        dotsIndicator.setViewPager(lastPlayedViewPager);
 
     }
+
+
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
 
 
         Context.callBack(item);
-        Log.d("io.", "lol");
 
         if (groupBy == Context.GROUPBY.NOTHING)
             editor.putString("GROUPBY", Context.GROUPBY.ALBUM.toString()).commit();
@@ -200,6 +255,77 @@ public class MainActivity extends AppCompatActivity //BottomNavigationView.OnNav
     }
 
 
+    @Override
+    public void addToRecentList(int id, Uri uri, CharSequence title, Context.MEDIATYPE mediaType) {
+        for (int id_ : idList)
+            if (id == id_)
+                return;
+
+        {
+
+            int[] i = Arrays.copyOf(idList, 4);
+            Uri[] u = Arrays.copyOf(uriList, 4);
+            Context.MEDIATYPE[] m = Arrays.copyOf(mediaTypeList, 4);
+            CharSequence[] t = Arrays.copyOf(titleList, 4);
+
+            idList[0] = id;
+            uriList[0] = uri;
+            mediaTypeList[0] = mediaType;
+            titleList[0] = title;
+
+
+            for (int i_ = 1; i_ < 5; i_++) {
+                idList[i_] = i[i_ - 1];
+                uriList[i_] = u[i_ - 1];
+                mediaTypeList[i_] = m[i_ - 1];
+                titleList[i_] = t[i_ - 1];
+
+            }
+
+
+            int x = 0;
+
+            for (Uri uri_ : uriList) {
+                if (uri_ != null)
+                    bitmaps[x] = (setThumbnailImage(uri_, new Size(300, 300), title));
+                x++;
+
+            }
+
+            for (int i_ = 0; i_ < 5; i_++) {
+
+                editor.putInt("id" + i_, idList[i_]).commit();
+
+                Uri uri_ = uriList[i_];
+                if (uri_ == null) {
+
+                    editor.putString("mediaType" + i_, null).commit();
+                    editor.putString("uri" + i_, null).commit();
+                    editor.putString("title" + i_, null).commit();
+
+                } else {
+                    editor.putString("mediaType" + i_, mediaTypeList[i_].toString()).commit();
+                    editor.putString("uri" + i_, uri_.toString()).commit();
+                    editor.putString("title" + i_, titleList[i_].toString()).commit();
+                }
+
+
+            }
+
+            Log.d(Arrays.toString(idList), Arrays.toString(uriList));
+
+
+            lastPlayedViewPagerAdapter.setIdList(idList);
+            lastPlayedViewPagerAdapter.setUriList(uriList);
+            lastPlayedViewPagerAdapter.setPreviews(bitmaps);
+            lastPlayedViewPagerAdapter.setTitleList(titleList);
+            lastPlayedViewPagerAdapter.setMediaTypeList(mediaTypeList);
+            lastPlayedViewPagerAdapter.notifyDataSetChanged();
+            lastPlayedViewPager.setAdapter(lastPlayedViewPagerAdapter);
+
+
+        }
+    }
 }
 
 

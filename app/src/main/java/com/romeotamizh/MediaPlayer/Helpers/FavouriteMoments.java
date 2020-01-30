@@ -1,8 +1,6 @@
 package com.romeotamizh.MediaPlayer.Helpers;
 
 
-import android.util.Log;
-
 import com.romeotamizh.MediaPlayer.Media;
 import com.romeotamizh.MediaPlayer.MediaRoomDatabase;
 
@@ -95,7 +93,6 @@ public class FavouriteMoments {
                 }
 
                 favouriteMoments = new FavouriteMoments(list, count, isExist, mediaType);
-                Log.d("mediatype", mediaType.toString());
                 FavouriteMoments.callback(favouriteMoments);
 
 
@@ -133,7 +130,6 @@ public class FavouriteMoments {
             favouriteMoments.isExist = true;
             FavouriteMoments.callback(favouriteMoments);
             databaseInsertOperation(mId);
-            Log.d("j1j", Arrays.toString(list));
 
         }
 
@@ -162,7 +158,6 @@ public class FavouriteMoments {
                 int[] temp = Arrays.copyOfRange(favouriteMoments.list, 0, favouriteMoments.count + 1);
                 temp[favouriteMoments.count] = currentPosition;
                 Arrays.sort(temp);
-                Log.d(Arrays.toString(temp), String.valueOf(currentPosition));
 
                 int currentPositionIndex;
                 currentPositionIndex = Arrays.binarySearch(temp, currentPosition);

@@ -5,7 +5,6 @@ import android.net.Uri;
 
 import com.romeotamizh.MediaPlayer.Helpers.Context;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
 import static com.romeotamizh.MediaPlayer.Helpers.MyApplication.getContext;
@@ -13,27 +12,31 @@ import static com.romeotamizh.MediaPlayer.Helpers.MyApplication.getContext;
 public class PlayMedia {
     public static MediaPlayer mediaPlayer = new MediaPlayer();
     public static int mediaPlayerDuration = 0;
-    private static ArrayList<OnPlayMediaListener> listeners = new ArrayList<>();
+    private static ArrayList<OnPlayMediaListener> onPlayMediaListeners = new ArrayList<>();
     private static int videoRatio;
 
     public static boolean mpPrepared = false;
+    private static ArrayList<OnAddToRecentListListener> onAddToRecentListListeners = new ArrayList<>();
+    private static ArrayList<OnMediaCompletedListener> onMediaCompletedListeners = new ArrayList<>();
 
-
-    public static void setPlayMusicListener(OnPlayMediaListener listener) {
-        PlayMedia.listeners.add(listener);
-
-    }
-
-    public static void callBack(int position, Context.MEDIATYPE mediaType) {
-        for (OnPlayMediaListener listenerItem : listeners)
-            listenerItem.playMedia(position, mediaType);
+    public static void setPlayMediaListener(OnPlayMediaListener listener) {
+        PlayMedia.onPlayMediaListeners.add(listener);
 
     }
 
-    private static ArrayList<OnMediaCompletedListener> listeners1 = new ArrayList<>();
+    public static void callBack(int id, Context.MEDIATYPE mediaType) {
+        for (OnPlayMediaListener onPlayMediaListener : onPlayMediaListeners)
+            onPlayMediaListener.playMedia(id, mediaType);
 
-    public interface OnPlayMediaListener {
-        void playMedia(int position, Context.MEDIATYPE mediaType);
+    }
+
+    public static void setOnAddToRecentListListener(OnAddToRecentListListener onAddToRecentListListener) {
+        onAddToRecentListListeners.add(onAddToRecentListListener);
+    }
+
+    public static void callBack(int id, Uri uri, CharSequence title, Context.MEDIATYPE mediaType) {
+        for (OnAddToRecentListListener listener : onAddToRecentListListeners)
+            listener.addToRecentList(id, uri, title, mediaType);
     }
 
     public static void playMedia(final Uri uri, final Context.MEDIATYPE mediaType) {
@@ -42,37 +45,13 @@ public class PlayMedia {
                     mediaPlayer.stop();
                     mediaPlayer.reset();
 
-            try {
-                mediaPlayer.setDataSource(getContext(), uri);
-                if (!mpPrepared)
-                    try {
-                        mediaPlayer.prepare();
-                    } catch (IllegalStateException e) {
-                        mediaPlayer.reset();
-                        mediaPlayer.setDataSource(getContext(), uri);
-                        try {
-                            Thread.sleep(1000);
-                        } catch (InterruptedException ex) {
-                            ex.printStackTrace();
-                        }
-                        return;
-                    }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-
-
+            mediaPlayer = MediaPlayer.create(getContext(), uri);
 
                 mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                     @Override
                     public void onPrepared(MediaPlayer mp) {
                         mpPrepared = true;
 
-                        if (mediaType == Context.MEDIATYPE.VIDEO) {
-                            mediaPlayer.setVideoScalingMode(MediaPlayer.VIDEO_SCALING_MODE_SCALE_TO_FIT);
-
-                        }
                         mediaPlayer.setVolume(1.0f, 1.0f);
                         mediaPlayerDuration = mediaPlayer.getDuration();
                         mediaPlayer.start();
@@ -87,13 +66,21 @@ public class PlayMedia {
     }
 
     public static void callBack(Context.MEDIATYPE mediaType) {
-        for (OnMediaCompletedListener listener : listeners1)
-            listener.onCompleted(mediaType);
+        for (OnMediaCompletedListener onMediaCompletedListener : onMediaCompletedListeners)
+            onMediaCompletedListener.onCompleted(mediaType);
     }
 
     private static void setOnMediaCompletedListener(OnMediaCompletedListener listener) {
-        listeners1.add(listener);
+        onMediaCompletedListeners.add(listener);
 
+    }
+
+    public interface OnAddToRecentListListener {
+        void addToRecentList(int id, Uri uri, CharSequence title, Context.MEDIATYPE mediaType);
+    }
+
+    public interface OnPlayMediaListener {
+        void playMedia(int id, Context.MEDIATYPE mediaType);
     }
 
     public interface OnMediaCompletedListener {

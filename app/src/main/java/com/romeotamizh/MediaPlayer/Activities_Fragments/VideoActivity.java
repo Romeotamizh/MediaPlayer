@@ -29,16 +29,13 @@ import com.romeotamizh.MediaPlayer.MediaController.MediaController;
 import com.romeotamizh.MediaPlayer.MediaController.PlayMedia;
 import com.romeotamizh.MediaPlayer.R;
 
-import java.io.IOException;
-
 import static com.romeotamizh.MediaPlayer.Activities_Fragments.AudioFragment.isReturnFromVideo;
-import static com.romeotamizh.MediaPlayer.Activities_Fragments.AudioFragment.previousAudioPlayed;
 import static com.romeotamizh.MediaPlayer.Helpers.CustomSeekBar.mFavouritesPositionsList;
 import static com.romeotamizh.MediaPlayer.MediaController.PlayMedia.mediaPlayer;
 import static com.romeotamizh.MediaPlayer.MediaController.PlayMedia.mediaPlayerDuration;
 
 
-public class VideoActivity extends AppCompatActivity implements View.OnClickListener, FavouriteMoments.OnFavouriteMomentsOperationsListener, View.OnLongClickListener {
+public class VideoActivity extends AppCompatActivity implements View.OnClickListener, FavouriteMoments.OnFavouriteMomentsOperationsListener, View.OnLongClickListener, SurfaceHolder.Callback {
 
     private static final boolean AUTO_HIDE = true;
     private static final int AUTO_HIDE_DELAY_MILLIS = 3000;
@@ -165,19 +162,16 @@ public class VideoActivity extends AppCompatActivity implements View.OnClickList
         if (mediaPlayer.isPlaying())
             mediaPlayer.stop();
         holder = null;
-        if (previousAudioPlayed != null) {
+        /*if (previousAudioPlayed != null) {
             try {
                 mediaPlayer.reset();
-                mediaPlayer.setDataSource(getBaseContext(), previousAudioPlayed);
-                isReturnFromVideo = true;
-                mediaPlayer.prepareAsync();
+                PlayMedia.playMedia(previousAudioPlayed, Context.MEDIATYPE.AUDIO);
 
             } catch (IllegalStateException e) {
 
-            } catch (IOException e) {
-                e.printStackTrace();
+
             }
-        }
+        }*/
         super.onBackPressed();
     }
 
@@ -202,7 +196,7 @@ public class VideoActivity extends AppCompatActivity implements View.OnClickList
         Uri uri = Uri.parse(getIntent().getStringExtra("URI"));
         mTitle = getIntent().getCharSequenceExtra("TITLE");
         holder = surfaceView.getHolder();
-        holder.setKeepScreenOn(true);
+        holder.addCallback(this);
         isReturnFromVideo = false;
         titleTextViewVideo = findViewById(R.id.title_video);
         PlayMedia.playMedia(uri, Context.MEDIATYPE.VIDEO);
@@ -238,59 +232,20 @@ public class VideoActivity extends AppCompatActivity implements View.OnClickList
         mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
             @Override
             public void onPrepared(MediaPlayer mp) {
-                double videoRatio = (double) mediaPlayer.getVideoWidth() / (double) mediaPlayer.getVideoHeight();
-                Point size = new Point();
-                getWindowManager().getDefaultDisplay().getSize(size);
-                int screenWidth = size.x;
-                int screenHeight = size.y;
-                double screenRatio = (double) screenWidth / (double) screenHeight;
-                ViewGroup.LayoutParams lp = surfaceView.getLayoutParams();
-                if (videoRatio > screenRatio) {
-                    lp.width = screenWidth;
-                    lp.height = (int) ((double) screenWidth / videoRatio);
-                } else {
-                    lp.width = (int) (videoRatio * (double) screenHeight);
-                    lp.height = screenHeight;
-
-                }
-                surfaceView.setLayoutParams(lp);
-                mediaPlayer.setDisplay(holder);
-                mediaPlayer.start();
-                mediaPlayerDuration = mediaPlayer.getDuration();
-                mediaControllerVideo.seekBarOperations();
-
-
+                mediaPlayer.setVideoScalingMode(MediaPlayer.VIDEO_SCALING_MODE_SCALE_TO_FIT);
+                fitVideoToScreen();
             }
         });
 
 
-        mediaPlayer.setOnVideoSizeChangedListener(new MediaPlayer.OnVideoSizeChangedListener() {
+        /*mediaPlayer.setOnVideoSizeChangedListener(new MediaPlayer.OnVideoSizeChangedListener() {
             @Override
             public void onVideoSizeChanged(MediaPlayer mp, int width, int height) {
+                fitVideoToScreen();
 
-                double videoRatio = (double) mediaPlayer.getVideoWidth() / (double) mediaPlayer.getVideoHeight();
-                Point size = new Point();
-                getWindowManager().getDefaultDisplay().getSize(size);
-                int screenWidth = size.x;
-                int screenHeight = size.y;
-
-                double screenRatio = (double) screenWidth / (double) screenHeight;
-                ViewGroup.LayoutParams lp = surfaceView.getLayoutParams();
-                if (videoRatio > screenRatio) {
-                    lp.width = screenWidth;
-                    lp.height = (int) ((double) screenWidth / videoRatio);
-                } else {
-                    lp.width = (int) (videoRatio * (double) screenHeight);
-                    lp.height = screenHeight;
-
-                }
-                surfaceView.setLayoutParams(lp);
-                mediaPlayer.setDisplay(holder);
-                if (!mediaPlayer.isPlaying())
-                    mediaPlayer.start();
 
             }
-        });
+        });*/
 
 
         //listen for seekBar and media initialization
@@ -316,38 +271,44 @@ public class VideoActivity extends AppCompatActivity implements View.OnClickList
                 }
             }
         }).start();
+
     }
+
+    private void fitVideoToScreen() {
+        double videoRatio = (double) mediaPlayer.getVideoWidth() / (double) mediaPlayer.getVideoHeight();
+        Point size = new Point();
+        getWindowManager().getDefaultDisplay().getSize(size);
+        int screenWidth = size.x;
+        int screenHeight = size.y;
+        if (screenWidth > screenHeight)
+            screenWidth += getResources().getIdentifier("navigation_bar_height", "dimen", "android");
+
+        double screenRatio = (double) screenWidth / (double) screenHeight;
+        ViewGroup.LayoutParams lp = surfaceView.getLayoutParams();
+        if (videoRatio > screenRatio) {
+            lp.width = screenWidth;
+            lp.height = (int) ((double) screenWidth / videoRatio);
+        } else {
+            lp.width = (int) (videoRatio * (double) screenHeight);
+            lp.height = screenHeight;
+
+        }
+        surfaceView.setLayoutParams(lp);
+        mediaPlayer.start();
+        mediaPlayerDuration = mediaPlayer.getDuration();
+        mediaControllerVideo.seekBarOperations();
+
+
+    }
+
 
     @Override
     public void onConfigurationChanged(@NonNull Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         setSeekBarProperties();
-        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE || newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
-            double videoRatio = (double) mediaPlayer.getVideoWidth() / (double) mediaPlayer.getVideoHeight();
-            Point size = new Point();
-            getWindowManager().getDefaultDisplay().getSize(size);
-            int screenWidth = size.x;
-            int screenHeight = size.y;
-
-            if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE)
-                screenWidth += getResources().getIdentifier("navigation_bar_height", "dimen", "android");
-            //  else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT)
-
-            double screenRatio = (double) screenWidth / (double) screenHeight;
-            ViewGroup.LayoutParams lp = surfaceView.getLayoutParams();
-            if (videoRatio > screenRatio) {
-                lp.width = screenWidth;
-                lp.height = (int) ((double) screenWidth / videoRatio);
-            } else {
-                lp.width = (int) (videoRatio * (double) screenHeight);
-                lp.height = screenHeight;
-
-            }
-            surfaceView.setLayoutParams(lp);
-            mediaPlayer.setDisplay(holder);
+        fitVideoToScreen();
 
 
-        }
 
 
     }
@@ -476,5 +437,23 @@ public class VideoActivity extends AppCompatActivity implements View.OnClickList
         }
 
         return true;
+    }
+
+    @Override
+    public void surfaceCreated(SurfaceHolder holder) {
+        holder.setKeepScreenOn(true);
+        mediaPlayer.setDisplay(holder);
+
+    }
+
+    @Override
+    public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
+        mediaPlayer.setDisplay(holder);
+
+    }
+
+    @Override
+    public void surfaceDestroyed(SurfaceHolder holder) {
+
     }
 }

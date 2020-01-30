@@ -15,7 +15,7 @@
 
         <com.google.android.material.appbar.CollapsingToolbarLayout
             android:layout_width="match_parent"
-            android:layout_height="200dp"
+            android:layout_height="300dp"
             android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
             android:touchscreenBlocksFocus="false"
             app:contentScrim="@color/Black"
@@ -24,21 +24,34 @@
 
             >
 
-            <FrameLayout
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="200dp"
+                android:layout_height="300dp"
                 android:layout_alignParentTop="true"
-
-
                 app:layout_collapseMode="parallax">
 
-                <ImageView
+                <androidx.viewpager.widget.ViewPager
+                    android:id="@+id/last_five_media"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:scaleType="centerCrop"
                     android:src="@mipmap/wallpaper" />
 
-            </FrameLayout>
+                <com.tbuonomo.viewpagerdotsindicator.WormDotsIndicator
+                    android:id="@+id/dots_indicator"
+                    android:layout_width="wrap_content"
+                    android:layout_height="6dp"
+                    android:layout_alignParentBottom="true"
+                    android:layout_centerHorizontal="true"
+                    app:dotsColor="@color/White"
+                    app:dotsSize="6dp"
+                    app:dotsStrokeWidth="2dp"
+
+
+                    />
+
+
+            </RelativeLayout>
 
 
         </com.google.android.material.appbar.CollapsingToolbarLayout>

@@ -214,9 +214,9 @@ public class AudioFragment extends Fragment implements Context.SetFragmentOnBack
 
         if (mediaType == Context.MEDIATYPE.AUDIO) {
             trackInfo = audioInfoDatabase.getTrackInfo(id, mediaType);
-            if (id != 0)
+            if (id != 0) {
                 play(id);
-
+            }
         }
     }
 
@@ -311,7 +311,7 @@ public class AudioFragment extends Fragment implements Context.SetFragmentOnBack
         //recyclerViewAdapter.
 
         //playMusicListener
-        PlayMedia.setPlayMusicListener(this);
+        PlayMedia.setPlayMediaListener(this);
 
         // set buttons onClick and onLongClick
         setButtonsClickFunctions();
@@ -389,15 +389,17 @@ public class AudioFragment extends Fragment implements Context.SetFragmentOnBack
 
     private void play(final int id) {
         this.id = id;
-        CharSequence mTitle;
         setSeekBarProperties();
+        Uri uri = audioInfoDatabase.getUriById(id);
+        CharSequence mTitle = audioInfoDatabase.getTitleById(id);
+        PlayMedia.callBack(id, uri, mTitle, Context.MEDIATYPE.AUDIO);
+
 
         if (slidingUpPanelLayout.getPanelState() == SlidingUpPanelLayout.PanelState.HIDDEN)
             slidingUpPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
 
 
-        mTitle = audioInfoDatabase.getTitleById(id);
-        PlayMedia.playMedia(audioInfoDatabase.getUriById(id), Context.MEDIATYPE.AUDIO);
+        PlayMedia.playMedia(uri, Context.MEDIATYPE.AUDIO);
 
         //listen for seekBar and media initialization
         new Thread(new Runnable() {
@@ -452,8 +454,8 @@ public class AudioFragment extends Fragment implements Context.SetFragmentOnBack
             });
 
             //set title images
-            Bitmap bitmapPlay = setThumbnailImage(audioInfoDatabase.getUriById(id), new Size(width, height), null);
-            Bitmap bitmapMain = setThumbnailImage(audioInfoDatabase.getUriById(id), new Size(width, 100), null);
+            Bitmap bitmapPlay = setThumbnailImage(uri, new Size(width, height), null);
+            Bitmap bitmapMain = setThumbnailImage(uri, new Size(width, 100), null);
             int whiteColor = getResources().getColor(R.color.White, null);
             int accentColor = 0;
 
@@ -510,7 +512,7 @@ public class AudioFragment extends Fragment implements Context.SetFragmentOnBack
 
         isFirstTime = false;
 
-        previousAudioPlayed = audioInfoDatabase.getUriById(id);
+        previousAudioPlayed = uri;
 
         if (!trackInfo.getIdsInAlbum().contains(prevId)) {
 
